@@ -1,4 +1,4 @@
-from django.contrib.admin.templatetags.admin_list import items_for_result
+from django.contrib.admin.templatetags.admin_list import items_for_result, paginator_number
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory
 from .filters import InventoryFilter
+from django.core.paginator import Paginator
 
 
 # Create your views here.
@@ -55,11 +56,16 @@ def branchInventory(request):
             assigned_branch = 'None assigned'
 
     myFilter = InventoryFilter(request.GET, queryset=items)
-    items = myFilter.qs
+    filtered_items = myFilter.qs
+
+    paginator = Paginator(filtered_items, 10)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'accounts/branch_inventory.html', {
         'myFilter': myFilter,
-        'items':items,
+        'items':page_obj,
         'assigned_branch':assigned_branch,
         'is_manager':is_manager,}
         )
