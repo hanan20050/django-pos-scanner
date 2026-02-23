@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory
+from .filters import InventoryFilter
 
 
 # Create your views here.
@@ -38,6 +39,8 @@ def logoutPage(request):
 def branchInventory(request):
     is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
 
+    myFilter = InventoryFilter()
+
     if is_manager:
         items = BranchInventory.objects.all().select_related('branch', 'product')
         assigned_branch = 'All Branches'
@@ -53,6 +56,7 @@ def branchInventory(request):
             assigned_branch = 'None assigned'
 
     return render(request, 'accounts/branch_inventory.html', {
+        'myFilter': myFilter,
         'items':items,
         'assigned_branch':assigned_branch,
         'is_manager':is_manager,}
