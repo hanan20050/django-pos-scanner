@@ -54,7 +54,9 @@
                 <th class="px-6 py-3">Price</th>
                 <th class="px-6 py-3">Barcode</th>
                 <th class="px-6 py-3">Status</th>
+                {% if is_manager %}
                 <th class="px-6 py-3">Option</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -84,11 +86,13 @@
                         </span>
                     {% endif %}
                 </td>
+                {% if is_manager %}
                 <td class="px-6 py-4 font-medium text-gray-900">
                     <a href="{% url 'inventory_update' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
                         Edit Stock
                     </a>
                 </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
