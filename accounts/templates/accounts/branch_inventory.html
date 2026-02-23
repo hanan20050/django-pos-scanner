@@ -19,6 +19,11 @@
             {{ myFilter.form.product }}
         </div>
 
+        <div class="flex flex-col">
+            <label class="text-xs font-semibold text-gray-600 mb-1">Status</label>
+            {{ myFilter.form.stock_status }}
+        </div>
+
         {% if is_manager %}
         <div class="flex flex-col">
             <label class="text-xs font-semibold text-gray-600 mb-1">Branch</label>
@@ -49,6 +54,7 @@
                 <th class="px-6 py-3">Price</th>
                 <th class="px-6 py-3">Barcode</th>
                 <th class="px-6 py-3">Status</th>
+                <th class="px-6 py-3">Status</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -63,6 +69,21 @@
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.quantity }}</td>
                 <td class="px-6 py-4">₱{{ i.product.base_price }}</td>
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.product.barcode }}</td>
+                <td class="px-6 py-4">
+                    {% if i.quantiy == 0 %}
+                        <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">
+                            Out of Stock
+                        </span>
+                    {% elif i.quantity <= i.product.min_stock_level %}
+                        <span class="px-2 py-1 text-xs font-semibold text-orange-800 bg-orange-100 rounded-full">
+                            Low Stock: {{ i.quantity }}
+                        </span>
+                    {% else %}
+                        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">
+                            In Stock
+                        </span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
