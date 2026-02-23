@@ -3,9 +3,17 @@
 {% block content %}
 
 <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-    <form method="get">
+    <form method="get" class="flex flex-row flex-wrap items-end gap-4 p-4 bg-gray-50 border-b">
         {{myFilter.form}}
-        <button type="submit">Filter</button>
+                <button type="submit"
+            class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition">
+            Filter
+        </button>
+
+        <a href="{% url 'branch_inventory' %}"
+           class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300 transition">
+            Reset
+        </a>
     </form>
 
     <table class="w-full text-sm text-left text-gray-500">
