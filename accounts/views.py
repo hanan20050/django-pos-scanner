@@ -39,7 +39,6 @@ def logoutPage(request):
 def branchInventory(request):
     is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
 
-    myFilter = InventoryFilter()
 
     if is_manager:
         items = BranchInventory.objects.all().select_related('branch', 'product')
@@ -55,9 +54,14 @@ def branchInventory(request):
             items = BranchInventory.objects.none()
             assigned_branch = 'None assigned'
 
+    myFilter = InventoryFilter(request.GET, queryset=items)
+    items = myFilter.qs
+
     return render(request, 'accounts/branch_inventory.html', {
         'myFilter': myFilter,
         'items':items,
         'assigned_branch':assigned_branch,
         'is_manager':is_manager,}
         )
+
+

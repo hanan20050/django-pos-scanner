@@ -3,8 +3,9 @@
 {% block content %}
 
 <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-    <form>
+    <form method="get">
         {{myFilter.form}}
+        <button type="submit">Filter</button>
     </form>
 
     <table class="w-full text-sm text-left text-gray-500">
