@@ -42,7 +42,7 @@
     </form>
 
     <table class="w-full text-sm text-left text-gray-500">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-100 text-center">
             <tr>
                 {% if is_manager %}
                 <th class="px-6 py-3">Branch</th>
@@ -54,12 +54,12 @@
                 <th class="px-6 py-3">Price</th>
                 <th class="px-6 py-3">Barcode</th>
                 <th class="px-6 py-3">Status</th>
-                <th class="px-6 py-3">Status</th>
+                <th class="px-6 py-3">Option</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
             {% for i in items %}
-            <tr class="hover:bg-gray-50">
+            <tr class="hover:bg-gray-50 text-center">
                 {% if is_manager %}
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.branch.name }}</td>
                 {% endif %}
@@ -83,6 +83,11 @@
                             In Stock
                         </span>
                     {% endif %}
+                </td>
+                <td class="px-6 py-4 font-medium text-gray-900">
+                    <a href="" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
+                        Edit Stock
+                    </a>
                 </td>
             </tr>
             {% endfor %}
