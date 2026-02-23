@@ -68,4 +68,27 @@
     </table>
 </div>
 
+<div class="flex items-center justify-between p-4 bg-white border-t border-gray-200">
+    <span class="text-sm text-gray-700">
+        Page <span class="font-semibold text-gray-900">{{ items.number }}</span> of
+        <span class="font-semibold text-gray-900">{{ items.paginator.num_pages }}</span>
+    </span>
+
+    <div class="inline-flex mt-2 xs:mt-0">
+        {% if items.has_previous %}
+            <a href="?page={{ items.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+               class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900">
+                Prev
+            </a>
+        {% endif %}
+
+        {% if items.has_next %}
+            <a href="?page={{ items.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+               class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900">
+                Next
+            </a>
+        {% endif %}
+    </div>
+</div>
+
 {% endblock %}
