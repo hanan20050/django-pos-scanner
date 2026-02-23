@@ -1,0 +1,37 @@
+{% extends 'accounts/main.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Update Stock</h2>
+
+    <div class="mb-6 p-4 bg-blue-50 rounded-md border border-blue-100">
+        <p class="text-sm text-blue-600 font-semibold uppercase">Product</p>
+        <p class="text-lg font-bold text-gray-900">{{ object.product.product_name }}</p>
+        <p class="text-sm text-gray-500">Barcode: {{ object.product.barcode }}</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Stock Quantity</label>
+                {{ form.quantity }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Minimum Stock Level</label>
+                {{ form.min_stock_level }}
+            </div>
+        </div>
+
+        <div class="mt-8 flex gap-3">
+            <button type="submit" class="px-6 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800">
+                Save Changes
+            </button>
+            <a href="{% url 'branch_inventory' %}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

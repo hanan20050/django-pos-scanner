@@ -15,7 +15,7 @@ from django.urls import reverse_lazy
 
 class InventoryUpdateView(UpdateView):
     model = BranchInventory
-    fields = ['quantity', 'min_stock_level']
+    fields = ['quantity']
     template_name = 'accounts/inventory_update.html'
     success_url = reverse_lazy('branch_inventory')
 

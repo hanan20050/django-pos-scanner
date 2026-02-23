@@ -7,4 +7,5 @@ urlpatterns = [
     path('logout/', views.logoutPage, name='logout'),
 
     path('branch_inventory', views.branchInventory, name='branch_inventory'),
+    path('accounts/<int:pk>/inventory_update', views.InventoryUpdateView.as_view(), name='inventory_update'),
 ]
