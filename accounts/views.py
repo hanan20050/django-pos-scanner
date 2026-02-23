@@ -7,9 +7,18 @@ from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory
 from .filters import InventoryFilter
 from django.core.paginator import Paginator
+from django.views.generic.edit import UpdateView
+from django.urls import reverse_lazy
 
 
 # Create your views here.
+
+class InventoryUpdateView(UpdateView):
+    model = BranchInventory
+    fields = ['quantity', 'min_stock_level']
+    template_name = 'accounts/inventory_update.html'
+    success_url = reverse_lazy('branch_inventory')
+
 
 @login_required(login_url='login')
 def home(request):
