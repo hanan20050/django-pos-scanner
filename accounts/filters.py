@@ -3,7 +3,7 @@ import django_filters
 from .models import *
 
 class InventoryFilter(django_filters.FilterSet):
-    product__product_name = django_filters.CharFilter(field_name='product__product_name', lookup_expr='icontains', label='Product Name',         widget=forms.TextInput(attrs={
+    product__product_name = django_filters.CharFilter(field_name='product__product_name', lookup_expr='icontains', label='Product Name', widget=forms.TextInput(attrs={
             'class': 'px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none',
             'placeholder': 'Search product name...'
         }))
