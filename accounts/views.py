@@ -93,5 +93,5 @@ def employeeProfile(request):
             return redirect('employee_profile')
 
 
-    context = {'form':form}
+    context = {'form':form, 'sales_agent':sales_agent}
     return render(request, 'accounts/employee_profile.html', context)
