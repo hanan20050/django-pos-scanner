@@ -3,6 +3,18 @@
 
 {% block content %}
 
+{% for employee in object_list %}
 
+
+{{ employee.name }}
+{{ employee.branch }}
+<img src="{{ employee.profile_pic }}">
+{{ employee.role }}
+{{ employee.email }}
+{{ employee.phone }}
+{{ employee.hire_date }}
+
+
+{% endfor %}
 
 {% endblock %}
