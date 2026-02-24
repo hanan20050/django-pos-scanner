@@ -34,6 +34,7 @@ class Employee(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     role = models.CharField(choices=ROLE_CHOICES, max_length=100, default='Sales Agent')
+    profile_pic = models.ImageField(null=True, blank=True)
     hire_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
