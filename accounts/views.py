@@ -102,3 +102,4 @@ class EmployeeList(ListView):
     model = Employee
     template_name = 'accounts/employee_list.html'
     context_object_name = 'employees'
+    paginate_by = 3
