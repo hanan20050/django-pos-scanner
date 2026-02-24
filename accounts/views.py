@@ -95,3 +95,7 @@ def employeeProfile(request):
 
     context = {'form':form, 'sales_agent':sales_agent}
     return render(request, 'accounts/employee_profile.html', context)
+
+
+def managerEmployee(request):
+    return render(request, 'accounts/manager_employee.html')
