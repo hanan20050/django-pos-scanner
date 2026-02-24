@@ -9,6 +9,7 @@ from .filters import InventoryFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
+from .forms import EmployeeForm
 
 
 # Create your views here.
@@ -81,4 +82,16 @@ def branchInventory(request):
 
 
 def employeeProfile(request):
-    return render(request, 'accounts/employee_profile.html')
+    sales_agent = request.user.employee
+    form = EmployeeForm(instance=sales_agent)
+
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST, request.FILES, instance=sales_agent)
+
+        if form.is_valid():
+            form.save()
+            return redirect('employee_profile')
+
+
+    context = {'form':form}
+    return render(request, 'accounts/employee_profile.html', context)
