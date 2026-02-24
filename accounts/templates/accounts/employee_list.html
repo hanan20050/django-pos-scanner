@@ -5,10 +5,13 @@
 
 {% for employee in object_list %}
 
-
+{% if employee.profile_pic %}
+    <img src="{{ employee.profile_pic.url }}" class="w-[100px] h-[100px] object-cover rounded-full shadow-sm" alt="{{ employee.name }}">
+{% else %}
+    <img src="/static/images/default-profile.png" class="w-[100px] h-[100px] object-cover rounded-full shadow-sm" alt="Default Profile">
+{% endif %}
 {{ employee.name }}
 {{ employee.branch }}
-<img src="{{ employee.profile_pic }}">
 {{ employee.role }}
 {{ employee.email }}
 {{ employee.phone }}
