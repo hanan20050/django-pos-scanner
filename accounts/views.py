@@ -10,6 +10,7 @@ from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView
 from django.urls import reverse_lazy
 from .forms import EmployeeForm
+from django.views.generic import ListView
 
 
 # Create your views here.
@@ -97,5 +98,7 @@ def employeeProfile(request):
     return render(request, 'accounts/employee_profile.html', context)
 
 
-def managerEmployee(request):
-    return render(request, 'accounts/manager_employee.html')
+class EmployeeList(ListView):
+    model = Employee
+    template_name = 'accounts/employee_list.html'
+    context_object_name = 'employees'
