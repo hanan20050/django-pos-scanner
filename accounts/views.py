@@ -80,3 +80,5 @@ def branchInventory(request):
         )
 
 
+def employeeProfile(request):
+    return render(request, 'accounts/employee_profile.html')
