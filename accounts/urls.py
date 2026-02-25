@@ -10,4 +10,5 @@ urlpatterns = [
     path('accounts/<int:pk>/inventory_update', views.InventoryUpdateView.as_view(), name='inventory_update'),
     path('employee_profile', views.employeeProfile, name='employee_profile'),
     path('employee_list', views.EmployeeList.as_view(), name='employee_list'),
+    path('employee_form', views.EmployeeCreate.as_view(), name='employee_form'),
 ]

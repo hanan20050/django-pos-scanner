@@ -7,3 +7,4 @@ class EmployeeForm(ModelForm):
         model = Employee
         fields = ['email', 'phone', 'profile_pic']
         exclude = ['user']
+

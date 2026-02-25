@@ -7,10 +7,13 @@ from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory
 from .filters import InventoryFilter
 from django.core.paginator import Paginator
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, CreateView
 from django.urls import reverse_lazy
 from .forms import EmployeeForm
 from django.views.generic import ListView
+from django.contrib.messages.views import SuccessMessageMixin
+
+
 
 
 # Create your views here.
@@ -103,3 +106,15 @@ class EmployeeList(ListView):
     template_name = 'accounts/employee_list.html'
     context_object_name = 'employees'
     paginate_by = 3
+
+
+
+class EmployeeCreate(SuccessMessageMixin, CreateView):
+    model = Employee
+    form_class = EmployeeForm
+    success_url = reverse_lazy('employee_list')
+    template_name = 'accounts/employee_form.html'
+    success_message = "Employee %(name)s was created successfully!"
+
+    def form_valid(self, form):
+        return super().form_valid(EmployeeForm)
