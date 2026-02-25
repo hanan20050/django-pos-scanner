@@ -134,14 +134,13 @@ class EmployeeCreate(SuccessMessageMixin, CreateView):
             form.add_error('username', 'This username is already taken.')
             return self.form_invalid(form)
 
-        # 3. Create the User object
+
         user = User.objects.create_user(
             username=custom_username,
             email=email,
             password=custom_password
         )
 
-        # 4. Attach the user and save the Employee profile
         employee = form.save(commit=False)
         employee.user = user
         employee.save()
@@ -173,7 +172,6 @@ def manageEmployee(request, pk):
             return redirect('employee_list')
 
     else:
-        # This is for the GET request (when you first click the button)
         form = EmployeeAdminForm(instance=employee)
         print(f"DEBUG: Form instance PK is {form.instance.pk}")
 
