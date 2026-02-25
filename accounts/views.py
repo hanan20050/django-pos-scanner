@@ -1,6 +1,8 @@
+from http.client import responses
+
 from django.contrib.admin.templatetags.admin_list import items_for_result, paginator_number
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user
@@ -12,6 +14,11 @@ from django.urls import reverse_lazy
 from .forms import EmployeeForm, EmployeeAdminForm
 from django.views.generic import ListView
 from django.contrib.messages.views import SuccessMessageMixin
+
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.utils.crypto import get_random_string
+from django.db import transaction
 
 
 
@@ -117,4 +124,41 @@ class EmployeeCreate(SuccessMessageMixin, CreateView):
     success_message = "Employee %(name)s was created successfully!"
 
     def form_valid(self, form):
-        return super().form_valid(form)
+        # 1. Pull the data from our custom fields
+        custom_username = form.cleaned_data.get('username')
+        custom_password = form.cleaned_data.get('password')
+        email = form.cleaned_data.get('email')
+
+        # 2. Check if username exists to avoid a crash
+        if User.objects.filter(username=custom_username).exists():
+            form.add_error('username', 'This username is already taken.')
+            return self.form_invalid(form)
+
+        # 3. Create the User object
+        user = User.objects.create_user(
+            username=custom_username,
+            email=email,
+            password=custom_password
+        )
+
+        # 4. Attach the user and save the Employee profile
+        employee = form.save(commit=False)
+        employee.user = user
+        employee.save()
+
+        return redirect(self.success_url)
+
+
+def manageEmployee(request, pk):
+    employee = get_object_or_404(Employee, pk=pk)
+    form = EmployeeForm(instance=employee)
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST, request.FILES, instance=employee)
+
+        if form.is_valid():
+            form.save()
+            return redirect('employee_list')
+
+    context = {'employee':employee, 'form':form}
+    return render(request, 'accounts/employee_form.html', context)
+

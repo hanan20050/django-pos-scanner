@@ -10,6 +10,20 @@ class EmployeeForm(ModelForm):
 
 
 class EmployeeAdminForm(forms.ModelForm):
+    username = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-600 focus:ring-0 font-semibold',
+            'placeholder': 'Create a login username'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-600 focus:ring-0 font-semibold',
+            'placeholder': 'Set a temporary password'
+        })
+    )
+
     class Meta:
         model = Employee
         fields = [

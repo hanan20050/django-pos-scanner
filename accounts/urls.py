@@ -11,4 +11,5 @@ urlpatterns = [
     path('employee_profile', views.employeeProfile, name='employee_profile'),
     path('employee_list', views.EmployeeList.as_view(), name='employee_list'),
     path('employee_form', views.EmployeeCreate.as_view(), name='employee_form'),
+    path('manage_employee/<str:pk>/', views.manageEmployee, name='manage_employee'),
 ]
