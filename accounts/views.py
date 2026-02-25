@@ -156,7 +156,18 @@ def manageEmployee(request, pk):
         form = EmployeeForm(request.POST, request.FILES, instance=employee)
 
         if form.is_valid():
-            form.save()
+            employee = form.save(commit=False)
+            user = employee.user
+
+            user.email = form.cleaned_data.get('email')
+
+            new_password = form.cleaned_data.get('password')
+            if new_password:
+                user.set_password(new_password)
+
+            user.save()
+            employee.save()
+
             return redirect('employee_list')
 
     context = {'employee':employee, 'form':form}
