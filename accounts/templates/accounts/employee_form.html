@@ -11,12 +11,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
             </a>
-            <h1 class="text-2xl font-black text-white tracking-tight">
+            <h1 class="text-xl font-black text-white tracking-tight">
                 {% if object %} EDIT STAFF: {{ object.name|upper }} {% else %} REGISTER NEW EMPLOYEE {% endif %}
             </h1>
         </div>
         <div class="text-blue-100 text-sm font-medium">
-            POS Scanner v2.0 | Management Portal
+           GGH Manager Portal
         </div>
     </div>
 
@@ -97,7 +97,6 @@
 </div>
 
 <style>
-    /* Full-screen fit logic */
     input, select {
         width: 100%;
         padding: 0.875rem;
@@ -113,7 +112,6 @@
         outline: none;
         box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.1);
     }
-    /* Style for the File Upload specifically */
     input[type="file"] {
         background: transparent;
         border: none;
