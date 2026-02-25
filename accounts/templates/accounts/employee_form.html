@@ -13,9 +13,13 @@
                 <span class="text-xs font-black uppercase tracking-widest pr-1">Back</span>
             </a>
 
-            <h1 class="text-2xl font-black text-white tracking-tight ml-2">
-                {% if object %} EDIT STAFF: {{ object.name|upper }} {% else %} REGISTER NEW EMPLOYEE {% endif %}
-            </h1>
+        <h1 class="font-black uppercase tracking-tight text-white">
+            {% if form.instance.pk %}
+                UPDATE EMPLOYEE: <span class="text-blue-200">{{ form.instance.name|upper }}</span>
+            {% else %}
+                REGISTER NEW EMPLOYEE
+            {% endif %}
+        </h1>
         </div>
         <div class="hidden md:block text-blue-100 text-sm font-medium border-l border-blue-600 pl-6">
             Management Portal v2.0

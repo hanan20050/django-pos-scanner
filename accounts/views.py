@@ -150,10 +150,12 @@ class EmployeeCreate(SuccessMessageMixin, CreateView):
 
 
 def manageEmployee(request, pk):
+    # print(f"\n\n--- DEBUG: ACCESSING PK {pk} --- \n\n")
+    # raise Exception(f"I am in the manageEmployee function with PK {pk}")
+
     employee = get_object_or_404(Employee, pk=pk)
-    form = EmployeeForm(instance=employee)
     if request.method == 'POST':
-        form = EmployeeForm(request.POST, request.FILES, instance=employee)
+        form = EmployeeAdminForm(request.POST, request.FILES, instance=employee)
 
         if form.is_valid():
             employee = form.save(commit=False)
@@ -169,6 +171,11 @@ def manageEmployee(request, pk):
             employee.save()
 
             return redirect('employee_list')
+
+    else:
+        # This is for the GET request (when you first click the button)
+        form = EmployeeAdminForm(instance=employee)
+        print(f"DEBUG: Form instance PK is {form.instance.pk}")
 
     context = {'employee':employee, 'form':form}
     return render(request, 'accounts/employee_form.html', context)

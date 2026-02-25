@@ -1,0 +1,123 @@
+{% extends 'accounts/main.html' %}
+{% load static %}
+
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="bg-blue-700 p-4 flex justify-between items-center text-white">
+        <div class="flex items-center gap-4">
+            <a href="{% url 'employee_list' %}" class="bg-black px-4 py-2 rounded font-bold text-xs uppercase tracking-widest flex items-center">
+                <span class="mr-2">←</span> BACK
+            </a>
+            <h1 class="font-black uppercase tracking-tight text-white">
+                {# We check if the form has an instance with a primary key #}
+                {% if form.instance.pk %}
+                    UPDATE EMPLOYEE: <span class="text-blue-200">{{ form.instance.name|upper }}</span>
+                {% else %}
+                    REGISTER NEW EMPLOYEE
+                {% endif %}
+            </h1>
+        </div>
+        <div class="text-[10px] font-bold opacity-50 uppercase">Management Portal v2.0</div>
+    </div>
+
+    <div class="p-10 bg-gray-100 min-h-screen flex gap-6">
+
+        <div class="w-1/4 bg-white rounded-2xl p-8 shadow-sm border border-gray-200 flex flex-col items-center">
+            <div class="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow-inner mb-4">
+                {% if employee.profile_pic %}
+                    <img src="{{ employee.profile_pic.url }}" class="w-full h-full object-cover">
+                {% else %}
+                    <img src="{% static 'images/user-placeholder.png' %}" class="w-16 opacity-20">
+                {% endif %}
+            </div>
+
+            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Upload Profile Image</label>
+
+            <div class="w-full text-center">
+                <div class="relative group">
+                    {{ form.profile_pic }}
+                </div>
+                <p class="text-[9px] text-gray-400 mt-4 italic">Preferred size: 800x800px (JPG/PNG)</p>
+            </div>
+        </div>
+
+        <div class="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+            <div class="p-8">
+                <h2 class="text-lg font-black text-gray-800">Employment Details</h2>
+                <p class="text-xs text-gray-400 mb-8">Enter the necessary credentials and branch assignments.</p>
+
+                <div class="grid grid-cols-3 gap-x-6 gap-y-8">
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-2">Full Name</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-2">Email Address</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-2">Contact Number</label>
+                        {{ form.phone }}
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-2">Assigned Branch</label>
+                        {{ form.branch }}
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-2">Company Role</label>
+                        {{ form.role }}
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-2">Username</label>
+                        <input type="text" name="username" value="{{ form.username.value|default:'' }}"
+                               {% if employee.id %} readonly class="manage-input-readonly" {% else %} class="manage-input" {% endif %}>
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-black text-gray-500 uppercase mb-2">
+                            {% if employee.id %} New Password (Optional) {% else %} Password {% endif %}
+                        </label>
+                        {{ form.password }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto bg-gray-50 p-6 flex justify-end items-center gap-6 border-t border-gray-100">
+                <a href="{% url 'employee_list' %}" class="text-xs font-black text-gray-400 hover:text-gray-600 uppercase">Discard</a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-xl font-black text-xs uppercase shadow-lg transition-transform active:scale-95">
+                    {% if employee.id %} UPDATE RECORD {% else %} SAVE RECORD {% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    /* Styling for the form fields to match your image */
+    input[type="text"], input[type="email"], input[type="password"], select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        color: #374151;
+    }
+
+    .manage-input-readonly {
+        background-color: #f9fafb;
+        color: #9ca3af !important;
+        cursor: not-allowed;
+        border: 1px solid #e5e7eb;
+    }
+
+    /* Fix for the messy Django File Input */
+    input[type="file"] {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+</style>
+{% endblock %}
