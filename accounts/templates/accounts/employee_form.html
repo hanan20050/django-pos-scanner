@@ -36,11 +36,11 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
                         <div class="relative inline-block mb-6">
                             {% if object.profile_pic %}
-                                <img class="h-40 w-40 rounded-full border-4 border-blue-50 object-cover shadow-inner"
+                                <img id="image-preview" class="h-40 w-40 rounded-full border-4 border-blue-50 object-cover shadow-inner"
                                      src="{{ object.profile_pic.url }}" alt="Profile Picture">
                             {% else %}
                                 <div class="h-40 w-40 rounded-full border-4 border-gray-100 bg-gray-50 flex items-center justify-center shadow-inner">
-                                    <svg class="h-16 w-16 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                    <svg id="svg" class="h-16 w-16 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
 
                                     <img id="image-preview" class="h-full w-full rounded-full object-cover hidden" src="" alt="Preview">
                                 </div>
@@ -137,4 +137,7 @@
         padding: 0;
     }
 </style>
+
+<script src="{% static 'js/image-preview.js' %}"></script>
+
 {% endblock %}
