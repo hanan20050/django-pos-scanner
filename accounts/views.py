@@ -200,13 +200,14 @@ def scanProduct(request):
 
     employee = get_object_or_404(Employee, user=request.user)
 
-    product = Product.objects.filter(barcode=barcode, branch=employee.branch).first()
+    inventory_item = BranchInventory.objects.filter(product__barcode=barcode, branch=employee.branch).select_related('product').first()
 
-    if not product:
+    if not inventory_item:
         return JsonResponse({'error': 'Product not found'}, status=404)
 
     return JsonResponse({
-        'id': product.id,
-        'name': product.product_name,
-        'price': str(product.base_price)
+        'id': inventory_item.product.id,
+        'name': inventory_item.product.product_name,
+        'price': str(inventory_item.product.base_price),
+        'stock': inventory_item.product.min_stock_level,
     })
