@@ -181,12 +181,12 @@ def manageEmployee(request, pk):
     return render(request, 'accounts/employee_form.html', context)
 
 
-@login_required(login_url='login')
-def posTerminal(request):
-    return render(request, 'accounts/pos_terminal.html')
+# @login_required(login_url='login')
+# def posTerminal(request):
+#     return render(request, 'accounts/pos_terminal.html')
 
 @login_required(login_url='login')
-def getProduct(request):
+def posTerminal(request):
     employee = get_object_or_404(Employee, user=request.user)
     branch_products = BranchInventory.objects.filter(branch=employee.branch).select_related('product')
 
