@@ -1,7 +1,105 @@
 {% extends 'accounts/main.html' %}
+{% load static %}
 
 {% block content %}
+<div class="h-[calc(100vh-110px)] flex flex-col lg:flex-row gap-4 p-4 bg-gray-100 overflow-hidden">
 
-<h1>terminal</h1>
+    <div class="flex-grow flex flex-col bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
 
+        <div class="p-6 border-b border-gray-100 flex items-center justify-between gap-4">
+            <div class="relative flex-grow">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </span>
+                <input type="text" placeholder="Search product name or SKU..."
+                       class="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-600 focus:bg-white transition-all outline-none font-bold">
+            </div>
+            <div class="flex gap-2">
+                <button class="px-4 py-3 bg-gray-50 rounded-xl font-bold text-gray-600 hover:bg-gray-200 transition">All</button>
+                <button class="px-4 py-3 bg-gray-50 rounded-xl font-bold text-gray-400 hover:bg-gray-200 transition">Drinks</button>
+                <button class="px-4 py-3 bg-gray-50 rounded-xl font-bold text-gray-400 hover:bg-gray-200 transition">Food</button>
+            </div>
+        </div>
+
+        <div class="flex-grow overflow-y-auto p-6 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+            {% for product in products %}
+            <button class="group bg-white border-2 border-gray-50 p-4 rounded-3xl hover:border-blue-600 hover:shadow-xl hover:shadow-blue-100 transition-all text-left flex flex-col h-full">
+                <div class="h-32 w-full bg-gray-100 rounded-2xl mb-4 overflow-hidden">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="h-full w-full object-cover">
+                    {% else %}
+                        <div class="h-full w-full flex items-center justify-center text-gray-300">
+                             <svg class="h-10 w-10" fill="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                    {% endif %}
+                </div>
+                <h3 class="font-black text-gray-800 leading-tight mb-1 truncate w-full">{{ product.name }}</h3>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{{ product.category }}</p>
+                <div class="mt-auto flex items-center justify-between">
+                    <span class="text-lg font-black text-blue-700">₱{{ product.price }}</span>
+                    <span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-md font-black uppercase">In Stock</span>
+                </div>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="w-full lg:w-[450px] shrink-0 flex flex-col bg-blue-900 rounded-3xl shadow-2xl overflow-hidden text-white">
+        <div class="p-8 border-b border-blue-800/50">
+            <div class="flex justify-between items-center mb-1">
+                <h2 class="text-2xl font-black tracking-tight">Current Order</h2>
+                <span class="bg-blue-600 text-[10px] px-3 py-1 rounded-full font-black uppercase">Order #4412</span>
+            </div>
+            <p class="text-blue-300 text-sm font-medium">Customer: Walk-in</p>
+        </div>
+
+        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4">
+            <div class="flex items-center gap-4 bg-blue-800/30 p-4 rounded-2xl border border-blue-700/50">
+                <div class="h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center font-bold">1x</div>
+                <div class="flex-grow">
+                    <h4 class="font-bold text-sm">Mountain Dew 500ml</h4>
+                    <p class="text-xs text-blue-400 font-medium">₱35.00</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-black text-white">₱35.00</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 bg-white rounded-t-[40px] text-gray-900">
+            <div class="space-y-3 mb-6">
+                <div class="flex justify-between text-gray-400 font-bold">
+                    <span>Subtotal</span>
+                    <span>₱0.00</span>
+                </div>
+                <div class="flex justify-between text-gray-400 font-bold">
+                    <span>Tax (12%)</span>
+                    <span>₱0.00</span>
+                </div>
+                <div class="flex justify-between text-2xl font-black pt-3 border-t border-gray-100">
+                    <span>Total</span>
+                    <span class="text-blue-700" id="total-display">₱0.00</span>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mb-4">
+                <button id="btn-cash" class="flex-1 py-2 bg-blue-100 text-blue-700 rounded-xl font-black border-2 border-blue-700">CASH</button>
+                <button id="btn-installment" class="flex-1 py-2 bg-gray-50 text-gray-400 rounded-xl font-black border-2 border-transparent">INSTALLMENT</button>
+            </div>
+
+            <div id="installment-options" class="hidden space-y-2 mb-4 animate-fade-in">
+                <select class="w-full p-2 rounded-lg border-2 border-gray-100 text-sm font-bold">
+                    <option>3 Months (5% Interest)</option>
+                    <option>6 Months (8% Interest)</option>
+                    <option>12 Months (12% Interest)</option>
+                </select>
+            </div>
+
+            <button class="w-full bg-blue-700 hover:bg-blue-800 text-white py-5 rounded-2xl font-black text-xl shadow-lg shadow-blue-200 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                CHECKOUT
+            </button>
+        </div>
+    </div>
+</div>
 {% endblock %}
