@@ -20,6 +20,8 @@ from django.contrib import messages
 from django.utils.crypto import get_random_string
 from django.db import transaction
 
+from django.http import JsonResponse
+
 
 
 
@@ -182,3 +184,7 @@ def manageEmployee(request, pk):
 @login_required(login_url='login')
 def posTerminal(request):
     return render(request, 'accounts/pos_terminal.html')
+
+
+def getProduct(request, barcode):
+    pass
