@@ -1,0 +1,1 @@
+const imagePreview = document.querySelector('input[type="file"]')
