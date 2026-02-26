@@ -186,5 +186,9 @@ def posTerminal(request):
     return render(request, 'accounts/pos_terminal.html')
 
 
-def getProduct(request, barcode):
-    pass
+def getProduct(request):
+    employee = get_object_or_404(Employee, user=request.user)
+
+    context = {'employee':employee}
+
+    return render(request, 'accounts/pos_terminal.html', context)
