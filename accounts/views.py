@@ -178,3 +178,7 @@ def manageEmployee(request, pk):
     context = {'employee':employee, 'form':form}
     return render(request, 'accounts/employee_form.html', context)
 
+
+@login_required(login_url='login')
+def posTerminal(request):
+    return render(request, 'accounts/pos_terminal.html')
