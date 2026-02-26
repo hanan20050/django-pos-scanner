@@ -188,8 +188,9 @@ def posTerminal(request):
 @login_required(login_url='login')
 def getProduct(request):
     employee = get_object_or_404(Employee, user=request.user)
+    branch_products = BranchInventory.objects.filter(branch=employee.branch).select_related('product')
 
-    context = {'employee':employee}
+    context = {'employee':employee, 'branch_products':branch_products}
 
     return render(request, 'accounts/pos_terminal.html', context)
 
