@@ -185,10 +185,28 @@ def manageEmployee(request, pk):
 def posTerminal(request):
     return render(request, 'accounts/pos_terminal.html')
 
-
+@login_required(login_url='login')
 def getProduct(request):
     employee = get_object_or_404(Employee, user=request.user)
 
     context = {'employee':employee}
 
     return render(request, 'accounts/pos_terminal.html', context)
+
+
+@login_required(login_url='login')
+def scanProduct(request):
+    barcode = request.GET.get('barcode')
+
+    employee = get_object_or_404(Employee, user=request.user)
+
+    product = Product.objects.filter(barcode=barcode, branch=employee.branch).first()
+
+    if not product:
+        return JsonResponse({'error': 'Product not found'}, status=404)
+
+    return JsonResponse({
+        'id': product.id,
+        'name': product.product_name,
+        'price': str(product.base_price)
+    })
