@@ -14,13 +14,10 @@ class InventoryFilter(django_filters.FilterSet):
 
     def filter_stock_status(self, queryset, name, value):
         if value == 'low':
-            # Returns items where quantity is > 0 but <= min_stock_level
             return queryset.filter(quantity__gt=0, quantity__lte=F('product__min_stock_level'))
         elif value == 'out':
-            # Returns items where quantity is 0 or less
             return queryset.filter(quantity__lte=0)
-        elif value == 'healthy':
-            # Returns items where quantity is strictly greater than min_stock_level
+        elif value == 'in stock':
             return queryset.filter(quantity__gt=F('product__min_stock_level'))
         return queryset
 
