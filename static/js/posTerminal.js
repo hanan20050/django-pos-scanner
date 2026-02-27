@@ -26,3 +26,19 @@ document.addEventListener("keydown", (e) => {
         }
     }
 })
+
+async function processScan(barcode){
+    const url = `/scan_product/${barcode}`
+
+    try{
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!response.ok){
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+    } catch (e) {
+        console.error(e)
+    }
+}
