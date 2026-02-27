@@ -2,8 +2,13 @@ let barcodeBuffer = ""
 let lastKeyTime = Date.now();
 let barcode = ""
 let focusTimer
+let isStageOpen = false
 
 document.addEventListener("keydown", (e) => {
+
+    if (isStageOpen){
+        return
+    }
 
     const currentTime = Date.now();
 
@@ -50,7 +55,10 @@ async function processScan(barcode){
     }
 }
 
+
 function renderFocusStage(data){
+    isStageOpen = true
+
     const inventoryGrid = document.getElementById('inventory-grid');
     const productContainer = document.getElementById('product-container');
     const focusTarget = document.getElementById('focus-card-target');
@@ -99,6 +107,8 @@ function renderFocusStage(data){
 }
 
 function confirmAddition(data){
+    isStageOpen = false
+
     document.getElementById('product-container').classList.add('hidden');
     document.getElementById('inventory-grid').classList.remove('hidden');
 
