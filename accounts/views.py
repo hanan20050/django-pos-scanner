@@ -211,7 +211,6 @@ def scanProduct(request):
     ).select_related('product').first()
 
     if not inventory_item:
-        # Fallback: Check if the product exists AT ALL, regardless of branch
         exists_anywhere = Product.objects.filter(barcode=barcode).exists()
         print(f"Exists anywhere in system: {exists_anywhere}")
         return JsonResponse({'error': 'Product not found'}, status=404)

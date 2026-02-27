@@ -105,7 +105,7 @@ function renderFocusStage(data){
 
     focusTimer = setTimeout(() => {
         confirmAddition(data,  1)
-    }, 2000)
+    }, 5000)
 
     qtyInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
@@ -130,11 +130,11 @@ function confirmAddition(data, quantity){
     });
 }
 
-function addItemToCart(data, quantity = 1) {
-    console.log("Adding to cart:", data, "Qty:", quantity);
-
-    // For now, let's just alert so we know it worked
-    // alert(`Added ${quantity}x ${data.name || 'Product'} to cart!`);
-
-    // Later, we will add the logic to update the blue sidebar here
-}
+// function addItemToCart(data, quantity = 1) {
+//     console.log("Adding to cart:", data, "Qty:", quantity);
+//
+//     // For now, let's just alert so we know it worked
+//     // alert(`Added ${quantity}x ${data.name || 'Product'} to cart!`);
+//
+//     // Later, we will add the logic to update the blue sidebar here
+// }
