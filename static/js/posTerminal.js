@@ -1,4 +1,3 @@
-let barcodeBuffer = ""
 let lastKeyTime = Date.now();
 let barcode = ""
 let focusTimer
@@ -106,7 +105,7 @@ function renderFocusStage(data){
     }, 2000)
 }
 
-function confirmAddition(data){
+function confirmAddition(data, quantity){
     isStageOpen = false
 
     document.getElementById('product-container').classList.add('hidden');
