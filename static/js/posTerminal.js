@@ -1,10 +1,13 @@
 let barcodeBuffer = ""
 let lastKeyTime = Date.now();
 let barcode = ""
+let focusTimer
 
 document.addEventListener("keydown", (e) => {
 
     const currentTime = Date.now();
+
+    if (e.target.id === 'focus-qty-input') return;
 
 
     if (e.key === "Enter" || e.keyCode === 13) {
@@ -55,7 +58,7 @@ function renderFocusStage(data){
     inventoryGrid.classList.add('hidden')
     productContainer.classList.remove('hidden')
 
-    focusTarget.innerHTML += `
+    focusTarget.innerHTML = `
         <div class="bg-white border-4 border-blue-600 rounded-[40px] shadow-2xl p-10 flex flex-col gap-6 animate-in zoom-in duration-300">
         <div class="flex items-center gap-10">
             <div class="w-40 h-40 bg-blue-50 rounded-3xl flex items-center justify-center text-6xl shadow-inner">
@@ -79,4 +82,10 @@ function renderFocusStage(data){
     const qtyInput = document.getElementById('focus-qty-input');
     qtyInput.focus()
     qtyInput.select()
+
+    clearTimeout(focusTimer)
+
+    focusTimer = setTimeout(() => {
+        confirmAddition(data,  1)
+    }, 2000)
 }
