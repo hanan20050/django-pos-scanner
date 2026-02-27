@@ -126,12 +126,10 @@ class EmployeeCreate(SuccessMessageMixin, CreateView):
     success_message = "Employee %(name)s was created successfully!"
 
     def form_valid(self, form):
-        # 1. Pull the data from our custom fields
         custom_username = form.cleaned_data.get('username')
         custom_password = form.cleaned_data.get('password')
         email = form.cleaned_data.get('email')
 
-        # 2. Check if username exists to avoid a crash
         if User.objects.filter(username=custom_username).exists():
             form.add_error('username', 'This username is already taken.')
             return self.form_invalid(form)
@@ -220,4 +218,5 @@ def scanProduct(request):
         'name': inventory_item.product.product_name,
         'price': str(inventory_item.product.base_price),
         'stock': inventory_item.product.min_stock_level,
+        'image': inventory_item.product.image.url,
     })
