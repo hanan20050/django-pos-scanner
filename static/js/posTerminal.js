@@ -28,17 +28,29 @@ document.addEventListener("keydown", (e) => {
 })
 
 async function processScan(barcode){
-    const url = `/scan_product/${barcode}`
+    const url = `/scan_product/?barcode=${barcode}`
 
     try{
         const response = await fetch(url);
-        const data = await response.json();
 
         if (!response.ok){
             throw new Error(`Response status: ${response.status}`);
+            return
         }
+
+        const data = await response.json();
+
+        renderFocusStage(data)
 
     } catch (e) {
         console.error(e)
     }
+}
+
+function renderFocusStage(data){
+    const inventoryGrid = document.getElementById('inventory-grid');
+    const productContainer = document.getElementById('product-container');
+    const focusTarget = document.getElementById('focus-card-target');
+
+
 }
