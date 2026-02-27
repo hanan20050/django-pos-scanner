@@ -11,6 +11,12 @@ document.addEventListener("keydown", (e) => {
 
     const currentTime = Date.now();
 
+    if (currentTime - lastKeyTime > 300){
+        barcode = ""
+    }
+
+    lastKeyTime = currentTime;
+
     if (e.target.id === 'focus-qty-input') return;
 
 
@@ -24,9 +30,6 @@ document.addEventListener("keydown", (e) => {
 
         barcode = ""
     } else {
-        if (currentTime - lastKeyTime > 100){
-            barcode = ""
-        }
 
         if (e.key.length === 1){
             barcode += e.key
@@ -73,7 +76,7 @@ function renderFocusStage(data){
             </div>
             <div class="flex-grow">
                 <span class="bg-blue-600 text-white text-xs font-black px-4 py-1 rounded-full uppercase tracking-widest leading-none">Scanned Item</span>
-                <h1 class="text-5xl font-black text-gray-900 mt-2">${data.product_name}</h1>
+                <h1 class="text-5xl font-black text-gray-900 mt-2">${data.name}</h1>
                 <p class="text-blue-700 font-black text-3xl mt-1">₱${data.price}</p>
             </div>
             
@@ -103,6 +106,14 @@ function renderFocusStage(data){
     focusTimer = setTimeout(() => {
         confirmAddition(data,  1)
     }, 2000)
+
+    qtyInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            clearTimeout(focusTimer);
+            const qty = parseInt(qtyInput.value) || 1;
+            confirmAddition(data, qty);
+        }
+    });
 }
 
 function confirmAddition(data, quantity){
@@ -117,4 +128,13 @@ function confirmAddition(data, quantity){
         price: data.price,
         qty: quantity
     });
+}
+
+function addItemToCart(data, quantity = 1) {
+    console.log("Adding to cart:", data, "Qty:", quantity);
+
+    // For now, let's just alert so we know it worked
+    alert(`Added ${quantity}x ${data.name || 'Product'} to cart!`);
+
+    // Later, we will add the logic to update the blue sidebar here
 }
