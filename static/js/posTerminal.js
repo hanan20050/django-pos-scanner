@@ -83,9 +83,29 @@ function renderFocusStage(data){
     qtyInput.focus()
     qtyInput.select()
 
+    qtyInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter'){
+            clearTimeout(focusTimer)
+            const qty = parseInt(qtyInput.value) || 1;
+            confirmAddition(data, qty);
+        }
+    })
+
     clearTimeout(focusTimer)
 
     focusTimer = setTimeout(() => {
         confirmAddition(data,  1)
     }, 2000)
+}
+
+function confirmAddition(data){
+    document.getElementById('product-container').classList.add('hidden');
+    document.getElementById('inventory-grid').classList.remove('hidden');
+
+    addItemToCart({
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        qty: quantity
+    });
 }
