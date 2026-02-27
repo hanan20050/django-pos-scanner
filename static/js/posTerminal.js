@@ -134,7 +134,7 @@ function addItemToCart(data, quantity = 1) {
     console.log("Adding to cart:", data, "Qty:", quantity);
 
     // For now, let's just alert so we know it worked
-    alert(`Added ${quantity}x ${data.name || 'Product'} to cart!`);
+    // alert(`Added ${quantity}x ${data.name || 'Product'} to cart!`);
 
     // Later, we will add the logic to update the blue sidebar here
 }

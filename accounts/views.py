@@ -201,9 +201,19 @@ def scanProduct(request):
 
     employee = get_object_or_404(Employee, user=request.user)
 
-    inventory_item = BranchInventory.objects.filter(product__barcode=barcode, branch=employee.branch).select_related('product').first()
+    print(f"--- SCAN DEBUG ---")
+    print(f"Input Barcode: '{barcode}'")
+    print(f"Branch: {employee.branch}")
+
+    inventory_item = BranchInventory.objects.filter(
+        product__barcode__iexact=barcode,
+        branch=employee.branch
+    ).select_related('product').first()
 
     if not inventory_item:
+        # Fallback: Check if the product exists AT ALL, regardless of branch
+        exists_anywhere = Product.objects.filter(barcode=barcode).exists()
+        print(f"Exists anywhere in system: {exists_anywhere}")
         return JsonResponse({'error': 'Product not found'}, status=404)
 
     return JsonResponse({
