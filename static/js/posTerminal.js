@@ -2,6 +2,7 @@ let lastKeyTime = Date.now();
 let barcode = ""
 let focusTimer
 let isStageOpen = false
+let cart = []
 
 document.addEventListener("keydown", (e) => {
 
@@ -55,6 +56,19 @@ async function processScan(barcode){
     } catch (e) {
         console.error(e)
     }
+}
+
+function addItemToCart(scannedItem) {
+
+    const itemExist = cart.find(item => item.id === scannedItem.id);
+
+    if (itemExist){
+        itemExist.qty += scannedItem.qty
+    } else {
+        cart.push(scannedItem)
+    }
+
+    console.log("Cart Updated:", scannedItem);
 }
 
 
@@ -113,15 +127,8 @@ function renderFocusStage(data){
             console.log("Auto-confirming...");
             confirmAddition(data, 1);
         }
-    }, 5000)
+    }, 3000)
 
-    // qtyInput.addEventListener('keydown', (e) => {
-    //     if (e.key === 'Enter') {
-    //         clearTimeout(focusTimer);
-    //         const qty = parseInt(qtyInput.value) || 1;
-    //         confirmAddition(data, qty);
-    //     }
-    // });
 }
 
 function confirmAddition(data, quantity){
@@ -139,11 +146,3 @@ function confirmAddition(data, quantity){
     });
 }
 
-// function addItemToCart(data, quantity = 1) {
-//     console.log("Adding to cart:", data, "Qty:", quantity);
-//
-//     // For now, let's just alert so we know it worked
-//     // alert(`Added ${quantity}x ${data.name || 'Product'} to cart!`);
-//
-//     // Later, we will add the logic to update the blue sidebar here
-// }
