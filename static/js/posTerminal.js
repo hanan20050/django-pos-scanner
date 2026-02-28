@@ -69,6 +69,8 @@ function addItemToCart(scannedItem) {
     }
 
     console.log("Cart Updated:", scannedItem);
+
+    renderCart()
 }
 
 
@@ -146,3 +148,28 @@ function confirmAddition(data, quantity){
     });
 }
 
+function renderCart(){
+    const cartContainer = document.getElementById('cart-items')
+    let itemName = document.getElementById('item-name')
+
+    if (!cartContainer) return
+
+    cartContainer.innerHTML = ''
+    let totalOrderAmount = 0
+
+    cart.forEach(item => {
+        cartContainer.innerHTML = `
+            <div class="flex items-center gap-4 bg-blue-800/30 p-4 rounded-2xl border border-blue-700/50">
+                <div class="h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center font-bold">1x</div>
+                <div class="flex-grow">
+                    <h4 id="item-name" class="font-bold text-sm">${item.name}</h4>
+                    <p class="text-xs text-blue-400 font-medium">${item.price}</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-black text-white">${item.price}</p>
+                </div>
+            </div>
+        `
+    })
+
+}
