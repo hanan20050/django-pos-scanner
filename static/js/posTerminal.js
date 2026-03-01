@@ -3,6 +3,8 @@ let barcode = ""
 let focusTimer
 let isStageOpen = false
 let cart = []
+let cashBtn = document.getElementById("btn-cash");
+let installmentBtn = document.getElementById("btn-installment");
 
 document.addEventListener("keydown", (e) => {
 
@@ -198,7 +200,24 @@ function renderCart(){
 
     })
 
-
-
-
 }
+
+
+installmentBtn.addEventListener("mouseenter", () => {
+    // Installment becomes active
+    installmentBtn.classList.remove("bg-gray-50", "text-gray-400");
+    installmentBtn.classList.add("bg-blue-950", "text-white");
+
+    // Cash becomes inactive
+    cashBtn.classList.remove("bg-blue-950", "text-white");
+    cashBtn.classList.add("bg-gray-50", "text-gray-400");
+});
+
+installmentBtn.addEventListener("mouseleave", () => {
+    // Reset to original state
+    installmentBtn.classList.remove("bg-blue-950", "text-white");
+    installmentBtn.classList.add("bg-gray-50", "text-gray-400");
+
+    cashBtn.classList.remove("bg-gray-50", "text-gray-400");
+    cashBtn.classList.add("bg-blue-950", "text-white");
+});
