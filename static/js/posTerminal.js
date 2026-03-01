@@ -203,18 +203,23 @@ function renderCart(){
 }
 
 
-installmentBtn.addEventListener("mouseenter", () => {
-    installmentBtn.classList.remove("bg-gray-50", "text-gray-400");
-    installmentBtn.classList.add("bg-blue-950", "text-white");
+cashBtn.addEventListener("click", () => {
 
-    cashBtn.classList.remove("bg-blue-950", "text-white");
-    cashBtn.classList.add("bg-gray-50", "text-gray-400");
+    cashBtn.classList.replace("bg-gray-50", "bg-blue-950");
+    cashBtn.classList.replace("text-gray-400", "text-white");
+
+    installmentBtn.classList.replace("bg-blue-950", "bg-gray-50");
+    installmentBtn.classList.replace("text-white", "text-gray-400");
+
+    document.getElementById("installment-options").classList.add("hidden");
 });
 
-installmentBtn.addEventListener("mouseleave", () => {
-    installmentBtn.classList.remove("bg-blue-950", "text-white");
-    installmentBtn.classList.add("bg-gray-50", "text-gray-400");
+installmentBtn.addEventListener("click", () => {
+    installmentBtn.classList.replace("bg-gray-50", "bg-blue-950");
+    installmentBtn.classList.replace("text-gray-400", "text-white");
 
-    cashBtn.classList.remove("bg-gray-50", "text-gray-400");
-    cashBtn.classList.add("bg-blue-950", "text-white");
+    cashBtn.classList.replace("bg-blue-950", "bg-gray-50");
+    cashBtn.classList.replace("text-white", "text-gray-400");
+
+    document.getElementById("installment-options").classList.remove("hidden");
 });
