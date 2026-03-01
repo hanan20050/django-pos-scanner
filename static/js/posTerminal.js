@@ -152,6 +152,7 @@ function confirmAddition(data, quantity){
 function renderCart(){
     const cartContainer = document.getElementById('cart-items')
     let itemName = document.getElementById('item-name')
+    const totalContainer = document.getElementById('total-container')
 
     if (!cartContainer) return
 
@@ -171,6 +172,21 @@ function renderCart(){
                     <p class="font-black text-white">₱${Number(subTotal).toLocaleString()}</p>
                 </div>
             </div>
+        `
+
+        totalContainer.innerHTML += `
+                <div class="flex justify-between text-gray-400 font-bold">
+                    <span>Subtotal</span>
+                    <span>₱${Number(subTotal).toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between text-gray-400 font-bold">
+                    <span>Tax (12%)</span>
+                    <span>₱0.00</span>
+                </div>
+                <div class="flex justify-between text-2xl font-black pt-3 border-t border-gray-100">
+                    <span>Total</span>
+                    <span class="text-blue-700" id="total-display">₱0.00</span>
+                </div>
         `
     })
 
