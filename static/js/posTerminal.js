@@ -157,10 +157,14 @@ function renderCart(){
     if (!cartContainer) return
 
     cartContainer.innerHTML = ''
+    totalContainer.innerHTML = ''
+
+
     let totalOrderAmount = 0
 
     cart.forEach(item => {
         let subTotal = item.price * item.qty
+        totalOrderAmount += subTotal;
         cartContainer.innerHTML += `
             <div class="flex items-center gap-4 bg-blue-800/30 p-4 rounded-2xl border border-blue-700/50">
                 <img src="${item.img}" class="h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center font-bold">
@@ -174,21 +178,27 @@ function renderCart(){
             </div>
         `
 
-        totalContainer.innerHTML += `
+        const tax = totalOrderAmount * 0.12;
+        const grandTotal = totalOrderAmount + tax;
+
+        totalContainer.innerHTML = `
                 <div class="flex justify-between text-gray-400 font-bold">
                     <span>Subtotal</span>
-                    <span>₱${Number(subTotal).toLocaleString()}</span>
+                    <span>${totalOrderAmount.toLocaleString()}</span>
                 </div>
                 <div class="flex justify-between text-gray-400 font-bold">
                     <span>Tax (12%)</span>
-                    <span>₱0.00</span>
+                    <span>₱${tax.toLocaleString()}</span>
                 </div>
                 <div class="flex justify-between text-2xl font-black pt-3 border-t border-gray-100">
                     <span>Total</span>
-                    <span class="text-blue-700" id="total-display">₱0.00</span>
+                    <span class="text-blue-700" id="total-display">₱${grandTotal.toLocaleString()}</span>
                 </div>
         `
+
     })
+
+
 
 
 }
