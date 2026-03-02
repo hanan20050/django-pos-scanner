@@ -5,6 +5,7 @@ let isStageOpen = false
 let cart = []
 let cashBtn = document.getElementById("btn-cash");
 let installmentBtn = document.getElementById("btn-installment");
+let checkoutBtn = document.getElementById("checkout-btn");
 
 document.addEventListener("keydown", (e) => {
 
@@ -226,5 +227,18 @@ function setSidebarActive(mode){
 
 }
 
-cashBtn.addEventListener('active', () => setSidebarActive('CASH'))
-installmentBtn.addEventListener('active', () => setSidebarActive('INSTALLMENT'))
+document.getElementById("btn-cash").addEventListener("click", () => setSidebarActive('CASH'));
+document.getElementById("btn-installment").addEventListener("click", () => setSidebarActive('INSTALLMENT'));
+
+
+checkoutBtn.addEventListener('click', () => {
+    if (cart.length === 0){
+        console.log('cart empty')
+    }
+
+    const isCashActive = document.getElementById("btn-cash").classList.contains("bg-blue-950")
+
+    openCheckoutModal = (isCashActive ? 'CASH' : 'INSTALLMENT')
+})
+
+
