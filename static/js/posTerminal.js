@@ -203,23 +203,28 @@ function renderCart(){
 }
 
 
-cashBtn.addEventListener("click", () => {
+function setSidebarActive(mode){
+    const installmentOptions = document.getElementById('installment-options');
 
-    cashBtn.classList.replace("bg-gray-50", "bg-blue-950");
-    cashBtn.classList.replace("text-gray-400", "text-white");
+    if (mode === 'CASH'){
+        cashBtn.classList.replace("bg-gray-50", "bg-blue-950");
+        cashBtn.classList.replace("text-gray-400", "text-white");
 
-    installmentBtn.classList.replace("bg-blue-950", "bg-gray-50");
-    installmentBtn.classList.replace("text-white", "text-gray-400");
+        installmentBtn.classList.replace("bg-blue-950", "bg-gray-50");
+        installmentBtn.classList.replace("text-white", "text-gray-400");
 
-    document.getElementById("installment-options").classList.add("hidden");
-});
+        installmentOptions.classList.add("hidden");
+    } else {
+        installmentBtn.classList.replace("bg-gray-50", "bg-blue-950");
+        installmentBtn.classList.replace("text-gray-400", "text-white");
 
-installmentBtn.addEventListener("click", () => {
-    installmentBtn.classList.replace("bg-gray-50", "bg-blue-950");
-    installmentBtn.classList.replace("text-gray-400", "text-white");
+        cashBtn.classList.replace("bg-blue-950", "bg-gray-50");
+        cashBtn.classList.replace("text-white", "text-gray-400");
 
-    cashBtn.classList.replace("bg-blue-950", "bg-gray-50");
-    cashBtn.classList.replace("text-white", "text-gray-400");
+        installmentOptions.classList.remove('hidden');
+    }
 
-    document.getElementById("installment-options").classList.remove("hidden");
-});
+}
+
+cashBtn.addEventListener('active', () => setSidebarActive('CASH'))
+installmentBtn.addEventListener('active', () => setSidebarActive('INSTALLMENT'))
