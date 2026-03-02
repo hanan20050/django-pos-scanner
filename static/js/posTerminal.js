@@ -6,9 +6,7 @@ let cart = []
 let cashBtn = document.getElementById("btn-cash");
 let installmentBtn = document.getElementById("btn-installment");
 let checkoutBtn = document.getElementById("checkout-btn");
-let modalContainer = document.getElementById('modal-container');
-let cashModal = document.getElementById("cash-modal");
-let installmentModal = document.getElementById("installment-modal");
+
 
 document.addEventListener("keydown", (e) => {
 
@@ -241,7 +239,25 @@ checkoutBtn.addEventListener('click', () => {
 
     const isCashActive = document.getElementById("btn-cash").classList.contains("bg-blue-950")
 
-    openCheckoutModal = (isCashActive ? 'CASH' : 'INSTALLMENT')
+    openCheckoutModal(isCashActive ? 'CASH' : 'INSTALLMENT')
 })
 
+
+function openCheckoutModal(type){
+    let modalContainer = document.getElementById('modal-container');
+    let cashModal = document.getElementById("cash-modal");
+    let installmentModal = document.getElementById("installment-modal");
+
+    modalContainer.classList.remove('hidden');
+    installmentModal.classList.add('hidden');
+    cashModal.classList.add('hidden');
+
+    if (type === 'CASH'){
+        cashModal.classList.remove('hidden');
+        installmentModal.classList.add('hidden');
+    } else {
+        cashModal.classList.add('hidden');
+        installmentModal.classList.remove('hidden');
+    }
+}
 
