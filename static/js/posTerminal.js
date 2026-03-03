@@ -2,7 +2,7 @@ let lastKeyTime = Date.now();
 let barcode = ""
 let focusTimer
 let isStageOpen = false
-let cart = []
+let cart = JSON.parse(localStorage.getItem("pos_cart")) || [];
 let cashBtn = document.getElementById("btn-cash");
 let installmentBtn = document.getElementById("btn-installment");
 let checkoutBtn = document.getElementById("checkout-btn");
@@ -74,8 +74,8 @@ function addItemToCart(scannedItem) {
     }
 
     console.log("Cart Updated:", scannedItem);
+    localStorage.setItem("pos_cart", JSON.stringify(cart))
 
-    renderCart()
 }
 
 
@@ -307,10 +307,11 @@ function openCheckoutModal(type){
         // cashModalName.textContent = singleNameList
         // cashModalQuantity.textContent = totalQuantity
         // cashModalPrice.textContent = currentGrandTotal.toLocaleString()
-        cashModalImage.innerHTML = `<div class="flex flex-wrap gap-2 mb-4">${finalImg}</div>`;
+        // cashModalImage.innerHTML = `<div class="flex flex-wrap gap-2 mb-4">${finalImg}</div>`;
     } else {
         cashModal.classList.add('hidden');
         installmentModal.classList.remove('hidden');
     }
 }
 
+renderCart()
