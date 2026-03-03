@@ -270,6 +270,13 @@ function openCheckoutModal(type){
     const cashModalQuantity = document.getElementById("cash-modal-quantity");
     const totalQuantity = cart.reduce((sum, item) => sum + item.qty, 0)
 
+    //modalImage
+    let cashModalImage = document.getElementById("cash-modal-image");
+    const modalImage = cart.map(function (item){
+        return `<img src="${item.img}" class="h-16 w-16 object-cover rounded-lg border-2 border-blue-100 shadow-sm">`;
+    })
+    const finalImg = modalImage.join("")
+
 
     modalContainer.classList.remove('hidden');
     installmentModal.classList.add('hidden');
@@ -281,6 +288,7 @@ function openCheckoutModal(type){
         cashModalName.textContent = singleNameList
         cashModalQuantity.textContent = totalQuantity
         cashModalPrice.textContent = currentGrandTotal.toLocaleString()
+        cashModalImage.innerHTML = `<div class="flex flex-wrap gap-2 mb-4">${finalImg}</div>`;
     } else {
         cashModal.classList.add('hidden');
         installmentModal.classList.remove('hidden');
