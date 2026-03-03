@@ -164,6 +164,12 @@ function renderCart(){
 
     cartContainer.innerHTML = ''
     totalContainer.innerHTML = ''
+    currentGrandTotal = 0
+
+    if (cart.length === 0){
+        cartContainer.innerHTML = '<p class="text-blue-400 text-center py-10">Cart is empty</p>';
+        return;
+    }
 
 
     let totalOrderAmount = 0
