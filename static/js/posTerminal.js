@@ -250,32 +250,51 @@ function openCheckoutModal(type){
     let cashModal = document.getElementById("cash-modal");
     let installmentModal = document.getElementById("installment-modal");
 
-    //modalName
-    let cashModalName = document.getElementById("cash-modal-name");
-
-    const nameList = cart.map(function (item){
-        return item.name;
-    })
-
-    const singleNameList = nameList.join(", ")
-
-    //modalPrice
-    let cashModalPrice = document.getElementById("cash-modal-price");
-    // const priceList = cart.map(function (item){
-    //     return item.price;
+    // //modalName
+    // let cashModalName = document.getElementById("cash-modal-name");
+    //
+    // const nameList = cart.map(function (item){
+    //     return item.name;
     // })
-    // const singlePriceList = priceList.join(", ")
+    //
+    // const singleNameList = nameList.join(", ")
+    //
+    // //modalPrice
+    // let cashModalPrice = document.getElementById("cash-modal-price");
+    // // const priceList = cart.map(function (item){
+    // //     return item.price;
+    // // })
+    // // const singlePriceList = priceList.join(", ")
+    //
+    // //modalQty
+    // const cashModalQuantity = document.getElementById("cash-modal-quantity");
+    // const totalQuantity = cart.reduce((sum, item) => sum + item.qty, 0)
 
-    //modalQty
-    const cashModalQuantity = document.getElementById("cash-modal-quantity");
-    const totalQuantity = cart.reduce((sum, item) => sum + item.qty, 0)
+    const cartRows = cart.map(item => {
+        return `
+                <div class="flex flex-row items-center justify-between border-b border-gray-100 p-2 gap-4">
+                    <div class="text-left flex-grow">
+                        <p class="text-sm font-bold text-gray-900">${item.name}</p>
+                        <p class="text-xs text-gray-500">Qty: ${item.qty}</p>
+                        <p class="text-xs font-black text-blue-600">₱${(item.price * item.qty).toLocaleString()}</p>
+                    </div>
+                    
+                    <div class="flex-shrink-0">
+                        <img src="${item.img}" class="h-16 w-16 object-cover rounded-xl border border-gray-100 shadow-sm">
+                    </div>
+                </div>
+                `
+    }).join("")
 
     //modalImage
     let cashModalImage = document.getElementById("cash-modal-image");
-    const modalImage = cart.map(function (item){
-        return `<img src="${item.img}" class="h-16 w-16 object-cover rounded-lg border-2 border-blue-100 shadow-sm">`;
-    })
-    const finalImg = modalImage.join("")
+    // const modalImage = cart.map(function (item){
+    //     return `<img src="${item.img}" class="h-16 w-16 object-cover rounded-lg border-2 border-blue-100 shadow-sm">`;
+    // })
+    // const finalImg = modalImage.join("")
+    cashModalImage.innerHTML = cartRows
+
+    document.getElementById("cash-modal-price").textContent = `₱${currentGrandTotal.toLocaleString()}`;
 
 
     modalContainer.classList.remove('hidden');
@@ -285,9 +304,9 @@ function openCheckoutModal(type){
     if (type === 'CASH'){
         cashModal.classList.remove('hidden');
         installmentModal.classList.add('hidden');
-        cashModalName.textContent = singleNameList
-        cashModalQuantity.textContent = totalQuantity
-        cashModalPrice.textContent = currentGrandTotal.toLocaleString()
+        // cashModalName.textContent = singleNameList
+        // cashModalQuantity.textContent = totalQuantity
+        // cashModalPrice.textContent = currentGrandTotal.toLocaleString()
         cashModalImage.innerHTML = `<div class="flex flex-wrap gap-2 mb-4">${finalImg}</div>`;
     } else {
         cashModal.classList.add('hidden');
