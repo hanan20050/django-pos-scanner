@@ -6,6 +6,7 @@ let cart = []
 let cashBtn = document.getElementById("btn-cash");
 let installmentBtn = document.getElementById("btn-installment");
 let checkoutBtn = document.getElementById("checkout-btn");
+let currentGrandTotal = 0;
 
 
 document.addEventListener("keydown", (e) => {
@@ -184,6 +185,7 @@ function renderCart(){
 
         const tax = totalOrderAmount * 0.12;
         const grandTotal = totalOrderAmount + tax;
+        currentGrandTotal = grandTotal
 
         totalContainer.innerHTML = `
                 <div class="flex justify-between text-gray-400 font-bold">
@@ -259,10 +261,14 @@ function openCheckoutModal(type){
 
     //modalPrice
     let cashModalPrice = document.getElementById("cash-modal-price");
-    const priceList = cart.map(function (item){
-        return item.price;
-    })
-    const singlePriceList = priceList.join(", ")
+    // const priceList = cart.map(function (item){
+    //     return item.price;
+    // })
+    // const singlePriceList = priceList.join(", ")
+
+    //modalQty
+    const cashModalQuantity = document.getElementById("cash-modal-quantity");
+    const totalQuantity = cart.reduce((sum, item) => sum + item.qty, 0)
 
 
     modalContainer.classList.remove('hidden');
@@ -273,7 +279,8 @@ function openCheckoutModal(type){
         cashModal.classList.remove('hidden');
         installmentModal.classList.add('hidden');
         cashModalName.textContent = singleNameList
-        cashModalPrice.textContent = singlePriceList
+        cashModalQuantity.textContent = totalQuantity
+        cashModalPrice.textContent = currentGrandTotal.toLocaleString()
     } else {
         cashModal.classList.add('hidden');
         installmentModal.classList.remove('hidden');
