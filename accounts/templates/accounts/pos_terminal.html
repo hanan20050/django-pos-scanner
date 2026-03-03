@@ -136,14 +136,29 @@
 
 
                     <div class="mt-4">
-                        <div id="cash-modal-image" class="max-h-60 overflow-y-auto pr-2">
+                        <div id="cash-modal-image" class="max-h-60 overflow-y-auto pr-2"></div>
+
+                        <div class="mt-4 pt-4 border-t-2 border-dashed border-gray-200 flex flex-col gap-3">
+                            <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl">
+                                <span class="text-xs font-bold text-gray-500 uppercase">Cash Received</span>
+                                <input type="number" id="cash-received-input"
+                                       class="w-32 text-right font-black text-xl bg-transparent outline-none text-blue-700"
+                                       placeholder="0">
                             </div>
 
-                        <div class="mt-4 pt-4 border-t-2 border-dashed border-gray-200">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-bold text-gray-400 uppercase tracking-widest">Total Amount</span>
+                            <div class="flex justify-between items-center px-3">
+                                <span class="text-xs font-bold text-gray-500 uppercase">Change</span>
+                                <span id="change-display" class="font-black text-xl text-green-600">₱0.00</span>
+                            </div>
+
+                            <div class="flex justify-between items-center px-3 mb-2">
+                                <span class="text-sm font-bold text-gray-400 uppercase">Total</span>
                                 <span id="cash-modal-price" class="text-2xl font-black text-blue-700"></span>
                             </div>
+
+                            <button id="place-order-btn" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl hover:bg-blue-700 transition-all">
+                                PLACE ORDER
+                            </button>
                         </div>
                     </div>
                 </div>

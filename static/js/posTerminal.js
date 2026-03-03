@@ -277,6 +277,7 @@ function openCheckoutModal(type){
                         <p class="text-sm font-bold text-gray-900">${item.name}</p>
                         <p class="text-xs text-gray-500">Qty: ${item.qty}</p>
                         <p class="text-xs font-black text-blue-600">₱${(item.price * item.qty).toLocaleString()}</p>
+                        
                     </div>
                     
                     <div class="flex-shrink-0">
