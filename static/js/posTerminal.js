@@ -171,17 +171,24 @@ function renderCart(){
         let subTotal = item.price * item.qty
         totalOrderAmount += subTotal;
         cartContainer.innerHTML += `
-            <div class="flex items-center gap-4 bg-blue-800/30 p-4 rounded-2xl border border-blue-700/50">
-                <img src="${item.img}" class="h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center font-bold">
-                <div class="flex-grow">
-                    <h4 class="font-bold text-sm">${item.name}</h4>
-                    <p class="text-sm text-blue-400 font-medium">Quantity: ${Number(item.qty)}</p>
-                </div>
-                <div class="text-right">
-                    <p class="font-black text-white">₱${Number(subTotal).toLocaleString()}</p>
-                </div>
-            </div>
-        `
+                    <div class="flex items-center gap-4 bg-blue-800/30 p-4 rounded-2xl border border-blue-700/50 relative group">
+                        <img src="${item.img}" class="h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center font-bold">
+                        
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-sm">${item.name}</h4>
+                            <p class="text-sm text-blue-400 font-medium">Quantity: ${Number(item.qty)}</p>
+                        </div>
+                    
+                        <div class="text-right flex items-center gap-3">
+                            <p class="font-black text-white">₱${Number(subTotal).toLocaleString()}</p>
+                            
+                            <button onclick="removeFromCart(${item.id})" 
+                                    class="text-blue-400 hover:text-red-500 transition-colors font-bold text-xl px-2">
+                                &times;
+                            </button>
+                        </div>
+                    </div>
+                    `
 
         const tax = totalOrderAmount * 0.12;
         const grandTotal = totalOrderAmount + tax;
