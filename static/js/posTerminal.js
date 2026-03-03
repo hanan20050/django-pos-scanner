@@ -76,6 +76,7 @@ function addItemToCart(scannedItem) {
     console.log("Cart Updated:", scannedItem);
     localStorage.setItem("pos_cart", JSON.stringify(cart))
 
+    renderCart()
 }
 
 
@@ -211,6 +212,14 @@ function renderCart(){
 
     })
 
+}
+
+function removeFromCart(id){
+    cart = cart.filter(item => item.id !== id)
+
+    localStorage.setItem('pos_cart', JSON.stringify(cart))
+
+    renderCart();
 }
 
 
