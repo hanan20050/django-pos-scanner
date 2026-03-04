@@ -293,9 +293,6 @@ function openCheckoutModal(type){
 
     let cashModalImage = document.getElementById("cash-modal-image");
 
-    cashModalImage.innerHTML = cartRows
-
-    document.getElementById("cash-modal-price").textContent = `₱${currentGrandTotal.toLocaleString()}`;
 
 
     modalContainer.classList.remove('hidden');
@@ -305,9 +302,18 @@ function openCheckoutModal(type){
     if (type === 'CASH'){
         cashModal.classList.remove('hidden');
         installmentModal.classList.add('hidden');
+
+        cashModalImage.innerHTML = cartRows
+        document.getElementById("cash-modal-price").textContent = `₱${currentGrandTotal.toLocaleString()}`;
     } else {
         cashModal.classList.add('hidden');
         installmentModal.classList.remove('hidden');
+
+        const installmentCartItems = document.getElementById('installment-cart-items')
+        const installmentTotalDisplay = document.getElementById('installment-total-display')
+
+        installmentCartItems.innerHTML = cartRows
+        installmentTotalDisplay.textContent = `₱${currentGrandTotal.toLocaleString()}`;
     }
 }
 
