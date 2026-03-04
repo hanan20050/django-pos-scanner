@@ -311,4 +311,13 @@ function openCheckoutModal(type){
     }
 }
 
+function closeCheckoutModal(){
+    document.getElementById('modal-container').classList.add('hidden');
+
+    const cashRecieved = document.getElementById("cash-received");
+    if (cashRecieved) {
+        cashRecieved.value = ''
+    }
+}
+
 renderCart()
