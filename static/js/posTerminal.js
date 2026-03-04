@@ -326,4 +326,20 @@ function closeCheckoutModal(){
     }
 }
 
+function updateInstallmentCalculation(){
+    const term = parseInt(document.getElementById("inst-term").value) || 3
+    const downpayment = parseFloat(document.getElementById('inst-downpayment').value) || 0
+
+    const balance = currentGrandTotal - downpayment
+
+    const finalBalance = Math.max(0, balance)
+
+    const monthly = finalBalance / term
+
+    document.getElementById('inst-balance-display').textContent = `₱${finalBalance.toLocaleString()}`
+    document.getElementById('inst-monthly-display').textContent = `₱${monthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+
+
+}
+
 renderCart()
