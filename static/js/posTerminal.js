@@ -272,25 +272,6 @@ function openCheckoutModal(type){
     let cashModal = document.getElementById("cash-modal");
     let installmentModal = document.getElementById("installment-modal");
 
-    // //modalName
-    // let cashModalName = document.getElementById("cash-modal-name");
-    //
-    // const nameList = cart.map(function (item){
-    //     return item.name;
-    // })
-    //
-    // const singleNameList = nameList.join(", ")
-    //
-    // //modalPrice
-    // let cashModalPrice = document.getElementById("cash-modal-price");
-    // // const priceList = cart.map(function (item){
-    // //     return item.price;
-    // // })
-    // // const singlePriceList = priceList.join(", ")
-    //
-    // //modalQty
-    // const cashModalQuantity = document.getElementById("cash-modal-quantity");
-    // const totalQuantity = cart.reduce((sum, item) => sum + item.qty, 0)
 
     const cartRows = cart.map(item => {
         return `
@@ -309,12 +290,9 @@ function openCheckoutModal(type){
                 `
     }).join("")
 
-    //modalImage
+
     let cashModalImage = document.getElementById("cash-modal-image");
-    // const modalImage = cart.map(function (item){
-    //     return `<img src="${item.img}" class="h-16 w-16 object-cover rounded-lg border-2 border-blue-100 shadow-sm">`;
-    // })
-    // const finalImg = modalImage.join("")
+
     cashModalImage.innerHTML = cartRows
 
     document.getElementById("cash-modal-price").textContent = `₱${currentGrandTotal.toLocaleString()}`;
@@ -327,10 +305,6 @@ function openCheckoutModal(type){
     if (type === 'CASH'){
         cashModal.classList.remove('hidden');
         installmentModal.classList.add('hidden');
-        // cashModalName.textContent = singleNameList
-        // cashModalQuantity.textContent = totalQuantity
-        // cashModalPrice.textContent = currentGrandTotal.toLocaleString()
-        // cashModalImage.innerHTML = `<div class="flex flex-wrap gap-2 mb-4">${finalImg}</div>`;
     } else {
         cashModal.classList.add('hidden');
         installmentModal.classList.remove('hidden');
