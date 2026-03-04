@@ -1,0 +1,75 @@
+<div id="cash-modal" class="hidden relative w-full max-w-5xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col md:flex-row animate-in zoom-in duration-300">
+
+    <button onclick="closeCheckoutModal()" class="absolute top-6 right-6 z-20 p-2 rounded-full bg-white/80 text-gray-400 hover:text-gray-900 shadow-sm transition-all">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+    </button>
+
+    <div class="w-full md:w-[60%] p-5 border-r border-gray-100">
+        <div class="flex items-center gap-4 mb-8">
+            <div class="h-14 w-14 rounded-2xl bg-green-500 flex items-center justify-center text-white shadow-lg shadow-green-200">
+                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            </div>
+            <div>
+                <h3 class="text-3xl font-black text-gray-900 tracking-tight">Cash Payment</h3>
+                <p class="text-gray-400 text-xs font-bold uppercase tracking-widest">Transaction Details</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="bg-gray-50 rounded-2xl p-4 border border-transparent focus-within:border-green-500 transition-all">
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-1">Customer Name</label>
+                <input type="text" id="cash-cust-name" class="w-full bg-transparent font-bold text-gray-900 outline-none" placeholder="Walk-in Customer">
+            </div>
+
+            <div class="bg-gray-50 rounded-2xl p-4 border border-transparent focus-within:border-green-500 transition-all">
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-1">Phone Number</label>
+                <input type="text" id="cash-cust-phone" class="w-full bg-transparent font-bold text-gray-900 outline-none" placeholder="09XX XXX XXXX">
+            </div>
+
+            <div class="col-span-2 bg-gray-50 rounded-2xl p-4 border border-transparent focus-within:border-green-500 transition-all">
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-1">Email Address (Optional)</label>
+                <input type="email" id="cash-cust-email" class="w-full bg-transparent font-bold text-gray-900 outline-none" placeholder="customer@email.com">
+            </div>
+
+            <div class="col-span-2 bg-gray-50 rounded-2xl p-4 border border-transparent focus-within:border-green-500 transition-all">
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-1">Complete Address</label>
+                <input type="text" id="cash-cust-address" class="w-full bg-transparent font-bold text-gray-900 outline-none" placeholder="Brgy, City, Province">
+            </div>
+        </div>
+
+        <div class="p-8 bg-slate-900 rounded-[32px] text-white">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cash Received</label>
+                    <div class="flex items-center">
+                        <span class="text-2xl font-black text-green-500 mr-2">₱</span>
+                        <input type="number" id="cash-received-input" oninput="calculateChange()"
+                               class="bg-transparent text-4xl font-black text-white outline-none w-full" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-6 border-t border-slate-800">
+                <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Change to Return</span>
+                <span id="change-display" class="text-4xl font-black text-green-400">₱0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full md:w-[40%] bg-gray-50/50 p-10 flex flex-col">
+        <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Items Purchased</h4>
+
+        <div id="cash-modal-image" class="flex-grow space-y-4 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
+            </div>
+
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <div class="flex justify-between items-end mb-6">
+                <span class="text-xs font-black text-gray-400 uppercase">Grand Total</span>
+                <span id="cash-modal-price" class="text-3xl font-black text-gray-900">₱0.00</span>
+            </div>
+            <button id="place-order-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl transition-all uppercase tracking-widest text-sm shadow-xl shadow-blue-100">
+                Place Order
+            </button>
+        </div>
+    </div>
+</div>

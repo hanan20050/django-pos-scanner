@@ -1,0 +1,45 @@
+<div class="flex-grow flex flex-col bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+
+    <div class="p-6 border-b border-gray-100 flex items-center justify-between gap-4">
+        <div class="relative flex-grow">
+            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </span>
+            <input type="text" placeholder="Search product name or SKU..."
+                   class="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-600 focus:bg-white transition-all outline-none font-bold">
+        </div>
+    </div>
+
+
+    <div class="relative flex-grow overflow-hidden bg-gray-50">
+
+        <div id="inventory-grid" class="h-full overflow-y-auto p-6 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 transition-opacity duration-300">
+            {% for item in branch_products %}
+            <button
+                    class="group bg-white border-2 border-gray-100 p-4 rounded-3xl hover:border-blue-600 hover:shadow-xl transition-all text-left flex flex-col">
+                <div class="h-32 w-full bg-gray-50 rounded-2xl mb-4 flex items-center justify-center overflow-hidden">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" class="h-full w-full object-cover">
+                    {% else %}
+                        <span class="text-gray-300 font-bold text-xs">NO IMAGE</span>
+                    {% endif %}
+                </div>
+                <h3 class="font-black text-gray-800 leading-tight truncate">{{ item.product.product_name }}</h3>
+                <div class="mt-auto pt-2 flex items-center justify-between">
+                    <span class="text-lg font-black text-blue-700">₱{{ item.product.base_price }}</span>
+                    <span class="text-[10px] font-bold {% if item.quantity > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                        QTY: {{ item.quantity }}
+                    </span>
+                </div>
+            </button>
+            {% endfor %}
+        </div>
+
+        <div id="product-container" class="hidden absolute inset-0 z-20 flex items-center justify-center bg-white/90 backdrop-blur-sm p-6">
+            <div id="focus-card-target" class="w-full max-w-2xl transform transition-all duration-500">
+            </div>
+        </div>
+
+    </div>
+
+</div>

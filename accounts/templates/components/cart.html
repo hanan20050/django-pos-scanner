@@ -1,0 +1,29 @@
+<div class="w-full lg:w-[450px] shrink-0 flex flex-col bg-blue-900 rounded-3xl shadow-2xl overflow-hidden text-white">
+    <div class="p-8 border-b border-blue-800/50">
+        <div class="flex justify-between items-center mb-1">
+            <h2 class="text-2xl font-black tracking-tight">Current Order</h2>
+            <span class="bg-blue-600 text-[10px] px-3 py-1 rounded-full font-black uppercase">Order #4412</span>
+        </div>
+        <p class="text-blue-300 text-sm font-medium">Customer: Walk-in</p>
+    </div>
+
+    <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4">
+
+    </div>
+
+    <div class="p-8 bg-white rounded-t-[40px] text-gray-900">
+        <div id="total-container" class="space-y-3 mb-6">
+
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <button id="btn-cash" class="flex-1 py-2 bg-blue-950 text-white rounded-xl font-black">CASH</button>
+            <button id="btn-installment" class="flex-1 py-2 bg-gray-50 text-gray-400 rounded-xl font-black">INSTALLMENT</button>
+        </div>
+
+        <button id="checkout-btn" class="w-full bg-blue-700 hover:bg-blue-800 text-white py-5 rounded-2xl font-black text-xl shadow-lg shadow-blue-200 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            CHECKOUT
+        </button>
+    </div>
+</div>
