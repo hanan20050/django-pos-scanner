@@ -64,6 +64,10 @@ async function processScan(barcode){
 }
 
 function addItemToCart(scannedItem) {
+    if (!scannedItem || !scannedItem.id || isNaN(scannedItem.price)){
+        console.error("Scanned Item is invalid");
+        return
+    }
 
     const itemExist = cart.find(item => item.id === scannedItem.id);
 
