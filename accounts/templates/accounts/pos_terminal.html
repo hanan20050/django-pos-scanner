@@ -23,7 +23,11 @@
 </div>
 
 <script>
-    let cart = JSON.parse(localStorage.getItem("pos_cart")) || [];
+    const currentEmployeeId = "{{ request.user.id }}"
+
+    const cartKey = `pos_cart_user${currentEmployeeId}`;
+
+    let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
     let currentGrandTotal = 0;
     let isStageOpen = false;
 </script>
