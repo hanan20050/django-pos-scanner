@@ -14,6 +14,9 @@
 
 
 document.addEventListener('DOMContentLoaded', () => {
+
+
+
     const cashBtn = document.getElementById('btn-cash')
     const installmentBtn = document.getElementById('btn-installment')
     const checkoutBtn  = document.getElementById('checkout-btn')
@@ -39,4 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     renderCart()
+
+    const cashInput = document.getElementById('cash-received-input');
+    if (cashInput) {
+        cashInput.addEventListener('input', calculateChange);
+        console.log("Cash listener attached");
+    }
 })
