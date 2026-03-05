@@ -5,8 +5,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils.text import phone2numeric
+
 from .decorators import unauthenticated_user
-from .models import Product, Employee, Branch, BranchInventory
+from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment
 from .filters import InventoryFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
@@ -237,3 +239,65 @@ def checkout_cash(request):
         if not cart:
             return JsonResponse({'success': False, 'message': 'Cart is empty'}, status=400)
 
+        try:
+            employee = request.user.employee
+            branch = employee.branch
+        except Exception:
+            return JsonResponse({'success': False, 'message': 'User is not an authorized employee'}, status=403)
+
+        customer = None
+        phone = customer_data.get('phone')
+
+        if phone:
+            customer, created = Customer.objects.get_or_create(
+                phone = phone,
+                defaults={
+                    'name': customer_data.get('name', 'Walk-in'),
+                    'email': customer_data.get('email', ''),
+                    'address': customer_data.get('address', '')
+                }
+            )
+
+        order = Order.objects.create(
+            employee = employee,
+            branch = branch,
+            customer = customer,
+            total_amount = total_amount,
+            payment_method = payment_method,
+            cash_received = cash_received,
+            change_given = change_given
+        )
+
+        for item in cart:
+            product = Product.objects.get(id=item['id'])
+            OrderItem.objects.create(
+                order = order,
+                product = product,
+                quantity = item['qty'],
+                unit_price = item['price']
+            )
+
+            try:
+                inventory = BranchInventory.objects.get(branch=branch, product=product)
+            except BranchInventory.DoesNotExist:
+                raise ValueError(f"Product {product.product_name} is not registered at this branch.")
+
+            if inventory.quantity < int(item['qty']): raise ValueError("Out of Stock")
+
+            inventory.quantity -= int(item['qty'])
+
+            inventory.save()
+
+        payment = Payment.objects.create(
+            order = order,
+            amount_paid = cash_received,
+            payment_method = payment_method,
+        )
+
+        CashPayment.objects.create(
+            payment = payment,
+            cash_received = cash_received,
+            change_given = change_given,
+        )
+
+        return JsonResponse({'success': True, 'order_id': order.id})

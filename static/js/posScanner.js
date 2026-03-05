@@ -29,7 +29,7 @@ document.addEventListener("keydown", (e) => {
         barcode = ""
     } else {
 
-        if (e.key.length === 1){
+        if (e.key && e.key.length === 1){
             barcode += e.key
         }
     }

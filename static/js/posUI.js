@@ -294,7 +294,7 @@ async function processCashPayment(cart, totalAmount, cashRecieved, changeGiven, 
 
     try{
 
-        const response = await fetch('checkout/cash/', {
+        const response = await fetch('/pos_terminal/api/checkout/cash/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

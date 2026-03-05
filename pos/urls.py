@@ -27,6 +27,7 @@ admin.site.index_title = "Welcome to the Galos POS System"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('accounts.urls')),
+    path('pos_terminal/api/', include('accounts.urls')),
 ]
 
 if settings.DEBUG:
