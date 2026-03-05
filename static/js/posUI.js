@@ -289,7 +289,10 @@ function calculateChange(){
 
 
 
-async function processCashPayment(cart, totalAmount, cashRecieved, changeGiven, customerData){
+async function processCashPayment(cart, totalAmount, cashReceived, changeGiven, customerData){
+
+    console.log("DEBUG PAYLOAD:", {cart, totalAmount, cashReceived, changeGiven});
+
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
 
     try{
@@ -304,7 +307,7 @@ async function processCashPayment(cart, totalAmount, cashRecieved, changeGiven, 
             body: JSON.stringify({
                 cart: cart,
                 totalAmount: totalAmount,
-                cashReceived: cashRecieved,
+                cashReceived: cashReceived,
                 changeGiven: changeGiven,
                 customerData: customerData,
                 paymentMethod: 'CASH'

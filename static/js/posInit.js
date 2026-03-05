@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (placeOrderBtn){
         placeOrderBtn.addEventListener('click', () => {
+
             const customerData = {
                 name: document.getElementById('cash-cust-name').value,
                 phone: document.getElementById('cash-cust-phone').value,
@@ -60,9 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 address: document.getElementById('cash-cust-address').value,
             }
 
-            const cashRecieved = document.getElementById('cash-recieved-input');
+            const cashReceived = document.getElementById('cash-received-input').value;
+            const changeGiven = document.getElementById('change-display').innerText.replace('₱', '').replace(',', '');
 
-            processCashPayment(cart, currentGrandTotal, cashRecieved, 0, customerData)
+            processCashPayment(cart, currentGrandTotal, cashReceived, changeGiven, customerData)
         })
     }
 })

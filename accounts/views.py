@@ -226,76 +226,85 @@ def scanProduct(request):
 
 @transaction.atomic
 def checkout_cash(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-
-        cart = data.get('cart', [])
-        total_amount = data.get('totalAmount')
-        cash_received = data.get('cashRecieved')
-        change_given = data.get('changeGiven')
-        customer_data = data.get('customerData', {})
-        payment_method = data.get('paymentMethod')
-
-        if not cart:
-            return JsonResponse({'success': False, 'message': 'Cart is empty'}, status=400)
-
-        try:
-            employee = request.user.employee
-            branch = employee.branch
-        except Exception:
-            return JsonResponse({'success': False, 'message': 'User is not an authorized employee'}, status=403)
-
-        customer = None
-        phone = customer_data.get('phone')
-
-        if phone:
-            customer, created = Customer.objects.get_or_create(
-                phone = phone,
-                defaults={
-                    'name': customer_data.get('name', 'Walk-in'),
-                    'email': customer_data.get('email', ''),
-                    'address': customer_data.get('address', '')
-                }
-            )
-
-        order = Order.objects.create(
-            employee = employee,
-            branch = branch,
-            customer = customer,
-            total_amount = total_amount,
-            payment_method = payment_method,
-        )
-
-        for item in cart:
-            product = Product.objects.get(id=item['id'])
-            OrderItem.objects.create(
-                order = order,
-                product = product,
-                quantity = item['qty'],
-                unit_price = item['price']
-            )
-
+        if request.method == 'POST':
             try:
-                inventory = BranchInventory.objects.get(branch=branch, product=product)
-            except BranchInventory.DoesNotExist:
-                raise ValueError(f"Product {product.product_name} is not registered at this branch.")
+                data = json.loads(request.body)
 
-            if inventory.quantity < int(item['qty']): raise ValueError("Out of Stock")
+                cart = data.get('cart', [])
+                total_amount = data.get('totalAmount')
+                cash_received = data.get('cashReceived')
+                change_given = data.get('changeGiven')
+                customer_data = data.get('customerData', {})
+                payment_method = data.get('paymentMethod')
 
-            inventory.quantity -= int(item['qty'])
+                if cash_received is None:
+                    return JsonResponse({'success': False, 'message': 'Cash received amount is missing'}, status=400)
 
-            inventory.save()
+                if not cart:
+                    return JsonResponse({'success': False, 'message': 'Cart is empty'}, status=400)
 
-        payment = Payment.objects.create(
-            order = order,
-            amount_paid = cash_received,
-            payment_type = payment_method,
-        )
+                try:
+                    employee = request.user.employee
+                    branch = employee.branch
+                except Exception:
+                    return JsonResponse({'success': False, 'message': 'User is not an authorized employee'}, status=403)
 
-        CashPayment.objects.create(
-            payment = payment,
-            cash_received = cash_received,
-            change_given = change_given,
-        )
+                customer = None
+                phone = customer_data.get('phone')
 
-        return JsonResponse({'success': True, 'order_id': order.id})
+                if phone:
+                    customer, created = Customer.objects.get_or_create(
+                        phone = phone,
+                        defaults={
+                            'name': customer_data.get('name', 'Walk-in'),
+                            'email': customer_data.get('email', ''),
+                            'address': customer_data.get('address', '')
+                        }
+                    )
+
+                order = Order.objects.create(
+                    employee = employee,
+                    branch = branch,
+                    customer = customer,
+                    total_amount = total_amount,
+                    payment_method = payment_method,
+                )
+
+                for item in cart:
+                    product = Product.objects.get(id=item['id'])
+                    OrderItem.objects.create(
+                        order = order,
+                        product = product,
+                        quantity = item['qty'],
+                        unit_price = item['price']
+                    )
+
+                    try:
+                        inventory = BranchInventory.objects.get(branch=branch, product=product)
+                    except BranchInventory.DoesNotExist:
+                        raise ValueError(f"Product {product.product_name} is not registered at this branch.")
+
+                    if inventory.quantity < int(item['qty']): raise ValueError("Out of Stock")
+
+                    inventory.quantity -= int(item['qty'])
+
+                    inventory.save()
+
+                payment = Payment.objects.create(
+                    order = order,
+                    amount_paid = cash_received,
+                    payment_type = payment_method,
+                )
+
+                CashPayment.objects.create(
+                    payment = payment,
+                    cash_received = cash_received,
+                    change_given = change_given,
+                )
+
+                return JsonResponse({'success': True, 'order_id': order.id})
+
+            except Exception as e:
+                return JsonResponse({'success': False, 'message': str(e)}, status=400)
+
+        return JsonResponse({'success': False, 'message': 'Invalid request'}, status=405)
