@@ -286,3 +286,44 @@ function calculateChange(){
         changeToDisplay.style.color = change < 0 ? "#ef4444" : "#4ade80";
     }
 }
+
+
+
+async function processCashPayment(cart, totalAmount, cashRecieved, changeGiven, customerData){
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+    try{
+
+        const response = await fetch('api/checkout/cash', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+
+            body: JSON.stringify({
+                cart: cart,
+                totalAmount: totalAmount,
+                cashRecieved: cashRecieved,
+                changeGiven: changeGiven,
+                customerData: customerData,
+                paymentMethod: 'CASH'
+            })
+        })
+
+        const data = await response.json()
+
+        if (data.success) {
+            alert("Order #" + data.order_id + " Confirmed!")
+            localStorage.removeItem(cartKey)
+            cart.length = 0
+            renderCart()
+            closeCheckoutModal()
+        } else {
+            alert("Error" + data.message)
+        }
+
+    } catch (error) {
+        console.error(error)
+    }
+}

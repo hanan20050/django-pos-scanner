@@ -48,4 +48,21 @@ document.addEventListener('DOMContentLoaded', () => {
         cashInput.addEventListener('input', calculateChange);
         console.log("Cash listener attached");
     }
+
+    const placeOrderBtn = document.getElementById('place-order-btn');
+
+    if (placeOrderBtn){
+        placeOrderBtn.addEventListener('click', () => {
+            const customerData = {
+                name: document.getElementById('cash-cust-name').value,
+                phone: document.getElementById('cash-cust-phone').value,
+                email: document.getElementById('cash-cust-email').value,
+                address: document.getElementById('cash-cust-address').value,
+            }
+
+            const cashRecieved = document.getElementById('cash-recieved-input');
+
+            processCashPayment(cart, currentGrandTotal, cashRecieved, 0, customerData)
+        })
+    }
 })
