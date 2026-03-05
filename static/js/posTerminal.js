@@ -346,4 +346,16 @@ function updateInstallmentCalculation(){
 
 }
 
+function calculateChange(){
+    let cashRecieved = parseInt(document.getElementById('cash-received-input').value)
+    let changeToDisplay = parseInt(document.getElementById('change-display').toLocaleString())
+
+    let change = cashRecieved - currentGrandTotal
+
+    if(changeToDisplay){
+        changeToDisplay.textContent = `₱${Math.max(0, change).toLocaleString(undefined, {minimumFractionDigits: 2})}`
+        changeToDisplay.style.color = change < 0 ? "#ef4444" : "#4ade80";
+    }
+}
+
 renderCart()

@@ -22,5 +22,21 @@
 
 </div>
 
-<script src="{% static 'js/posTerminal.js' %}"></script>
+<script>
+    let cart = JSON.parse(localStorage.getItem("pos_cart")) || [];
+    let currentGrandTotal = 0;
+    let isStageOpen = false;
+</script>
+
+<!--<script src="{% static 'js/posTerminal.js' %}"></script>-->
+<script src="{% static 'js/posCalculations.js' %}"></script>
+<script src="{% static 'js/posScanner.js' %}"></script>
+<script src="{% static 'js/posUI.js' %}"></script>
+
+<script src="{% static 'js/posInit.js' %}"></script>
+
+<script>
+    renderCart()
+</script>
+
 {% endblock %}
