@@ -18,4 +18,5 @@ urlpatterns = [
     path('employee_list', views.EmployeeList.as_view(), name='employee_list'),
     path('employee_form', views.EmployeeCreate.as_view(), name='employee_form'),
     # path('pos_terminal', views.posTerminal, name='pos_terminal'),
+    path('checkout/cash/', views.checkout_cash, name='checkout_cash'),
 ]

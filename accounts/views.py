@@ -21,6 +21,7 @@ from django.utils.crypto import get_random_string
 from django.db import transaction
 
 from django.http import JsonResponse
+import json
 
 
 
@@ -220,3 +221,19 @@ def scanProduct(request):
         'stock': inventory_item.product.min_stock_level,
         'image': inventory_item.product.image.url,
     })
+
+@transaction.atomic
+def checkout_cash(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        cart = data.get('cart', [])
+        total_amount = data.get('totalAmount')
+        cash_received = data.get('cashRecieved')
+        change_given = data.get('changeGiven')
+        customer_data = data.get('customerData', {})
+        payment_method = data.get('paymentMethod')
+
+        if not cart:
+            return JsonResponse({'success': False, 'message': 'Cart is empty'}, status=400)
+
