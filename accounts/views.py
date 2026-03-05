@@ -264,8 +264,6 @@ def checkout_cash(request):
             customer = customer,
             total_amount = total_amount,
             payment_method = payment_method,
-            cash_received = cash_received,
-            change_given = change_given
         )
 
         for item in cart:
@@ -291,7 +289,7 @@ def checkout_cash(request):
         payment = Payment.objects.create(
             order = order,
             amount_paid = cash_received,
-            payment_method = payment_method,
+            payment_type = payment_method,
         )
 
         CashPayment.objects.create(
