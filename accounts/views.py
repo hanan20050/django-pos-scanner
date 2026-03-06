@@ -304,6 +304,15 @@ def checkout_cash(request):
                     change_given = change_given,
                 )
 
+                try:
+                    agent_profile = order.employee.salesagent
+                    agent_profile.total_sales += order.total_amount
+                    agent_profile.commission_rate = order.total_amount * 0.03
+                    agent_profile.save()
+                except Exception:
+                    pass
+
+
                 return JsonResponse({'success': True, 'order_id': order.id})
 
             except Exception as e:
