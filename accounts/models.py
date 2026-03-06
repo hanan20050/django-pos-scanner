@@ -45,7 +45,7 @@ class Employee(models.Model):
 class SalesAgent(models.Model):
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
     commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
-    total_commission_earned = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    total_commission_earned = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     total_sales = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
     def __str__(self):
