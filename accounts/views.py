@@ -268,6 +268,8 @@ def checkout_cash(request):
                     customer = customer,
                     total_amount = total_amount,
                     payment_method = payment_method,
+                    order_status = Order.ORDER_STATUS[1][0]
+
                 )
 
                 for item in cart:
