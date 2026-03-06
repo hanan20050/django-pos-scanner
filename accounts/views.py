@@ -307,8 +307,8 @@ def checkout_cash(request):
                 try:
                     agent_profile = order.employee.salesagent
                     agent_profile.total_sales += order.total_amount
-                    agent_profile.commission_rate = order.total_amount * 0.03
-                    agent_profile.total_commission_earned += agent_profile.commission_rate
+                    commission_for_this_order = order.total_amount * agent_profile.commission_rate
+                    agent_profile.total_commission_earned += commission_for_this_order
                     agent_profile.save()
                 except Exception:
                     pass
