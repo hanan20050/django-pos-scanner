@@ -42,7 +42,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 @admin.register(SalesAgent)
 class SalesAgentAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'commission_rate', 'total_sales')
+    list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales',)
     list_filter = ('employee',)
 
 @admin.register(CreditOfficer)
