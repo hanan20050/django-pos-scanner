@@ -332,6 +332,8 @@ async function processCashPayment(cart, totalAmount, cashReceived, changeGiven, 
     }
 }
 
+
+
 async function processInstallmentPayment(cart, totalAmount, installmentTotal, installmentData){
     console.log("DEBUG PAYLOAD:", {cart, currentGrandTotal, installmentTotal, installmentData})
 
@@ -341,6 +343,7 @@ async function processInstallmentPayment(cart, totalAmount, installmentTotal, in
 
         const response = await fetch('/pos_terminal/api/checkout/installment/', {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrfToken

@@ -28,6 +28,11 @@ from django.db import transaction
 from datetime import date
 from dateutil.relativedelta import relativedelta
 
+from django.views.decorators.csrf import csrf_exempt
+
+import re
+from decimal import Decimal
+
 from django.http import JsonResponse
 import json
 
@@ -330,114 +335,126 @@ def checkout_cash(request):
 
 
 
+def clean_currency(value):
+    if isinstance(value, (int, float, Decimal)):
+        return Decimal(value)
+    clean_val = re.sub(r'[^\d.]', '', str(value))
+    return Decimal(clean_val) if clean_val else Decimal('0.00')
 
+
+
+@csrf_exempt
 @transaction.atomic
 def installment_checkout(request):
-        if request.method == 'POST':
+    print(f"DEBUG: Request reached view. CSRF Middleware Token in request: {request.headers.get('X-CSRFToken')}")
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            cart = data.get('cart', [])
+            total_amount = data.get('totalAmount')
+            installment_total = data.get('installmentTotal')
+            installment_data = data.get('installmentData')
+            payment_method = data.get('paymentMethod')
+
+            if installment_data.get('downpayment') is None:
+                return JsonResponse({'success': False, 'message': 'Downpayment received amount is missing'}, status=400)
+
+            if not cart:
+                return JsonResponse({'success': False, 'message': 'Cart is empty'}, status=400)
+
             try:
-                data = json.loads(request.body)
+                sales_agent = request.user.employee.salesagent
+                branch = request.user.employee.branch
+            except Exception:
+                return JsonResponse({'success': False, 'message': 'You must be a Sales Agent to process orders'},
+                                    status=403)
 
-                cart = data.get('cart', [])
-                total_amount = data.get('totalAmount')
-                installment_total = data.get('installmentTotal')
-                installment_data = data.get('installmentData')
-                payment_method = data.get('paymentMethod')
+            try:
+                officer_id = installment_data.get('creditOfficerId')
+                print(f"DEBUG: Attempting to find Credit Officer with ID: '{officer_id}'")
+                credit_officer = CreditOfficer.objects.get(employee_id=officer_id)
+            except CreditOfficer.DoesNotExist:
+                return JsonResponse({'success': False, 'message': 'test'},
+                                    status=400)
 
-                if installment_data.get('payment') is None:
-                    return JsonResponse({'success': False, 'message': 'Downpayment received amount is missing'}, status=400)
+            customer = None
+            phone = installment_data.get('phone')
+            payment = clean_currency(installment_data.get('downpayment'))
+            term_months = installment_data.get('term')
+            monthly_due = clean_currency(installment_data.get('monthlyPayment'))
+            remaining_balance = clean_currency(installment_data.get('balanceToFinance'))
 
-                if not cart:
-                    return JsonResponse({'success': False, 'message': 'Cart is empty'}, status=400)
-
-                try:
-                    employee = request.user.employee
-                    branch = employee.branch
-
-                    officer_id = installment_data.get('creditOfficerId')
-                    credit_officer = CreditOfficer.objects.get(id=officer_id)
-                except Exception:
-                    return JsonResponse({'success': False, 'message': 'User is not an authorized employee'}, status=403)
-
-                customer = None
-                phone = installment_data.get('phone')
-                payment = installment_data.get('payment')
-                term_months = installment_data.get('term')
-                monthly_due = installment_data.get('monthlyPayment')
-                remaining_balance = installment_data.get('balanceToFinance')
-
-                if phone:
-                    customer, created = Customer.objects.get_or_create(
-                        phone=phone,
-                        defaults={
-                            'name': installment_data.get('name', 'Walk-in'),
-                            'email': installment_data.get('email', ''),
-                            'address': installment_data.get('address', '')
-                        }
-                    )
-
-                order = Order.objects.create(
-                    employee = employee,
-                    branch = branch,
-                    customer = customer,
-                    total_amount = total_amount,
-                    payment_method = payment_method,
-                    order_status = Order.ORDER_STATUS[0][0]
+            if phone:
+                customer, created = Customer.objects.get_or_create(
+                    phone=phone,
+                    defaults={
+                        'name': installment_data.get('name', 'Walk-in'),
+                        'email': installment_data.get('email', ''),
+                        'address': installment_data.get('address', '')
+                    }
                 )
 
-                for item in cart:
-                    product = Product.objects.get(id=item['id'])
-                    OrderItem.objects.create(
-                        order=order,
-                        product=product,
-                        quantity=item['qty'],
-                        unit_price=item['price']
-                    )
+            order = Order.objects.create(
+                employee = sales_agent.employee,
+                branch = branch,
+                customer = customer,
+                total_amount = total_amount,
+                payment_method = payment_method,
+                order_status = Order.ORDER_STATUS[0][0]
+            )
 
-                    try:
-                        inventory = BranchInventory.objects.get(branch=branch, product=product)
-                    except BranchInventory.DoesNotExist:
-                        raise ValueError(f"Product {product.product_name} is not registered at this branch.")
-
-                    if inventory.quantity < int(item['qty']): raise ValueError("Out of Stock")
-
-                    inventory.quantity -= int(item['qty'])
-
-                    inventory.save()
-
-                payment = Payment.objects.create(
+            for item in cart:
+                product = Product.objects.get(id=item['id'])
+                OrderItem.objects.create(
                     order=order,
-                    amount_paid=payment,
-                    payment_type=payment_method,
-                )
-
-                InstallmentPlan.objects.create(
-                    payment=payment,
-                    credit_officer = credit_officer,
-                    term_months=term_months,
-                    monthly_due=monthly_due,
-                    remaining_balance=remaining_balance,
-                    # next_due_date=datetime() * nextmonth, how to get the next() due
-                    payment_status=Order.ORDER_STATUS[0][0],
+                    product=product,
+                    quantity=item['qty'],
+                    unit_price=item['price']
                 )
 
                 try:
-                    agent_profile = order.employee.salesagent
-                    credit_officer = order.employee.creditofficer
-                    agent_profile.total_sales += order.total_amount
-                    commission_for_this_order = order.total_amount * agent_profile.commission_rate
-                    agent_profile.total_commission_earned += commission_for_this_order
+                    inventory = BranchInventory.objects.get(branch=branch, product=product)
+                except BranchInventory.DoesNotExist:
+                    raise ValueError(f"Product {product.product_name} is not registered at this branch.")
 
-                    # //how to save the installment data to credit_officer
-                    agent_profile.save()
-                except Exception:
-                    pass
+                if inventory.quantity < int(item['qty']): raise ValueError("Out of Stock")
+
+                inventory.quantity -= int(item['qty'])
+
+                inventory.save()
+
+            payment = Payment.objects.create(
+                order=order,
+                amount_paid=payment,
+                payment_type=payment_method,
+            )
+
+            InstallmentPlan.objects.create(
+                payment=payment,
+                credit_officer = credit_officer,
+                term_months=term_months,
+                monthly_due=monthly_due,
+                remaining_balance=remaining_balance,
+                next_due_date=date.today() + relativedelta(months=1),
+                payment_status=Order.ORDER_STATUS[0][0],
+            )
+
+            try:
+                sales_agent.total_sales += order.total_amount
+                sales_agent.total_commission_earned += (order.total_amount * sales_agent.commission_rate)
+                sales_agent.save()
+
+                # //how to save the installment data to credit_officer
+            except Exception:
+                pass
 
 
-                return JsonResponse({'success': True, 'order_id': order.id})
+            return JsonResponse({'success': True, 'order_id': order.id})
 
 
 
-            except Exception as e:
-                return JsonResponse({'success': False, 'message': str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
-        return JsonResponse({'success': False, 'message': 'Invalid request'}, status=405)
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=405)
