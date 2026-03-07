@@ -320,3 +320,7 @@ def checkout_cash(request):
                 return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
         return JsonResponse({'success': False, 'message': 'Invalid request'}, status=405)
+
+
+@transaction.atomic
+def installment_checkout(request):

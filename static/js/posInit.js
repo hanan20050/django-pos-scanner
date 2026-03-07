@@ -67,4 +67,29 @@ document.addEventListener('DOMContentLoaded', () => {
             processCashPayment(cart, currentGrandTotal, cashReceived, changeGiven, customerData)
         })
     }
+
+
+
+    const submitInstallment = document.getElementById('submit-installment')
+
+    if (submitInstallment){
+        submitInstallment.addEventListener('click', () => {
+
+            const installmentData = {
+                name: document.getElementById('ins-cust-name').value,
+                email: document.getElementById('ins-cust-email').value,
+                phone: document.getElementById('ins-cust-phone').value,
+                address: document.getElementById('ins-cust-address').value,
+                term: document.getElementById('inst-term'),
+                balanceToFinance: document.getElementById('inst-balance-display'),
+                monthlyPayment: document.getElementById('inst-monthly-payment')
+            }
+
+            const downpayment = document.getElementById('inst-downpayment')
+            const installmentTotal = document.getElementById('installment-total-display')
+
+            processInstallmentPayment(cart, currentGrandTotal, downpayment, installmentTotal, installmentData)
+        });
+    }
+
 })

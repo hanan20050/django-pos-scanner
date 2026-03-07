@@ -330,3 +330,7 @@ async function processCashPayment(cart, totalAmount, cashReceived, changeGiven, 
         console.error(error)
     }
 }
+
+async function processInstallmentPayment(){
+
+}
