@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 address: document.getElementById('ins-cust-address').value,
                 creditOfficerId: document.getElementById('ins-creditOfficer').value,
                 term: document.getElementById('inst-term').value,
-                downpayment: document.getElementById('inst-downpayment').value,
+                payment: document.getElementById('inst-downpayment').value,
                 balanceToFinance: document.getElementById('inst-balance-display').innerText,
                 monthlyPayment: document.getElementById('inst-monthly-payment').innerText
             }
