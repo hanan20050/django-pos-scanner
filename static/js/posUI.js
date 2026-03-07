@@ -331,6 +331,6 @@ async function processCashPayment(cart, totalAmount, cashReceived, changeGiven, 
     }
 }
 
-async function processInstallmentPayment(cart, currentGrandTotal, downpayment, installmentTotal, installmentData){
-    console.log("DEBUG PAYLOAD:", {cart, currentGrandTotal, downpayment, installmentTotal, installmentData})
+async function processInstallmentPayment(cart, currentGrandTotal, installmentTotal, installmentData){
+    console.log("DEBUG PAYLOAD:", {cart, currentGrandTotal, installmentTotal, installmentData})
 }

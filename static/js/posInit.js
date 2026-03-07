@@ -80,15 +80,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: document.getElementById('ins-cust-email').value,
                 phone: document.getElementById('ins-cust-phone').value,
                 address: document.getElementById('ins-cust-address').value,
-                term: document.getElementById('inst-term'),
-                balanceToFinance: document.getElementById('inst-balance-display'),
-                monthlyPayment: document.getElementById('inst-monthly-payment')
+                creditOfficerId: document.getElementById('ins-creditOfficer').value,
+                term: document.getElementById('inst-term').value,
+                downpayment: document.getElementById('inst-downpayment').value,
+                balanceToFinance: document.getElementById('inst-balance-display').innerText,
+                monthlyPayment: document.getElementById('inst-monthly-payment').innerText
             }
 
-            const downpayment = document.getElementById('inst-downpayment')
             const installmentTotal = document.getElementById('installment-total-display')
 
-            processInstallmentPayment(cart, currentGrandTotal, downpayment, installmentTotal, installmentData)
+            processInstallmentPayment(cart, currentGrandTotal, installmentTotal, installmentData)
         });
     }
 
