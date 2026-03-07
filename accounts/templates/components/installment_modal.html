@@ -38,12 +38,19 @@
         </div>
 
         <div class="mt-8 grid grid-cols-2 gap-4 p-6 bg-slate-900 rounded-[32px] text-white">
-            <div class="border-r border-slate-700 pr-4">
+            <div class="border-r border-slate-700 pr-4 language_switcher_placeholder">
                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Select Term</label>
                 <select id="inst-term" onchange="updateInstallmentCalculation()" class="w-full rounded bg-transparent font-black text-2xl text-blue-400 outline-none cursor-pointer pl-2">
                     <option value="3" class="text-gray-900">3 Months</option>
                     <option value="6" class="text-gray-900">6 Months</option>
                     <option value="12" class="text-gray-900">12 Months</option>
+                </select>
+
+                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Select Credit Officer</label>
+                <select id="inst-credit-officer" onchange="updateInstallmentCalculation()" class="w-full rounded bg-transparent font-black text-2xl text-blue-400 outline-none cursor-pointer pl-2">
+                    {% for credit_officer in credit_officers %}
+                        <option value="{{ credit_officer.id }}">{{ credit_officer.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
 

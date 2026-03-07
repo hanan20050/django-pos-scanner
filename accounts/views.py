@@ -8,7 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.text import phone2numeric
 
 from .decorators import unauthenticated_user
-from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment
+from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
+    CreditOfficer
 from .filters import InventoryFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
@@ -190,8 +191,9 @@ def manageEmployee(request, pk):
 def posTerminal(request):
     employee = get_object_or_404(Employee, user=request.user)
     branch_products = BranchInventory.objects.filter(branch=employee.branch).select_related('product')
+    credit_officers = Employee.objects.filter(role='Credit Officer')
 
-    context = {'employee':employee, 'branch_products':branch_products}
+    context = {'employee':employee, 'branch_products':branch_products, 'credit_officers': credit_officers}
 
     return render(request, 'accounts/pos_terminal.html', context)
 
@@ -322,5 +324,7 @@ def checkout_cash(request):
         return JsonResponse({'success': False, 'message': 'Invalid request'}, status=405)
 
 
-@transaction.atomic
-def installment_checkout(request):
+
+
+# @transaction.atomic
+# def installment_checkout(request):

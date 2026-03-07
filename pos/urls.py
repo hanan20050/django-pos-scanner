@@ -28,7 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('accounts.urls')),
     path('pos_terminal/api/', include('accounts.urls')),
-    path('pos_terminal/api/', include('accounts.url'))
+    # path('pos_terminal/api/', include('accounts.urls'))
 ]
 
 if settings.DEBUG:
