@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: document.getElementById('ins-cust-email').value,
                 phone: document.getElementById('ins-cust-phone').value,
                 address: document.getElementById('ins-cust-address').value,
-                creditOfficerId: document.getElementById('ins-creditOfficer').value,
+                creditOfficerId: document.getElementById('inst-credit-officer').value,
                 term: document.getElementById('inst-term').value,
                 payment: document.getElementById('inst-downpayment').value,
                 balanceToFinance: document.getElementById('inst-balance-display').innerText,

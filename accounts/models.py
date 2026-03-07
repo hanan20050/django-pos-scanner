@@ -144,6 +144,7 @@ class CashPayment(models.Model):
 
 class InstallmentPlan(models.Model):
     payment = models.OneToOneField(Payment, on_delete=models.CASCADE)
+    credit_officer = models.ForeignKey(CreditOfficer, on_delete=models.SET_NULL, null=True, blank=True)
     term_months = models.IntegerField()
     monthly_due = models.DecimalField(max_digits=10, decimal_places=2)
     remaining_balance = models.DecimalField(max_digits=10, decimal_places=2)

@@ -349,7 +349,10 @@ def installment_checkout(request):
                 try:
                     employee = request.user.employee
                     branch = employee.branch
-                    credit_officer = employee.credit_officer
+
+                    installment_data = data.get('installmentData')
+                    officer_id = installment_data.get('creditOfficerId')
+                    credit_officer = CreditOfficer.objects.get(id=officer_id)
                 except Exception:
                     return JsonResponse({'success': False, 'message': 'User is not an authorized employee'}, status=403)
 
