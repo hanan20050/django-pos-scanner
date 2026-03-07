@@ -25,6 +25,9 @@ from django.contrib import messages
 from django.utils.crypto import get_random_string
 from django.db import transaction
 
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
 from django.http import JsonResponse
 import json
 
@@ -350,7 +353,6 @@ def installment_checkout(request):
                     employee = request.user.employee
                     branch = employee.branch
 
-                    installment_data = data.get('installmentData')
                     officer_id = installment_data.get('creditOfficerId')
                     credit_officer = CreditOfficer.objects.get(id=officer_id)
                 except Exception:
@@ -410,6 +412,7 @@ def installment_checkout(request):
 
                 InstallmentPlan.objects.create(
                     payment=payment,
+                    credit_officer = credit_officer,
                     term_months=term_months,
                     monthly_due=monthly_due,
                     remaining_balance=remaining_balance,

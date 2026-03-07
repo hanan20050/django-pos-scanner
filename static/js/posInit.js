@@ -13,9 +13,7 @@
 // })
 
 
-document.addEventListener('DOMContentLoaded', () => {
-
-
+document.addEventListener('DOMContentLoaded', (e) => {
 
     const cashBtn = document.getElementById('btn-cash')
     const installmentBtn = document.getElementById('btn-installment')
@@ -73,8 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitInstallment = document.getElementById('submit-installment')
 
     if (submitInstallment){
-        submitInstallment.addEventListener('click', () => {
+        submitInstallment.addEventListener('click', (e) => {
+            e.preventDefault();
 
+            console.log("SUBMIT INSTALLMENT CLICKED")
             const installmentData = {
                 name: document.getElementById('ins-cust-name').value,
                 email: document.getElementById('ins-cust-email').value,
@@ -84,10 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 term: document.getElementById('inst-term').value,
                 payment: document.getElementById('inst-downpayment').value,
                 balanceToFinance: document.getElementById('inst-balance-display').innerText,
-                monthlyPayment: document.getElementById('inst-monthly-payment').innerText
+                monthlyPayment: document.getElementById('inst-monthly-display').innerText
             }
 
-            const installmentTotal = document.getElementById('installment-total-display')
+            const installmentTotal = document.getElementById('installment-total-display').innerText.replace('₱','').replace(',','')
 
             processInstallmentPayment(cart, currentGrandTotal, installmentTotal, installmentData)
         });

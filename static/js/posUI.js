@@ -142,6 +142,7 @@ function openCheckoutModal(type){
 
         installmentCartItems.innerHTML = cartRows
         installmentTotalDisplay.textContent = `₱${currentGrandTotal.toLocaleString()}`;
+
     }
 }
 
