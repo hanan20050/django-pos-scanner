@@ -3,6 +3,12 @@ from . models import *
 
 # Register your models here.
 
+class InstallmentPlanInline(admin.TabularInline):
+    model = InstallmentPlan
+    extra = 0
+    readonly_fields = ('payment', 'term_months', 'monthly_due', 'remaining_balance', 'next_due_date', 'payment_status')
+    can_delete = False
+    show_change_link = True
 
 @admin.register(Branch)
 class BranchAdmin(admin.ModelAdmin):
@@ -47,7 +53,18 @@ class SalesAgentAdmin(admin.ModelAdmin):
 
 @admin.register(CreditOfficer)
 class CreditOfficerAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'approval_limit', 'security_level')
+    list_display = ('get_name', 'approval_limit', 'security_level', 'get_plans_count')
+    search_fields = ('employee__name',)
+
+    inlines = [InstallmentPlanInline]
+
+    @admin.display(description='Officer Name', ordering='employee__name')
+    def get_name(self, obj):
+        return obj.employee.name
+
+    @admin.display(description='Total Applications')
+    def get_plans_count(self, obj):
+        return obj.installmentplan_set.count()
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
