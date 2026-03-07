@@ -326,5 +326,5 @@ def checkout_cash(request):
 
 
 
-# @transaction.atomic
-# def installment_checkout(request):
+@transaction.atomic
+def installment_checkout(request):

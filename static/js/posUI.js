@@ -331,6 +331,41 @@ async function processCashPayment(cart, totalAmount, cashReceived, changeGiven, 
     }
 }
 
-async function processInstallmentPayment(cart, currentGrandTotal, installmentTotal, installmentData){
+async function processInstallmentPayment(cart, totalAmount, installmentTotal, installmentData){
     console.log("DEBUG PAYLOAD:", {cart, currentGrandTotal, installmentTotal, installmentData})
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+    try{
+
+        const response = await fetch('/pos_terminal/api/checkout/installment/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                cart: cart,
+                totalAmount: totalAmount,
+                installmentTotal: installmentTotal,
+                installmentData: installmentData,
+                paymentMethod: 'INSTALLMENT'
+            })
+        })
+
+        const data = await response.json()
+
+        if (data.success) {
+            alert("Order #" + data.order_id + " Confirmed!")
+            localStorage.removeItem(cartKey)
+            cart.length = 0
+            renderCart()
+            closeCheckoutModal()
+        } else {
+            alert("Error" + data.message)
+        }
+
+    } catch (error){
+        console.error(error)
+    }
 }

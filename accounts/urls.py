@@ -19,5 +19,5 @@ urlpatterns = [
     path('employee_form', views.EmployeeCreate.as_view(), name='employee_form'),
     # path('pos_terminal', views.posTerminal, name='pos_terminal'),
     path('checkout/cash/', views.checkout_cash, name='checkout_cash'),
-    # path('checkout/installment', views.installment_checkout, name='installment_checkout'),
+    path('checkout/installment/', views.installment_checkout, name='installment_checkout'),
 ]
