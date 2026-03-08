@@ -10,7 +10,7 @@
 
         <div class="text-gray-700 font-semibold flex justify-center items-center space-x-2">
             {% if request.user.is_superuser %}
-            <span>Welcome Admin</span>
+            <span>Welcome Jemicha 🧚‍♂️️</span>
             {% else %}
             <span>Welcome, {{ request.user.employee.name }}</span>
             <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">
@@ -26,7 +26,7 @@
         {% if request.user.is_superuser or request.user.employee.role == 'Manager' %}
 
         <li><a href="#" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-600 md:p-0">Dashboard</a></li>
-        <li><a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">All Sales</a></li>
+        <li><a href="{% url 'sales_display' %}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">All Sales</a></li>
         <li><a href="{% url 'branch_inventory' %}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">Inventory</a></li>
         <li><a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">Installments</a></li>
         <li><a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">Reports</a></li>
@@ -41,7 +41,7 @@
         <li><a href="{% url 'pos_terminal' %}" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-600 md:p-0">POS Terminal</a></li>
         <li><a href="{% url 'branch_inventory' %}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">Branch Inventory</a></li>
         <li><a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">Installment Calculator</a></li>
-        <li><a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">My Sales</a></li>
+        <li><a href="{% url 'sales_display' %}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">My Sales</a></li>
         <li><a href="{% url 'employee_profile' %}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">Profile</a></li>
 
         {% endif %}

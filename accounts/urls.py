@@ -20,4 +20,5 @@ urlpatterns = [
     # path('pos_terminal', views.posTerminal, name='pos_terminal'),
     path('checkout/cash/', views.checkout_cash, name='checkout_cash'),
     path('checkout/installment/', views.installment_checkout, name='installment_checkout'),
+    path('sales_display/', views.salesDisplay, name='sales_display'),
 ]

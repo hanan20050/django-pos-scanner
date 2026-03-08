@@ -12,7 +12,7 @@ from django.utils.text import phone2numeric
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
     CreditOfficer, InstallmentPlan
-from .filters import InventoryFilter
+from .filters import InventoryFilter, salesFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
 from django.urls import reverse_lazy
@@ -72,6 +72,27 @@ def loginPage(request):
 def logoutPage(request):
     logout(request)
     return redirect('login')
+
+
+@login_required(login_url='login')
+def salesDisplay(request):
+    is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
+
+    if is_manager:
+        sales = OrderItem.objects.all().select_related('order', 'order__customer', 'product', 'order__employee')
+    else:
+        try:
+            assigned_branch = request.user.employee.branch
+
+            sales = OrderItem.objects.filter(order__branch=assigned_branch).select_related('order', 'product')
+        except Employee.DoesNotExist:
+            sales = OrderItem.objects.none
+
+    myFilter = salesFilter(request.GET, queryset=sales)
+
+    context = {'myFilter': myFilter, 'is_manager': is_manager, 'sales': myFilter.qs}
+
+    return render(request, 'accounts/sales_display.html', context)
 
 @login_required(login_url='login')
 def branchInventory(request):

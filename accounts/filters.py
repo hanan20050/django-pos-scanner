@@ -1,7 +1,20 @@
+from dataclasses import fields
+
 from django import forms
 import django_filters
 from .models import *
 from django.db.models import F
+
+class salesFilter(django_filters.FilterSet):
+    customer_name = django_filters.CharFilter(field_name='order__customer__name', lookup_expr='icontains', label='Customer', widget=forms.TextInput(attrs={
+        'class': 'px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none',
+        'placeholder': 'Search product name...'
+    }))
+
+    class Meta:
+        model = Order
+        fields = ['customer', 'employee', 'branch']
+
 
 class InventoryFilter(django_filters.FilterSet):
     STOCK_CHOICES = (
