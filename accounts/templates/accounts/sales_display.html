@@ -15,14 +15,15 @@
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 text-center">
             <tr>
                 {% if is_manager %}
-                <th class="px-6 py-3">Customer</th>
+                <th class="px-6 py-3">Employee</th>
                 {% endif %}
-                <th class="px-6 py-3">Supplier</th>
+                <th class="px-6 py-3">Customer</th>
                 <th class="px-6 py-3">Product Name</th>
+                <th class="px-6 py-3">Branch</th>
                 <th class="px-6 py-3">Category</th>
-                <th class="px-6 py-3">Quantity</th>
+                <th class="px-6 py-3">Qty</th>
                 <th class="px-6 py-3">Price</th>
-                <th class="px-6 py-3">Barcode</th>
+                <th class="px-6 py-3">Order Type</th>
                 <th class="px-6 py-3">Status</th>
                 {% if is_manager %}
                 <th class="px-6 py-3">Option</th>
@@ -33,28 +34,29 @@
             {% for i in sales %}
             <tr class="hover:bg-gray-50 text-center">
                 {% if is_manager %}
-                <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.customer }}</td>
+                <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.employee }}</td>
                 {% endif %}
-                <td class="px-6 py-4">{{ i.order.employee }}</td>
+                <td class="px-6 py-4">{{ i.order.customer }}</td>
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.product.product_name }}</td>
+                <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.branch }}</td>
                 <td class="px-6 py-4">{{ i.product.category }}</td>
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.quantity }}</td>
                 <td class="px-6 py-4">₱{{ i.product.base_price }}</td>
-                <td class="px-6 py-4 font-medium text-gray-900">{{ i.product.barcode }}</td>
-                <td class="px-6 py-4">
-                    {% if i.quantity <= 0 %}
-                        <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">
-                            Out of Stock
-                        </span>
-                    {% elif i.quantity <= i.product.min_stock_level %}
-                        <span class="px-2 py-1 text-xs font-semibold text-orange-800 bg-orange-100 rounded-full">
-                            Low Stock: {{ i.quantity }}
-                        </span>
-                    {% else %}
-                        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">
-                            In Stock: {{ i.quantity }}
-                        </span>
-                    {% endif %}
+                <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.payment_method }}</td>
+                <td class="px-6 py-4"> {{ i.order.order_status }}
+<!--                    {% if i.quantity <= 0 %}-->
+<!--                        <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">-->
+<!--                            Out of Stock-->
+<!--                        </span>-->
+<!--                    {% elif i.quantity <= i.product.min_stock_level %}-->
+<!--                        <span class="px-2 py-1 text-xs font-semibold text-orange-800 bg-orange-100 rounded-full">-->
+<!--                            Low Stock: {{ i.quantity }}-->
+<!--                        </span>-->
+<!--                    {% else %}-->
+<!--                        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">-->
+<!--                            In Stock: {{ i.quantity }}-->
+<!--                        </span>-->
+<!--                    {% endif %}-->
                 </td>
                 {% if is_manager %}
                 <td class="px-6 py-4 font-medium text-gray-900">
