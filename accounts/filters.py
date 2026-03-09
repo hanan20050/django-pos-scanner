@@ -21,6 +21,13 @@ class salesFilter(django_filters.FilterSet):
         'placeholder': 'Search order date...'
     }))
 
+    branch = django_filters.ModelChoiceFilter(field_name='order__branch', to_field_name='id',
+        queryset=Branch.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white',
+        })
+    )
+
 
 
     class Meta:
