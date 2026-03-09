@@ -23,7 +23,7 @@
                 <th class="px-6 py-3">Category</th>
                 <th class="px-6 py-3">Qty</th>
                 <th class="px-6 py-3">Price</th>
-                <th class="px-6 py-3">Order Type</th>
+                <th class="px-6 py-3">Payment Method</th>
                 <th class="px-6 py-3">Status</th>
                 {% if is_manager %}
                 <th class="px-6 py-3">Option</th>
@@ -69,6 +69,29 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
+
+<div class="flex items-center justify-between p-4 bg-white border-t border-gray-200">
+    <span class="text-sm text-gray-700">
+        Page <span class="font-semibold text-gray-900">{{ sales.number }}</span> of
+        <span class="font-semibold text-gray-900">{{ sales.paginator.num_pages }}</span>
+    </span>
+
+    <div class="inline-flex mt-2 xs:mt-0">
+        {% if sales.has_previous %}
+            <a href="?page={{ sales.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+               class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900">
+                Prev
+            </a>
+        {% endif %}
+
+        {% if sales.has_next %}
+            <a href="?page={{ sales.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+               class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900">
+                Next
+            </a>
+        {% endif %}
+    </div>
 </div>
 
 {% endblock %}

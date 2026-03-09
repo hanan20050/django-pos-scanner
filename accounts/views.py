@@ -89,8 +89,14 @@ def salesDisplay(request):
             sales = OrderItem.objects.none
 
     myFilter = salesFilter(request.GET, queryset=sales)
+    filtered_items = myFilter.qs
 
-    context = {'myFilter': myFilter, 'is_manager': is_manager, 'sales': myFilter.qs}
+    paginator = Paginator(filtered_items, 10)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {'myFilter': myFilter, 'is_manager': is_manager, 'sales': page_obj}
 
     return render(request, 'accounts/sales_display.html', context)
 
