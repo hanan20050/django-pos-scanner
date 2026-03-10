@@ -62,7 +62,7 @@
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 text-center">
             <tr>
                 {% if is_manager %}
-                <th class="px-6 py-3">Order #</th>
+                <th class="px-3 py-3">Order #</th>
                 <th class="px-6 py-3">Employee</th>
                 {% endif %}
                 <th class="px-6 py-3">Customer</th>
@@ -96,25 +96,11 @@
                 <td class="px-6 py-4">₱{{ i.line_total }}</td>
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.payment_method }}</td>
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.order_date }}</td>
-                <td class="px-6 py-4"> {{ i.order.order_status }}
-<!--                    {% if i.quantity <= 0 %}-->
-<!--                        <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">-->
-<!--                            Out of Stock-->
-<!--                        </span>-->
-<!--                    {% elif i.quantity <= i.product.min_stock_level %}-->
-<!--                        <span class="px-2 py-1 text-xs font-semibold text-orange-800 bg-orange-100 rounded-full">-->
-<!--                            Low Stock: {{ i.quantity }}-->
-<!--                        </span>-->
-<!--                    {% else %}-->
-<!--                        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">-->
-<!--                            In Stock: {{ i.quantity }}-->
-<!--                        </span>-->
-<!--                    {% endif %}-->
-                </td>
+                <td class="px-6 py-4"> {{ i.order.order_status }}</td>
                 {% if is_manager %}
                 <td class="px-6 py-4 font-medium text-gray-900">
                     <a href="{% url 'sales_edit' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
-                        Edit Sales
+                        Edit
                     </a>
                 </td>
                 {% endif %}
