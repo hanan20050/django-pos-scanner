@@ -15,12 +15,24 @@
 
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700">Stock Quantity</label>
-                {{ form.quantity }}
+                <label class="block text-sm font-medium text-gray-700">Processed by:</label>
+                {{ form.employee }}
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700">Minimum Stock Level</label>
-                {{ form.min_stock_level }}
+                <label class="block text-sm font-medium text-gray-700">Branch</label>
+                {{ form.branch }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Order Status</label>
+                {{ form.order_status }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Payment Method</label>
+                <p class="text-gray-900 font-bold">{{ object.payment_method }}</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Total Amount</label>
+                <p class="text-gray-900 font-bold">{{ object.total_amount }}</p>
             </div>
         </div>
 

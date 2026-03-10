@@ -53,7 +53,7 @@ class InventoryUpdateView(UpdateView):
 
 class salesUpdateView(UpdateView):
     model = Order
-    fields = ['customer']
+    fields = ['employee', 'branch', 'order_status', 'payment_method', 'total_amount']
     template_name = 'components/sales_edit.html'
     success_url = reverse_lazy('sales_display')
 
