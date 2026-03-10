@@ -1,5 +1,6 @@
 from contextlib import nullcontext
 from http.client import responses
+from xmlrpc.client import WRAPPERS
 
 from django.contrib.admin.templatetags.admin_list import items_for_result, paginator_number
 from django.contrib.auth import authenticate, login, logout
@@ -29,6 +30,9 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from django.views.decorators.csrf import csrf_exempt
+
+from django.db.models import Sum, F, Expression, ExpressionWrapper
+from django.db import models
 
 import re
 from decimal import Decimal
@@ -91,12 +95,23 @@ def salesDisplay(request):
     myFilter = salesFilter(request.GET, queryset=sales)
     filtered_items = myFilter.qs
 
+    result = filtered_items.aggregate(
+        total_revenue=Sum(
+            ExpressionWrapper(
+                F('unit_price') * F('quantity'),
+                output_field=models.DecimalField()
+            )
+        )
+    )
+
+    grand_total = result['total_revenue'] or 0
+
     paginator = Paginator(filtered_items, 10)
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    context = {'myFilter': myFilter, 'is_manager': is_manager, 'sales': page_obj}
+    context = {'myFilter': myFilter, 'is_manager': is_manager, 'sales': page_obj, 'grand_total': grand_total}
 
     return render(request, 'accounts/sales_display.html', context)
 
