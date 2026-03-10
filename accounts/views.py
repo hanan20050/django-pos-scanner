@@ -95,6 +95,10 @@ def salesDisplay(request):
     myFilter = salesFilter(request.GET, queryset=sales)
     filtered_items = myFilter.qs
 
+    inst = Order.objects.filter(payment_method='INSTALLMENT').count()
+    cash_sales = Order.objects.filter(payment_method='CASH').count()
+    print(f"DEBUG: Cash sales count is {cash_sales}")
+
     result = filtered_items.aggregate(
         total_revenue=Sum(
             ExpressionWrapper(
@@ -111,7 +115,7 @@ def salesDisplay(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    context = {'myFilter': myFilter, 'is_manager': is_manager, 'sales': page_obj, 'grand_total': grand_total}
+    context = {'myFilter': myFilter, 'is_manager': is_manager, 'sales': page_obj, 'grand_total': grand_total, 'inst': inst, 'cash_sales': cash_sales}
 
     return render(request, 'accounts/sales_display.html', context)
 
