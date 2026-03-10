@@ -71,6 +71,7 @@
                 <th class="px-6 py-3">Category</th>
                 <th class="px-6 py-3">Qty</th>
                 <th class="px-6 py-3">Price</th>
+                <th class="px-6 py-3">Total</th>
                 <th class="px-6 py-3">Payment Method</th>
                 <th class="px-6 py-3">Date</th>
                 <th class="px-6 py-3">Status</th>
@@ -92,6 +93,7 @@
                 <td class="px-6 py-4">{{ i.product.category }}</td>
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.quantity }}</td>
                 <td class="px-6 py-4">₱{{ i.product.base_price }}</td>
+                <td class="px-6 py-4">₱{{ i.line_total }}</td>
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.payment_method }}</td>
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.order_date }}</td>
                 <td class="px-6 py-4"> {{ i.order.order_status }}
