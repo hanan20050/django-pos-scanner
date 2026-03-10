@@ -51,6 +51,18 @@ class InventoryUpdateView(UpdateView):
     template_name = 'accounts/inventory_update.html'
     success_url = reverse_lazy('branch_inventory')
 
+class salesUpdateView(UpdateView):
+    model = Order
+    fields = ['customer']
+    template_name = 'components/sales_edit.html'
+    success_url = reverse_lazy('sales_display')
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        # Now 'obj' is the actual Order instance
+        print(f"DEBUG: Updating order for: {obj.customer}")
+        return obj
+
 
 @login_required(login_url='login')
 def home(request):
