@@ -86,11 +86,39 @@
                 <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Branch</p>
                 <p class="text-base font-bold text-gray-800">{{ object.branch.name }}</p>
             </div>
+            {% for item in object.orderitem_set.all %}
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Product Name</p>
+                <p class="text-base font-bold text-gray-800">{{ item.product.product_name }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Quantity</p>
+                <p class="text-base font-bold text-gray-800">{{ item.quantity }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Base Price</p>
+                <p class="text-base font-bold text-gray-800">{{ item.product.base_price }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Line Total</p>
+                <p class="text-base font-bold text-gray-800">{{ item.line_total }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Subtotal</p>
+                <p class="text-base font-bold text-gray-800">{{ item.product.base_price }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Grand Total</p>
+                <p class="text-base font-bold text-gray-800">{{ item.line_total }}</p>
+            </div>
+            {% endfor %}
             <div>
                 <p class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Payment Method</p>
                 <p class="text-base font-bold text-gray-800">{{ object.payment_method }}</p>
             </div>
         </div>
+
+</div>
     </div>
 
 </div>
