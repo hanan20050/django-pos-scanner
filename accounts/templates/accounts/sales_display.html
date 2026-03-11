@@ -75,6 +75,7 @@
                 <th class="px-6 py-3">Payment Method</th>
                 <th class="px-6 py-3">Date</th>
                 <th class="px-6 py-3">Status</th>
+                <th class="px-6 py-3">Receipt</th>
                 {% if is_manager %}
                 <th class="px-6 py-3">Option</th>
                 {% endif %}
@@ -97,6 +98,11 @@
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.payment_method }}</td>
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.order_date }}</td>
                 <td class="px-6 py-4"> {{ i.order.order_status }}</td>
+                <td class="px-6 py-4 font-medium text-gray-900">
+                    <a href="{% url 'sales_edit' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
+                        View
+                    </a>
+                </td>
                 {% if is_manager %}
                 <td class="px-6 py-4 font-medium text-gray-900">
                     <a href="{% url 'sales_edit' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
