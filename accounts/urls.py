@@ -22,4 +22,5 @@ urlpatterns = [
     path('checkout/installment/', views.installment_checkout, name='installment_checkout'),
     path('sales_display/', views.salesDisplay, name='sales_display'),
     path('components/<int:pk>/sales_edit', views.salesUpdateView.as_view(), name='sales_edit'),
+    path('accounts/<int:pk>/emp_receipt/', views.emp_receipt, name='emp_receipt')
 ]

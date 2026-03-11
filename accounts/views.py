@@ -62,6 +62,10 @@ class salesUpdateView(UpdateView):
         print(f"DEBUG: Updating order for: {obj.customer}")
         return obj
 
+@login_required(login_url='login')
+def emp_receipt(request, pk):
+    return render(request, 'accounts/emp_receipt.html')
+
 
 @login_required(login_url='login')
 def home(request):
