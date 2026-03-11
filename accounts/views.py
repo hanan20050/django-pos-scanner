@@ -64,7 +64,11 @@ class salesUpdateView(UpdateView):
 
 @login_required(login_url='login')
 def emp_receipt(request, pk):
-    return render(request, 'accounts/emp_receipt.html')
+
+    order = get_object_or_404(Order, pk=pk)
+    context = {'order': order}
+
+    return render(request, 'accounts/emp_receipt.html', context)
 
 
 @login_required(login_url='login')
