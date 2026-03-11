@@ -59,7 +59,6 @@ class salesUpdateView(UpdateView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
-        # Now 'obj' is the actual Order instance
         print(f"DEBUG: Updating order for: {obj.customer}")
         return obj
 
