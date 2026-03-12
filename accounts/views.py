@@ -73,6 +73,7 @@ def emp_receipt(request, pk):
 @login_required(login_url='login')
 def instCalculator(request):
     product_count = Product.objects.count()
+    all_products = Product.objects.all()
 
     form = ProductForm()
     product_data = None
@@ -85,7 +86,7 @@ def instCalculator(request):
             product_data = selected_product
 
 
-    context = {'form':form, 'product_data':product_data, 'sales_agent': request.user.employee, 'product_count': product_count}
+    context = {'form':form, 'product_data':product_data, 'sales_agent': request.user.employee, 'product_count': product_count, 'all_products': all_products}
 
     return render(request, 'accounts/inst_calculator.html', context)
 
