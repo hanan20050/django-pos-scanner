@@ -1,0 +1,56 @@
+{% extends 'accounts/main.html' %}
+
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-bold mb-4">Plan Parameters</h3>
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs font-bold text-gray-500 uppercase">Downpayment</label>
+                <div class="flex">
+                    <span class="bg-gray-100 px-3 py-2 border border-r-0 rounded-l-md">₱</span>
+                    <input type="number" id="downpayment" class="w-full border rounded-r-md p-2">
+                </div>
+            </div>
+            <div>
+                <label class="text-xs font-bold text-gray-500 uppercase">Installment Terms</label>
+                <div class="grid grid-cols-3 gap-2 mt-1">
+                    <button class="py-2 border rounded-md hover:bg-blue-50">3 Mo</button>
+                    <button class="py-2 border rounded-md bg-blue-600 text-white">6 Mo</button>
+                    <button class="py-2 border rounded-md hover:bg-blue-50">12 Mo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lg:col-span-2 space-y-6">
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-blue-700 p-6 rounded-xl text-white">
+                <p class="text-sm opacity-80">Monthly Payment</p>
+                <h2 class="text-3xl font-black">₱2,450.00</h2>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-xl text-white">
+                <p class="text-sm opacity-80">Total Interest</p>
+                <h2 class="text-3xl font-black">₱850.00</h2>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 font-bold">
+                    <tr>
+                        <th class="p-3 text-left">Date Due</th>
+                        <th class="p-3 text-right">Amount</th>
+                        <th class="p-3 text-right">Balance</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
