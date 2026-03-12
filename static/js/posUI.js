@@ -259,19 +259,19 @@ function setSidebarActive(mode) {
 }
 
 function updateInstallmentCalculation(){
-    const term = parseInt(document.getElementById("inst-term").value) || 3
-    const downpayment = parseFloat(document.getElementById('inst-downpayment').value) || 0
+    const term = parseInt(document.getElementById("inst-term").value) || 3;
+    const downpayment = parseFloat(document.getElementById('inst-downpayment').value) || 0;
 
-    const balance = currentGrandTotal - downpayment
+    const principal = Math.max(0, currentGrandTotal - downpayment);
 
-    const finalBalance = Math.max(0, balance)
+    const interest = principal * 0.03;
 
-    const monthly = finalBalance / term
+    const totalAmountToPay = principal + interest;
 
-    document.getElementById('inst-balance-display').textContent = `₱${finalBalance.toLocaleString()}`
-    document.getElementById('inst-monthly-display').textContent = `₱${monthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    const monthly = totalAmountToPay / term;
 
-
+    document.getElementById('inst-balance-display').textContent = `₱${totalAmountToPay.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+    document.getElementById('inst-monthly-display').textContent = `₱${monthly.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
 }
 
 function calculateChange(){
