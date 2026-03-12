@@ -157,7 +157,7 @@ class InstallmentPlan(models.Model):
     payment_status = models.CharField(max_length=100, choices=Order.ORDER_STATUS)
 
 class Invoice(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='invoice')
     or_number = models.CharField(max_length=100, unique=True)
     invoice_date = models.DateTimeField(auto_now_add=True)
     vat_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)

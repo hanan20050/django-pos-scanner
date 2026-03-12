@@ -63,11 +63,17 @@ class salesUpdateView(UpdateView):
         print(f"DEBUG: Updating order for: {obj.customer}")
         return obj
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['invoice'] = Invoice.objects.filter(order=self.object).first()
+        return context
+
 @login_required(login_url='login')
 def emp_receipt(request, pk):
 
     order = get_object_or_404(Order, pk=pk)
-    context = {'order': order}
+    invoice = Invoice.objects.filter(order=order).first()
+    context = {'order': order, 'invoice': invoice}
 
     return render(request, 'accounts/emp_receipt.html', context)
 
@@ -405,7 +411,7 @@ def checkout_cash(request):
                 Invoice.objects.create(
                     order=order,
                     or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
-                    vat_amount=order.total_amount * Decimal('0.12'),  # Assuming 12% VAT
+                    vat_amount=order.total_amount * Decimal('0.12'),
                     grand_total=order.total_amount,
                     issued_by=order.employee
                 )
@@ -537,7 +543,7 @@ def installment_checkout(request):
             Invoice.objects.create(
                 order=order,
                 or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
-                vat_amount=order.total_amount * Decimal('0.12'),  # Assuming 12% VAT
+                vat_amount=order.total_amount * Decimal('0.12'),
                 grand_total=order.total_amount,
                 issued_by=order.employee
             )
