@@ -27,9 +27,9 @@
             <div>
                 <label class="text-xs font-bold text-gray-500 uppercase">Installment Terms</label>
                 <div id="month-option" class="grid grid-cols-3 gap-2 mt-1">
-                    <button class="py-2 border rounded-md hover:bg-blue-50">3 Mo</button>
-                    <button class="py-2 border rounded-md bg-blue-600 text-white">6 Mo</button>
-                    <button class="py-2 border rounded-md hover:bg-blue-50">12 Mo</button>
+                    <button type="button" class="term-btn py-2 border rounded-md hover:bg-blue-50" data-value="3">3 Mo</button>
+                    <button type="button" class="term-btn py-2 border rounded-md bg-blue-600 text-white" data-value="6">6 Mo</button>
+                    <button type="button" class="term-btn py-2 border rounded-md hover:bg-blue-50" data-value="12">12 Mo</button>
                 </div>
             </div>
             <div class="w-full">
@@ -75,6 +75,9 @@
 
     const dropdown = document.getElementById('product_select');
     const display = document.getElementById('price-display');
+    let downpayment = document.getElementById('downpayment')
+    let monthOption = document.getElementById('month-option');
+    const buttons = document.querySelectorAll('.term-btn')
 
     dropdown.addEventListener('change', function() {
         const selectedId = this.value;
@@ -85,6 +88,22 @@
             display.innerText = '₱0.00';
         }
     });
+
+    monthOption.addEventListener('click', (e) => {
+        if (e.target.classList.contains('term-btn')){
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white')
+                btn.classList.add('hover:bg-blue-50')
+            })
+
+            e.target.classList.add('bg-blue-600', 'text-white')
+            e.target.classList.remove('hover:bg-blue-50')
+
+            const selectedTerm = e.target.getAttribute('data-value');
+            console.log('Selected term:', selectedTerm)
+
+        }
+    })
 </script>
 
 {% endblock %}
