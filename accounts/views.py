@@ -534,6 +534,14 @@ def installment_checkout(request):
                 payment_status=Order.ORDER_STATUS[0][0],
             )
 
+            Invoice.objects.create(
+                order=order,
+                or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
+                vat_amount=order.total_amount * Decimal('0.12'),  # Assuming 12% VAT
+                grand_total=order.total_amount,
+                issued_by=order.employee
+            )
+
             try:
                 sales_agent.total_sales += order.total_amount
                 sales_agent.total_commission_earned += (order.total_amount * sales_agent.commission_rate)
