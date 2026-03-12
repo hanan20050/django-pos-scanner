@@ -26,11 +26,14 @@
             </div>
             <div>
                 <label class="text-xs font-bold text-gray-500 uppercase">Installment Terms</label>
-                <div class="grid grid-cols-3 gap-2 mt-1">
+                <div id="month-option" class="grid grid-cols-3 gap-2 mt-1">
                     <button class="py-2 border rounded-md hover:bg-blue-50">3 Mo</button>
                     <button class="py-2 border rounded-md bg-blue-600 text-white">6 Mo</button>
                     <button class="py-2 border rounded-md hover:bg-blue-50">12 Mo</button>
                 </div>
+            </div>
+            <div class="w-full">
+                <button id="calculate button" class="w-full bg-blue-600 text-white h-10 rounded text-2xl font-bold">Calculate</button>
             </div>
         </div>
     </form>
@@ -64,7 +67,6 @@
 </div>
 
 <script>
-    // Create a lookup table (map) of ID to Price
     const priceMap = {
         {% for p in all_products %}
             "{{ p.id }}": {{ p.base_price }},
