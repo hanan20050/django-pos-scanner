@@ -70,6 +70,10 @@ def emp_receipt(request, pk):
 
     return render(request, 'accounts/emp_receipt.html', context)
 
+@login_required(login_url='login')
+def instCalculator(request):
+    return render(request, 'accounts/inst_calculator.html')
+
 
 @login_required(login_url='login')
 def home(request):
