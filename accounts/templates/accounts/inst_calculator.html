@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div class="w-full">
-                <button id="calculate button" class="w-full bg-blue-600 text-white h-10 rounded text-2xl font-bold">Calculate</button>
+                <button type="button" id="calculate-button" class="w-full bg-blue-600 text-white h-10 rounded text-2xl font-bold">Calculate</button>
             </div>
         </div>
     </form>
@@ -42,11 +42,11 @@
         <div class="grid grid-cols-2 gap-4">
             <div class="bg-blue-700 p-6 rounded-xl text-white">
                 <p class="text-sm opacity-80">Monthly Payment</p>
-                <h2 class="text-3xl font-black">₱2,450.00</h2>
+                <h2 id="monthly-payment" class="text-3xl font-black">₱2,450.00</h2>
             </div>
             <div class="bg-gray-800 p-6 rounded-xl text-white">
                 <p class="text-sm opacity-80">Total Interest</p>
-                <h2 class="text-3xl font-black">₱850.00</h2>
+                <h2 id="total-interest-display" class="text-3xl font-black">₱850.00</h2>
             </div>
         </div>
 
@@ -75,9 +75,11 @@
 
     const dropdown = document.getElementById('product_select');
     const display = document.getElementById('price-display');
-    let downpayment = document.getElementById('downpayment')
     let monthOption = document.getElementById('month-option');
     const buttons = document.querySelectorAll('.term-btn')
+    const monthlyPayment = document.getElementById('monthly-payment');
+    let selectedTerm = 6
+    let currentPrice = 0
 
     dropdown.addEventListener('change', function() {
         const selectedId = this.value;
@@ -87,6 +89,8 @@
         } else {
             display.innerText = '₱0.00';
         }
+
+        currentPrice = parseFloat(priceMap[selectedId]) || 0;
     });
 
     monthOption.addEventListener('click', (e) => {
@@ -99,11 +103,39 @@
             e.target.classList.add('bg-blue-600', 'text-white')
             e.target.classList.remove('hover:bg-blue-50')
 
-            const selectedTerm = e.target.getAttribute('data-value');
+            selectedTerm = e.target.getAttribute('data-value');
             console.log('Selected term:', selectedTerm)
 
         }
     })
+
+    function calculate() {
+        const downpaymentVal = parseFloat(document.getElementById('downpayment').value) || 0;
+
+        let tax = currentPrice * 0.12;
+
+        let principal = (currentPrice + tax) - downpaymentVal;
+
+        let interestAmount = principal * 0.03;
+
+        let totalPayable = principal + interestAmount;
+
+        let monthlyPaymentAmount = totalPayable / selectedTerm;
+
+        // Display Monthly Payment
+        monthlyPayment.innerText = '₱' + monthlyPaymentAmount.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        document.getElementById('total-interest-display').innerText = '₱' + interestAmount.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    document.getElementById('calculate-button').addEventListener('click', calculate)
+
 </script>
 
 {% endblock %}
