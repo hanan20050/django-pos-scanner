@@ -3,6 +3,15 @@ from django import forms
 from .models import Employee, Product
 
 class ProductForm(forms.ModelForm):
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.all(),
+        empty_label='--Select Product--',
+        widget=forms.Select(attrs={
+            'class': 'w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500',
+            'id': 'product_select',
+        })
+    )
+
     class Meta:
         model = Product
         fields = ['product_name']

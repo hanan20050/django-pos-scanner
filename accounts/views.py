@@ -17,7 +17,7 @@ from .filters import InventoryFilter, salesFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
 from django.urls import reverse_lazy
-from .forms import EmployeeForm, EmployeeAdminForm
+from .forms import EmployeeForm, EmployeeAdminForm, ProductForm
 from django.views.generic import ListView
 from django.contrib.messages.views import SuccessMessageMixin
 
@@ -72,7 +72,21 @@ def emp_receipt(request, pk):
 
 @login_required(login_url='login')
 def instCalculator(request):
-    return render(request, 'accounts/inst_calculator.html')
+
+    form = ProductForm()
+    product_data = None
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+
+        if form.is_valid():
+            selected_product = form.cleaned_data.get('product')
+            product_data = selected_product
+
+
+    context = {'form':form, 'product_data':product_data, 'sales_agent': request.user.employee}
+
+    return render(request, 'accounts/inst_calculator.html', context)
 
 
 @login_required(login_url='login')
