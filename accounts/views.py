@@ -12,7 +12,7 @@ from django.utils.text import phone2numeric
 
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
-    CreditOfficer, InstallmentPlan
+    CreditOfficer, InstallmentPlan, Invoice
 from .filters import InventoryFilter, salesFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
@@ -39,6 +39,7 @@ from decimal import Decimal
 
 from django.http import JsonResponse
 import json
+import uuid
 
 
 
@@ -399,6 +400,14 @@ def checkout_cash(request):
                     payment = payment,
                     cash_received = cash_received,
                     change_given = change_given,
+                )
+
+                Invoice.objects.create(
+                    order=order,
+                    or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
+                    vat_amount=order.total_amount * Decimal('0.12'),  # Assuming 12% VAT
+                    grand_total=order.total_amount,
+                    issued_by=order.employee
                 )
 
                 try:
