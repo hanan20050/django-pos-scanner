@@ -14,7 +14,7 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ['product_name']
+        fields = ['product']
 
 class EmployeeForm(forms.ModelForm):
     class Meta:
