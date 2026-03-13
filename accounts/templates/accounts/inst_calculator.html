@@ -78,6 +78,7 @@
     let monthOption = document.getElementById('month-option');
     const buttons = document.querySelectorAll('.term-btn')
     const monthlyPayment = document.getElementById('monthly-payment');
+    const tableBody = document.querySelector('tbody')
     let selectedTerm = 6
     let currentPrice = 0
 
@@ -131,6 +132,27 @@
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
+
+        tableBody.innerHTML = ''
+
+        let monthlyInstallment = totalPayable / selectedTerm;
+        let balance = totalPayable
+        let date = new Date();
+
+        for (let i = 1; i <= selectedTerm; i++){
+            balance -= monthlyInstallment
+            date.setMonth(date.getMonth() + 1)
+
+            let row = `
+                <tr>
+                    <td class="p-3">${date.toLocaleDateString()}</td>
+                    <td class="p-3 text-right">₱${monthlyInstallment.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td class="p-3 text-right">₱${Math.max(0, balance).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                </tr>
+            `
+
+            tableBody.insertAdjacentHTML('beforeend', row)
+        }
     }
 
     document.getElementById('calculate-button').addEventListener('click', calculate)
