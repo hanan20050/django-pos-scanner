@@ -70,7 +70,11 @@ class salesUpdateView(UpdateView):
 
 @login_required(login_url='login')
 def admin_installment(request):
-    return render(request, 'accounts/admin_installment.html')
+    installment_sales = Order.objects.filter(payment_method='INSTALLMENT').order_by('-order_date')
+
+    context = {'installment_sales': installment_sales}
+
+    return render(request, 'accounts/admin_installment.html', context)
 
 @login_required(login_url='login')
 def emp_receipt(request, pk):
