@@ -2,4 +2,145 @@
 
 {% block content %}
 
+
+<div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+    <form method="get" class="flex flex-row flex-wrap items-center justify-between gap-4 p-4 bg-gray-50 border-b">
+        <div class="flex flex-row gap-2">
+            <div class="flex flex-col">
+                <label class="text-xs font-semibold text-gray-600 mb-1">Employee Name</label>
+                {{ myFilter.form.employee_name }}
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-xs font-semibold text-gray-600 mb-1">Customer Name</label>
+                {{ myFilter.form.customer_name }}
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-xs font-semibold text-gray-600 mb-1">Order Date</label>
+                {{ myFilter.form.order_date }}
+            </div>
+
+            {% if is_manager %}
+            <div class="flex flex-col">
+                <label class="text-xs font-semibold text-gray-600 mb-1">Branch</label>
+                {{ myFilter.form.branch }}
+            </div>
+            {% endif %}
+
+            <div class="flex items-end gap-2 mb-0.5">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 shadow-sm transition">
+                    Filter
+                </button>
+                <a href="{% url 'sales_display' %}" class="px-4 py-2 bg-gray-100 text-gray-600 text-sm font-medium rounded-md hover:bg-gray-200 transition">
+                    Reset
+                </a>
+            </div>
+        </div>
+
+        {% if is_manager %}
+            <div class="flex justify-center items-center">
+                <div class="text-gray-700 font-semibold flex justify-center items-center space-x-2">
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Cash Sales: {{ cash_sales }}</span>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Installment Processed: {{ inst }}</span>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Total Sales: ₱{{ grand_total }}</span>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if request.user.employee.branch %}
+        <div class="flex justify-center items-center">
+            <div class="text-gray-700 font-semibold flex justify-center items-center space-x-2">
+                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Commission: {{ request.user.employee.salesagent.total_commission_earned }}</span>
+                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Total Sales: {{ request.user.employee.salesagent.total_sales }}</span>
+            </div>
+        </div>
+        {% endif %}
+    </form>
+
+    <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-100 text-center">
+            <tr>
+                {% if is_manager %}
+                <th class="px-3 py-3">Order #</th>
+                <th class="px-6 py-3">Employee</th>
+                {% endif %}
+                <th class="px-6 py-3">Customer</th>
+                <th class="px-6 py-3">Product Name</th>
+                <th class="px-6 py-3">Branch</th>
+                <th class="px-6 py-3">Category</th>
+                <th class="px-6 py-3">Qty</th>
+                <th class="px-6 py-3">Price</th>
+                <th class="px-6 py-3">Total</th>
+                <th class="px-6 py-3">Payment Method</th>
+                <th class="px-6 py-3">Date</th>
+                <th class="px-6 py-3">Status</th>
+                {% if request.user.employee.branch %}
+                <th class="px-6 py-3">Receipt</th>
+                {% endif %}
+                {% if is_manager %}
+                <th class="px-6 py-3">Option</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            {% for i in sales %}
+            <tr class="hover:bg-gray-50 text-center">
+                {% if is_manager %}
+                <td class="px-6 py-4"> #{{ i.id }}
+                <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.employee }}</td>
+                {% endif %}
+                <td class="px-6 py-4">{{ i.order.customer }}</td>
+                <td class="px-6 py-4 font-medium text-gray-900">{{ i.product.product_name }}</td>
+                <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.branch }}</td>
+                <td class="px-6 py-4">{{ i.product.category }}</td>
+                <td class="px-6 py-4 font-medium text-gray-900">{{ i.quantity }}</td>
+                <td class="px-6 py-4">₱{{ i.product.base_price }}</td>
+                <td class="px-6 py-4">₱{{ i.line_total }}</td>
+                <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.payment_method }}</td>
+                <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.order_date }}</td>
+                <td class="px-6 py-4"> {{ i.order.order_status }}</td>
+                {% if request.user.employee.branch %}
+                <td class="px-6 py-4 font-medium text-gray-900">
+                    <a href="{% url 'emp_receipt' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
+                        View
+                    </a>
+                </td>
+                {% endif %}
+                {% if is_manager %}
+                <td class="px-6 py-4 font-medium text-gray-900">
+                    <a href="{% url 'sales_edit' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
+                        Edit
+                    </a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="flex items-center justify-between p-4 bg-white border-t border-gray-200">
+    <span class="text-sm text-gray-700">
+        Page <span class="font-semibold text-gray-900">{{ sales.number }}</span> of
+        <span class="font-semibold text-gray-900">{{ sales.paginator.num_pages }}</span>
+    </span>
+
+    <div class="inline-flex mt-2 xs:mt-0">
+        {% if sales.has_previous %}
+            <a href="?page={{ sales.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+               class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900">
+                Prev
+            </a>
+        {% endif %}
+
+        {% if sales.has_next %}
+            <a href="?page={{ sales.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+               class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900">
+                Next
+            </a>
+        {% endif %}
+    </div>
+</div>
+
 {%endblock%}
