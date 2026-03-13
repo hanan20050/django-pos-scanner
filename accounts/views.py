@@ -129,16 +129,18 @@ def salesDisplay(request):
     is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
 
     if is_manager:
-        sales = OrderItem.objects.all().select_related('order', 'order__customer', 'product', 'order__employee')
+        queryset = OrderItem.objects.all().select_related('order', 'order__customer', 'product', 'order__employee')
     else:
         try:
             assigned_branch = request.user.employee.branch
 
-            sales = OrderItem.objects.filter(order__branch=assigned_branch).select_related('order', 'product')
+            queryset = OrderItem.objects.filter(order__branch=assigned_branch).select_related('order', 'product')
         except Employee.DoesNotExist:
-            sales = OrderItem.objects.none
+            queryset = OrderItem.objects.none
 
-    myFilter = salesFilter(request.GET, queryset=sales)
+    queryset = queryset.order_by('-order__order_date')
+
+    myFilter = salesFilter(request.GET, queryset=queryset)
     filtered_items = myFilter.qs
 
     inst = Order.objects.filter(payment_method='INSTALLMENT').count()

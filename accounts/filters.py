@@ -28,8 +28,6 @@ class salesFilter(django_filters.FilterSet):
         })
     )
 
-
-
     class Meta:
         model = Order
         fields = ['customer', 'employee', 'branch']
