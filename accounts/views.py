@@ -69,6 +69,10 @@ class salesUpdateView(UpdateView):
         return context
 
 @login_required(login_url='login')
+def admin_installment(request):
+    return render(request, 'accounts/admin_installment.html')
+
+@login_required(login_url='login')
 def emp_receipt(request, pk):
 
     order = get_object_or_404(Order, pk=pk)
