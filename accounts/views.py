@@ -13,7 +13,7 @@ from django.utils.text import phone2numeric
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
     CreditOfficer, InstallmentPlan, Invoice
-from .filters import InventoryFilter, salesFilter
+from .filters import InventoryFilter, salesFilter, installmentFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
 from django.urls import reverse_lazy
@@ -70,7 +70,21 @@ class salesUpdateView(UpdateView):
 
 @login_required(login_url='login')
 def admin_installment(request):
-    return render(request, 'accounts/admin_installment.html')
+    is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
+
+    installment_sales = OrderItem.objects.filter(order__payment_method='INSTALLMENT').select_related('order', 'order__customer', 'product', 'order__employee').order_by('-order__order_date', '-id')
+
+    myFilter = installmentFilter(request.GET, queryset=installment_sales)
+    filtered_items = myFilter.qs
+
+    inst = Order.objects.filter(payment_method='INSTALLMENT').count()
+
+    sales_result = filtered_items.aggregate(total=Sum('order__total_amount'))
+    grand_total = sales_result['total'] or 0
+
+    context = {'installment_sales': installment_sales, 'myFilter': myFilter, 'is_manager': is_manager, 'inst': inst, 'grand_total': grand_total}
+
+    return render(request, 'accounts/admin_installment.html', context)
 
 @login_required(login_url='login')
 def emp_receipt(request, pk):
