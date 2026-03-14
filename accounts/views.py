@@ -72,18 +72,15 @@ class salesUpdateView(UpdateView):
 def admin_installment(request):
     is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
 
-    installment_sales = Order.objects.filter(payment_method='INSTALLMENT').order_by('-order_date')
+    installment_sales = OrderItem.objects.all().select_related('order', 'order__customer', 'product', 'order__employee')
 
     myFilter = installmentFilter(request.GET, queryset=installment_sales)
     filtered_items = myFilter.qs
 
     inst = Order.objects.filter(payment_method='INSTALLMENT').count()
 
-    result = filtered_items.aggregate(
-        total_revenue=Sum('total_amount', output_field=models.DecimalField())
-    )
-
-    grand_total = result['total_revenue'] or 0
+    sales_result = filtered_items.aggregate(total=Sum('order__total_amount'))
+    grand_total = sales_result['total'] or 0
 
     context = {'installment_sales': installment_sales, 'myFilter': myFilter, 'is_manager': is_manager, 'inst': inst, 'grand_total': grand_total}
 

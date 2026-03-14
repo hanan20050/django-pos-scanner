@@ -42,19 +42,12 @@
             <div class="flex justify-center items-center">
                 <div class="text-gray-700 font-semibold flex justify-center items-center space-x-2">
                     <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Installment Processed: {{ inst }}</span>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Total Sales: ₱{{ grand_total }}</span>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Total Installments: ₱{{ grand_total }}</span>
                 </div>
             </div>
         {% endif %}
 
-        {% if request.user.employee.branch %}
-        <div class="flex justify-center items-center">
-            <div class="text-gray-700 font-semibold flex justify-center items-center space-x-2">
-                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Commission: {{ request.user.employee.salesagent.total_commission_earned }}</span>
-                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Total Sales: {{ request.user.employee.salesagent.total_sales }}</span>
-            </div>
-        </div>
-        {% endif %}
+
     </form>
 
     <table class="w-full text-sm text-left text-gray-500">
