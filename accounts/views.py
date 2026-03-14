@@ -72,7 +72,7 @@ class salesUpdateView(UpdateView):
 def admin_installment(request):
     is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
 
-    installment_sales = OrderItem.objects.all().select_related('order', 'order__customer', 'product', 'order__employee')
+    installment_sales = OrderItem.objects.filter(order__payment_method='INSTALLMENT').select_related('order', 'order__customer', 'product', 'order__employee').order_by('-order__order_date', '-id')
 
     myFilter = installmentFilter(request.GET, queryset=installment_sales)
     filtered_items = myFilter.qs
