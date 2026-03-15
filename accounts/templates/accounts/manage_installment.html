@@ -20,13 +20,21 @@
 
     <div class="lg:col-span-2 space-y-6">
         <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-800 p-6 rounded-xl text-white">
+                <p class="text-sm opacity-80">Monthly Payment</p>
+                <h2 class="text-2xl font-black">{{ inst.monthly_due }}</h2>
+            </div>
             <div class="bg-indigo-600 p-6 rounded-xl text-white">
                 <p class="text-sm opacity-80">Remaining Balance</p>
                 <h2 class="text-3xl font-black">₱{{ inst.remaining_balance }}</h2>
             </div>
-            <div class="bg-gray-800 p-6 rounded-xl text-white">
+            <div class="bg-indigo-600 p-6 rounded-xl text-white">
                 <p class="text-sm opacity-80">Next Due Date</p>
                 <h2 class="text-2xl font-black">{{ inst.next_due_date }}</h2>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-xl text-white">
+                <p class="text-sm opacity-80">Month Term</p>
+                <h2 class="text-2xl font-black">{{ inst.term_months }}</h2>
             </div>
         </div>
 
@@ -37,7 +45,6 @@
                     <tr>
                         <th class="p-3 text-left">Date</th>
                         <th class="p-3 text-right">Amount Paid</th>
-                        <th class="p-3 text-right">OR #</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -45,7 +52,6 @@
                     <tr>
                         <td class="p-3">{{ i.date_paid }}</td>
                         <td class="p-3 text-right font-bold">₱{{ i.amount_paid }}</td>
-                        <td class="p-3 text-right">{{ i.invoice.or_number }}</td>
                     </tr>
                     {% empty %}
                     <tr><td colspan="3" class="p-4 text-center text-gray-500">No payments yet.</td></tr>
