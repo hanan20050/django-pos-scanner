@@ -1,0 +1,65 @@
+{% extends 'accounts/main.html' %}
+
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <div class="lg:col-span-1">
+        <form method="POST" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            {% csrf_token %}
+            <h3 class="text-lg font-bold mb-4">Record Payment</h3>
+            <div class="space-y-4">
+                <label class="block text-sm font-bold">Amount Paid</label>
+                {{ form.amount_paid }}
+                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700">
+                    Post Transaction
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="lg:col-span-2 space-y-6">
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-800 p-6 rounded-xl text-white">
+                <p class="text-sm opacity-80">Monthly Payment</p>
+                <h2 class="text-2xl font-black">{{ inst.monthly_due }}</h2>
+            </div>
+            <div class="bg-indigo-600 p-6 rounded-xl text-white">
+                <p class="text-sm opacity-80">Remaining Balance</p>
+                <h2 class="text-3xl font-black">₱{{ inst.remaining_balance }}</h2>
+            </div>
+            <div class="bg-indigo-600 p-6 rounded-xl text-white">
+                <p class="text-sm opacity-80">Next Due Date</p>
+                <h2 class="text-2xl font-black">{{ inst.next_due_date }}</h2>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-xl text-white">
+                <p class="text-sm opacity-80">Month Term</p>
+                <h2 class="text-2xl font-black">{{ inst.term_months }}</h2>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+            <h3 class="p-4 font-bold border-b">Payment History</h3>
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="p-3 text-left">Date</th>
+                        <th class="p-3 text-right">Amount Paid</th>
+                    </tr>
+                </thead>
+<p class="text-red-600 font-bold">THE LOOP IS RUNNING!</p>
+
+<tbody class="divide-y">
+    {% for i in payments %}
+    <tr class="border-2 border-red-500">
+        <td class="p-3">{{ i.date_paid }}</td>
+        <td class="p-3 text-right font-bold">₱{{ i.amount_paid }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

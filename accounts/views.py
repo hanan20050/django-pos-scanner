@@ -4,6 +4,7 @@ from xmlrpc.client import WRAPPERS
 
 from django.contrib.admin.templatetags.admin_list import items_for_result, paginator_number
 from django.contrib.auth import authenticate, login, logout
+from django.forms import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -17,7 +18,7 @@ from .filters import InventoryFilter, salesFilter, installmentFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
 from django.urls import reverse_lazy
-from .forms import EmployeeForm, EmployeeAdminForm, ProductForm
+from .forms import EmployeeForm, EmployeeAdminForm, ProductForm, InstallmentPaymentForm
 from django.views.generic import ListView
 from django.contrib.messages.views import SuccessMessageMixin
 
@@ -27,6 +28,7 @@ from django.utils.crypto import get_random_string
 from django.db import transaction
 
 from datetime import date
+from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
 from django.views.decorators.csrf import csrf_exempt
@@ -89,9 +91,52 @@ def admin_installment(request):
 @login_required(login_url='login')
 def manage_installment(request, pk):
 
-    inst = get_object_or_404(Order, pk=pk)
+    inst = get_object_or_404(InstallmentPlan, payment__order__pk=pk)
 
-    context = {'inst': inst}
+    inst.refresh_from_db()
+
+    # DEBUG: See the raw balance in your server log
+    print(f"DEBUG: Current Balance in DB: {inst.remaining_balance}")
+
+    payments = Payment.objects.filter(order=inst.payment.order).order_by('-date_paid')
+
+    if request.method == 'POST':
+        form = InstallmentPaymentForm(request.POST)
+
+        if form.is_valid():
+            amount = form.cleaned_data['amount_paid']
+
+            if amount > inst.remaining_balance:
+                print("Payment exceeds remaining balance.")
+                return render(request, 'accounts/manage_installment.html', {'inst': inst, 'form': form})
+
+            try:
+                with transaction.atomic():
+                    new_payment = form.save(commit=False)
+                    new_payment.order = inst.payment.order
+                    new_payment.payment_type = 'INSTALLMENT'
+                    new_payment.save()  # <--- IF THIS FAILS, THE WHOLE BLOCK STOPS
+
+                    inst.remaining_balance -= amount
+                    inst.next_due_date += timedelta(days=30)
+                    inst.save()
+
+                    messages.success(request, "Payment successful")
+                    return redirect('manage_installment', pk=pk)
+            except Exception as e:
+                print(f"!!! TRANSACTION FAILED: {e}")
+                messages.error(request, f"Error: {e}")
+        else:
+            return redirect('manage_installment', pk=inst.pk)
+    else:
+        form = InstallmentPaymentForm()
+
+    payment = Payment.objects.filter(order=inst.payment.order)
+
+    print(f"DEBUG: Looking for payments for Order ID: {inst.payment.order.id}")
+    print(f"DEBUG: Found {payments.count()} payments.")
+
+    context = {'inst': inst, 'form': form, 'payment': payment, 'payments': payments}
 
     return render(request, 'accounts/manage_installment.html', context)
 
