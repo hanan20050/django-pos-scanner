@@ -94,7 +94,7 @@
                 <td class="px-6 py-4"> {{ i.order.order_status }}</td>
                 {% if is_manager %}
                 <td class="px-6 py-4 font-medium text-gray-900">
-                    <a href="{% url 'accounts:manage_installment' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
+                    <a href="{% url 'manage_installment' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
                         Manage
                     </a>
                 </td>

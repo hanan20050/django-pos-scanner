@@ -1,4 +1,4 @@
-{% include 'accounts/main.html' %}
+{% extends 'accounts/main.html' %}
 
 {% block content %}
 
@@ -9,7 +9,9 @@
             {% csrf_token %}
             <h3 class="text-lg font-bold mb-4">Record Payment</h3>
             <div class="space-y-4">
-                {{ form.as_p }} <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700">
+                <label class="block text-sm font-bold">Amount Paid</label>
+                {{ form.amount_paid }}
+                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700">
                     Post Transaction
                 </button>
             </div>
@@ -20,11 +22,11 @@
         <div class="grid grid-cols-2 gap-4">
             <div class="bg-indigo-600 p-6 rounded-xl text-white">
                 <p class="text-sm opacity-80">Remaining Balance</p>
-                <h2 class="text-3xl font-black">₱{{ installment.balance }}</h2>
+                <h2 class="text-3xl font-black">₱{{ inst.remaining_balance }}</h2>
             </div>
             <div class="bg-gray-800 p-6 rounded-xl text-white">
                 <p class="text-sm opacity-80">Next Due Date</p>
-                <h2 class="text-2xl font-black">{{ installment.next_due_date }}</h2>
+                <h2 class="text-2xl font-black">{{ inst.next_due_date }}</h2>
             </div>
         </div>
 
@@ -35,15 +37,15 @@
                     <tr>
                         <th class="p-3 text-left">Date</th>
                         <th class="p-3 text-right">Amount Paid</th>
-                        <th class="p-3 text-right">Reference</th>
+                        <th class="p-3 text-right">OR #</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
-                    {% for payment in payments %}
+                    {% for i in payment %}
                     <tr>
-                        <td class="p-3">{{ payment.payment_date }}</td>
-                        <td class="p-3 text-right font-bold">₱{{ payment.amount }}</td>
-                        <td class="p-3 text-right">{{ payment.reference }}</td>
+                        <td class="p-3">{{ i.date_paid }}</td>
+                        <td class="p-3 text-right font-bold">₱{{ i.amount_paid }}</td>
+                        <td class="p-3 text-right">{{ i.invoice.or_number }}</td>
                     </tr>
                     {% empty %}
                     <tr><td colspan="3" class="p-4 text-center text-gray-500">No payments yet.</td></tr>

@@ -5,7 +5,7 @@ from .models import Employee, Product, InstallmentPlan, Payment
 class InstallmentPaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
-        fields = ['amount_paid', 'or_number']
+        fields = ['amount_paid']
         widgets = {
             'amount_paid': forms.NumberInput(attrs={
                 'class': 'form-control', 'step': '0.01'

@@ -90,7 +90,7 @@ def admin_installment(request):
 @login_required(login_url='login')
 def manage_installment(request, pk):
 
-    inst = get_object_or_404(InstallmentPlan, pk=pk)
+    inst = get_object_or_404(InstallmentPlan, payment__order__pk=pk)
 
     if request.method == 'POST':
         form = InstallmentPaymentForm(request.POST)
@@ -123,7 +123,9 @@ def manage_installment(request, pk):
     else:
         form = InstallmentPaymentForm()
 
-    context = {'inst': inst, 'form': form}
+    payment = Payment.objects.filter(order=inst.payment.order)
+
+    context = {'inst': inst, 'form': form, 'payment': payment}
 
     return render(request, 'accounts/manage_installment.html', context)
 
