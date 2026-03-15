@@ -1,6 +1,19 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Employee, Product
+from .models import Employee, Product, InstallmentPlan, Payment
+
+class InstallmentPaymentForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['amount_paid', 'or_number']
+        widgets = {
+            'amount_paid': forms.NumberInput(attrs={
+                'class': 'form-control', 'step': '0.01'
+            }),
+            'or_number': forms.TextInput(attrs={
+                'class': 'form-control'
+            })
+        }
 
 class ProductForm(forms.ModelForm):
     product = forms.ModelChoiceField(
