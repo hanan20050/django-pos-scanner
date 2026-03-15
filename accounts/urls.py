@@ -24,5 +24,6 @@ urlpatterns = [
     path('components/<int:pk>/sales_edit', views.salesUpdateView.as_view(), name='sales_edit'),
     path('accounts/<int:pk>/emp_receipt/', views.emp_receipt, name='emp_receipt'),
     path('inst_calculator/', views.instCalculator, name='inst_calculator'),
-    path('admin_installment/', views.admin_installment, name='admin_installment')
+    path('admin_installment/', views.admin_installment, name='admin_installment'),
+    path('manage_installment', views.manage_installment, name='manage_installment')
 ]

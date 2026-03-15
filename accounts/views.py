@@ -87,6 +87,10 @@ def admin_installment(request):
     return render(request, 'accounts/admin_installment.html', context)
 
 @login_required(login_url='login')
+def manage_installment(request):
+    return render(request, 'accounts/manage_installment.html')
+
+@login_required(login_url='login')
 def emp_receipt(request, pk):
 
     order = get_object_or_404(Order, pk=pk)
