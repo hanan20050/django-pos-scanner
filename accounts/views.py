@@ -4,6 +4,7 @@ from xmlrpc.client import WRAPPERS
 
 from django.contrib.admin.templatetags.admin_list import items_for_result, paginator_number
 from django.contrib.auth import authenticate, login, logout
+from django.forms import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -17,7 +18,7 @@ from .filters import InventoryFilter, salesFilter, installmentFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
 from django.urls import reverse_lazy
-from .forms import EmployeeForm, EmployeeAdminForm, ProductForm
+from .forms import EmployeeForm, EmployeeAdminForm, ProductForm, InstallmentPaymentForm
 from django.views.generic import ListView
 from django.contrib.messages.views import SuccessMessageMixin
 
@@ -91,7 +92,38 @@ def manage_installment(request, pk):
 
     inst = get_object_or_404(InstallmentPlan, pk=pk)
 
-    context = {'inst': inst}
+    if request.method == 'POST':
+        form = InstallmentPaymentForm(request.POST)
+
+        if form.is_valid():
+            amount = form.cleaned_data['amount_paid']
+
+            if amount > inst.remaining_balance:
+                print("Payment exceeds remaining balance.")
+                return render(request, 'accounts/manage_installment.html', {'inst': inst, 'form': form})
+
+            try:
+                with transaction.atomic():
+                    payment = form.save(commit=False)
+                    payment.order = inst.payment.order
+                    payment.payment_type = 'INSTALLMENT'
+                    payment.save()
+
+                    inst.remaining_balance -= amount
+                    if inst.remaining_balance <= 0:
+                        inst.payment_status = 'COMPLETED'
+                    inst.save()
+
+                    messages.success(request, "Payment sucessful")
+                    return redirect('some-view-name')
+            except Exception as e:
+                messages.error(request, "A system error occurred.")
+        else:
+            return redirect('manage_installment', pk=inst.pk)
+    else:
+        form = InstallmentPaymentForm()
+
+    context = {'inst': inst, 'form': form}
 
     return render(request, 'accounts/manage_installment.html', context)
 

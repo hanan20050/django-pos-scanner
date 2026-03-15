@@ -10,9 +10,6 @@ class InstallmentPaymentForm(forms.ModelForm):
             'amount_paid': forms.NumberInput(attrs={
                 'class': 'form-control', 'step': '0.01'
             }),
-            'or_number': forms.TextInput(attrs={
-                'class': 'form-control'
-            })
         }
 
 class ProductForm(forms.ModelForm):
