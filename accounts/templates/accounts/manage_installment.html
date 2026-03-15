@@ -47,16 +47,14 @@
                         <th class="p-3 text-right">Amount Paid</th>
                     </tr>
                 </thead>
-<p class="text-red-600 font-bold">THE LOOP IS RUNNING!</p>
-
-<tbody class="divide-y">
-    {% for i in payments %}
-    <tr class="border-2 border-red-500">
-        <td class="p-3">{{ i.date_paid }}</td>
-        <td class="p-3 text-right font-bold">₱{{ i.amount_paid }}</td>
-    </tr>
-    {% endfor %}
-</tbody>
+                <tbody class="divide-y">
+                    {% for i in payments %}
+                    <tr class="border-2">
+                        <td class="p-3">{{ i.date_paid }}</td>
+                        <td class="p-3 text-right font-bold">₱{{ i.amount_paid }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
