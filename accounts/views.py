@@ -98,7 +98,7 @@ def manage_installment(request, pk):
 @login_required(login_url='login')
 def emp_receipt(request, pk):
 
-    order = get_object_or_404(Order, pk=pk)
+    order = get_object_or_404(InstallmentPlan, pk=pk)
     invoice = Invoice.objects.filter(order=order).first()
     context = {'order': order, 'invoice': invoice}
 

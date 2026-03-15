@@ -2,5 +2,56 @@
 
 {% block content %}
 
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <div class="lg:col-span-1">
+        <form method="POST" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            {% csrf_token %}
+            <h3 class="text-lg font-bold mb-4">Record Payment</h3>
+            <div class="space-y-4">
+                {{ form.as_p }} <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700">
+                    Post Transaction
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="lg:col-span-2 space-y-6">
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-indigo-600 p-6 rounded-xl text-white">
+                <p class="text-sm opacity-80">Remaining Balance</p>
+                <h2 class="text-3xl font-black">₱{{ installment.balance }}</h2>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-xl text-white">
+                <p class="text-sm opacity-80">Next Due Date</p>
+                <h2 class="text-2xl font-black">{{ installment.next_due_date }}</h2>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+            <h3 class="p-4 font-bold border-b">Payment History</h3>
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="p-3 text-left">Date</th>
+                        <th class="p-3 text-right">Amount Paid</th>
+                        <th class="p-3 text-right">Reference</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    {% for payment in payments %}
+                    <tr>
+                        <td class="p-3">{{ payment.payment_date }}</td>
+                        <td class="p-3 text-right font-bold">₱{{ payment.amount }}</td>
+                        <td class="p-3 text-right">{{ payment.reference }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="p-4 text-center text-gray-500">No payments yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
