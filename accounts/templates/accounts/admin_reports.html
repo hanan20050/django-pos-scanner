@@ -2,5 +2,82 @@
 
 {% block content %}
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <p class="text-sm font-medium text-gray-500">Gross Revenue</p>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ total_revenue }}</h3>
+  </div>
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <p class="text-sm font-medium text-gray-500">Net Profit</p>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ net_profit }}</h3>
+  </div>
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <p class="text-sm font-medium text-gray-500">Transactions</p>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ total_transactions }}</h3>
+  </div>
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <p class="text-sm font-medium text-gray-500">Avg Order Value</p>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ aov }}</h3>
+  </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+  <div class="px-6 py-4 border-b border-gray-100">
+    <h2 class="text-lg font-semibold text-gray-800">Recent Transactions</h2>
+  </div>
+  <table class="w-full text-left">
+    <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+      <tr>
+        <th class="px-6 py-4">Invoice</th>
+        <th class="px-6 py-4">Customer</th>
+        <th class="px-6 py-4">Type</th>
+        <th class="px-6 py-4">Amount</th>
+        <th class="px-6 py-4">Status</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for tx in transactions %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-6 py-4 text-sm font-medium text-indigo-600">#{{ tx.id }}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.customer.name }}</td>
+        <td class="px-6 py-4 text-sm text-gray-500">{{ tx.payment_method }}</td>
+        <td class="px-6 py-4 text-sm font-semibold">₱{{ tx.total }}</td>
+        <td class="px-6 py-4">
+          <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+            {{ tx.status }}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Method Split</h3>
+    <div class="h-64"> <canvas id="paymentChart"></canvas>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('paymentChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Cash', 'Installment'],
+            datasets: [{
+                data: [{{ cash_total }}, {{ installment_total }}],
+                backgroundColor: ['#10b981', '#f59e0b']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
 
 {% endblock %}
