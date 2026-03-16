@@ -71,6 +71,12 @@ class salesUpdateView(UpdateView):
         return context
 
 @login_required(login_url='login')
+def admin_reports(request):
+    return render(request, 'accounts/admin_reports.html')
+
+
+
+@login_required(login_url='login')
 def admin_installment(request):
     is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
 
