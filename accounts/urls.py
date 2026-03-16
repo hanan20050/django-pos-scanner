@@ -25,5 +25,6 @@ urlpatterns = [
     path('accounts/<int:pk>/emp_receipt/', views.emp_receipt, name='emp_receipt'),
     path('inst_calculator/', views.instCalculator, name='inst_calculator'),
     path('admin_installment/', views.admin_installment, name='admin_installment'),
-    path('accounts/<int:pk>/manage_installment', views.manage_installment, name='manage_installment')
+    path('accounts/<int:pk>/manage_installment', views.manage_installment, name='manage_installment'),
+    path('admin_reports/', views.admin_reports, name='admin_reports')
 ]
