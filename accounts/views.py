@@ -30,10 +30,12 @@ from django.db import transaction
 from datetime import date
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
+from django.utils import timezone
+from datetime import datetime
 
 from django.views.decorators.csrf import csrf_exempt
 
-from django.db.models import Sum, F, Expression, ExpressionWrapper
+from django.db.models import Sum, F, Expression, ExpressionWrapper, Count
 from django.db import models
 
 import re
@@ -72,7 +74,23 @@ class salesUpdateView(UpdateView):
 
 @login_required(login_url='login')
 def admin_reports(request):
-    return render(request, 'accounts/admin_reports.html')
+
+    now = timezone.now()
+
+    current_month_transactions = Order.objects.filter(
+        order_date__year=now.year,
+        order_date__month=now.month
+    )
+
+    gross_revenue = current_month_transactions.aggregate(
+        monthly_total=Sum('total_amount')
+    )
+
+    context = {'gross_revenue': gross_revenue['monthly_total'] or 0}
+
+    print(gross_revenue)
+
+    return render(request, 'accounts/admin_reports.html', context)
 
 
 
