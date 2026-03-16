@@ -80,6 +80,7 @@ class Product(models.Model):
     category = models.CharField(max_length=100, choices=CATEGORIES, default='Laptop')
     base_price = models.DecimalField(max_digits=10, decimal_places=2)
     barcode = models.CharField(max_length=100, unique=True)
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2)
     min_stock_level = models.PositiveIntegerField(default=3)
     image = models.ImageField(upload_to='media/', null=True, blank=True)
 
@@ -122,6 +123,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
