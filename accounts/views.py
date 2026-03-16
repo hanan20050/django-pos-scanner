@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template.defaulttags import csrf_token
-from django.utils.text import phone2numeric
+from django.utils.text import phone2numeric, compress_string
 
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
@@ -82,11 +82,16 @@ def admin_reports(request):
         order_date__month=now.month
     )
 
-    gross_revenue = current_month_transactions.aggregate(
-        monthly_total=Sum('total_amount')
+    stats = current_month_transactions.aggregate(
+        total_revenue=Sum('total_amount'),
+        total_cost=Sum(F('orderitem__quantity') * F('orderitem__cost_price'))
     )
 
-    context = {'gross_revenue': gross_revenue['monthly_total'] or 0}
+    gross_revenue = stats['total_revenue'] or 0
+    cost = stats['total_cost'] or 0
+    net_profit = gross_revenue - cost
+
+    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit}
 
     print(gross_revenue)
 
