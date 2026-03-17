@@ -49,11 +49,11 @@
   <table class="w-full text-center">
     <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
       <tr>
-        <th class="px-6 py-4">Order ID</th>
         <th class="px-6 py-4">Customer</th>
         <th class="px-6 py-4">Employee</th>
         <th class="px-6 py-4">Branch</th>
         <th class="px-6 py-4">Product</th>
+        <th class="px-6 py-4">QTY</th>
         <th class="px-6 py-4">Type</th>
         <th class="px-6 py-4">Date</th>
         <th class="px-6 py-4">Amount</th>
@@ -61,13 +61,13 @@
       </tr>
     </thead>
     <tbody class="divide-y divide-gray-100">
-      {% for tx in transactions %}
+      {% for tx in page_obj %}
       <tr class="hover:bg-gray-50">
-        <td class="px-6 py-4 text-sm font-medium text-indigo-600">#{{ tx.id }}</td>
         <td class="px-6 py-4 text-sm text-gray-700">{{ tx.customer }}</td>
         <td class="px-6 py-4 text-sm text-gray-700">{{ tx.employee }}</td>
         <td class="px-6 py-4 text-sm text-gray-700">{{ tx.branch }}</td>
         <td class="px-6 py-4 text-sm text-gray-700">{{ tx.orderitem_set.first.product }}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.orderitem_set.first.quantity }}</td>
         <td class="px-6 py-4 text-sm text-gray-500">{{ tx.payment_method }}</td>
         <td class="px-6 py-4 text-sm text-gray-500">{{ tx.order_date }}</td>
         <td class="px-6 py-4 text-sm font-semibold">₱{{ tx.total_amount }}</td>
@@ -84,6 +84,29 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
+
+<div class="flex items-center justify-between p-4 bg-white border-t border-gray-200">
+    <span class="text-sm text-gray-700">
+        Page <span class="font-semibold text-gray-900">{{ page_obj.number }}</span> of
+        <span class="font-semibold text-gray-900">{{ page_obj.paginator.num_pages }}</span>
+    </span>
+
+    <div class="inline-flex mt-2 xs:mt-0">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+               class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900">
+                Prev
+            </a>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+               class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900">
+                Next
+            </a>
+        {% endif %}
+    </div>
 </div>
 
 
