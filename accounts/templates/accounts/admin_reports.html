@@ -42,7 +42,23 @@
   </div>
 </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Method Split</h3>
+        <div class="h-64">
+            <canvas id="paymentChart"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Revenue by Branch</h3>
+        <div class="h-64">
+            <canvas id="branchChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div id="transaction-table" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
   <div class="px-6 py-4 border-b border-gray-100">
     <h2 class="text-lg font-semibold text-gray-800">Recent Transactions</h2>
   </div>
@@ -94,14 +110,14 @@
 
     <div class="inline-flex mt-2 xs:mt-0">
         {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}#transaction-table"
                class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900">
                 Prev
             </a>
         {% endif %}
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}#transaction-table"
                class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900">
                 Next
             </a>
@@ -109,18 +125,6 @@
     </div>
 </div>
 
-
-<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-    <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Method Split</h3>
-    <div class="h-64"> <canvas id="paymentChart"></canvas>
-    </div>
-</div>
-
-<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-    <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Method Split</h3>
-    <div class="h-64"> <canvas id="branchChart"></canvas>
-    </div>
-</div>
 
 <script>
     const ctx = document.getElementById('paymentChart').getContext('2d');
