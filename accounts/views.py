@@ -100,7 +100,7 @@ def admin_reports(request):
     total_transactions = stats['total_count'] or 0
     net_profit = gross_revenue - cost
 
-    transactions = Order.objects.all()
+    transactions = Order.objects.select_related('customer', 'branch').prefetch_related('orderitem_set__product').order_by('-order_date')
 
     if gross_revenue > 0:
         ratio = float(outstanding_balance / gross_revenue)

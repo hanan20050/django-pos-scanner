@@ -46,12 +46,16 @@
   <div class="px-6 py-4 border-b border-gray-100">
     <h2 class="text-lg font-semibold text-gray-800">Recent Transactions</h2>
   </div>
-  <table class="w-full text-left">
+  <table class="w-full text-center">
     <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
       <tr>
-        <th class="px-6 py-4">Invoice</th>
+        <th class="px-6 py-4">Order ID</th>
         <th class="px-6 py-4">Customer</th>
+        <th class="px-6 py-4">Employee</th>
+        <th class="px-6 py-4">Branch</th>
+        <th class="px-6 py-4">Product</th>
         <th class="px-6 py-4">Type</th>
+        <th class="px-6 py-4">Date</th>
         <th class="px-6 py-4">Amount</th>
         <th class="px-6 py-4">Status</th>
       </tr>
@@ -61,12 +65,20 @@
       <tr class="hover:bg-gray-50">
         <td class="px-6 py-4 text-sm font-medium text-indigo-600">#{{ tx.id }}</td>
         <td class="px-6 py-4 text-sm text-gray-700">{{ tx.customer }}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.employee }}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.branch }}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.orderitem_set.first.product }}</td>
         <td class="px-6 py-4 text-sm text-gray-500">{{ tx.payment_method }}</td>
+        <td class="px-6 py-4 text-sm text-gray-500">{{ tx.order_date }}</td>
         <td class="px-6 py-4 text-sm font-semibold">₱{{ tx.total_amount }}</td>
         <td class="px-6 py-4">
-          <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
-            {{ tx.order_status }}
-          </span>
+          {% if tx.order_status == 'Completed' %}
+            <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Completed</span>
+          {% elif tx.order_status == 'Pending' %}
+            <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">Pending</span>
+          {% else %}
+            <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">{{ tx.order_status }}</span>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}
