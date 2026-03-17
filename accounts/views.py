@@ -98,7 +98,11 @@ def admin_reports(request):
     cost = stats['total_cost'] or 0
     total_count = stats['total_count'] or 0
     net_profit = gross_revenue - cost
-    ratio = (outstanding_balance / gross_revenue) * 100
+
+    if gross_revenue > 0:
+        ratio = float(outstanding_balance / gross_revenue)
+    else:
+        ratio = 0
 
     aov = gross_revenue / total_count if total_count > 0 else 0
 
