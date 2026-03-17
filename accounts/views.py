@@ -100,6 +100,8 @@ def admin_reports(request):
     total_transactions = stats['total_count'] or 0
     net_profit = gross_revenue - cost
 
+    transactions = Order.objects.all()
+
     if gross_revenue > 0:
         ratio = float(outstanding_balance / gross_revenue)
     else:
@@ -107,7 +109,7 @@ def admin_reports(request):
 
     aov = gross_revenue / total_count if total_count > 0 else 0
 
-    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ration': ratio, 'outstanding_balance': outstanding_balance, 'total_transactions': total_transactions}
+    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ration': ratio, 'outstanding_balance': outstanding_balance, 'total_transactions': total_transactions, 'transactions': transactions}
 
     print(gross_revenue)
 

@@ -60,12 +60,12 @@
       {% for tx in transactions %}
       <tr class="hover:bg-gray-50">
         <td class="px-6 py-4 text-sm font-medium text-indigo-600">#{{ tx.id }}</td>
-        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.customer.name }}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.customer }}</td>
         <td class="px-6 py-4 text-sm text-gray-500">{{ tx.payment_method }}</td>
-        <td class="px-6 py-4 text-sm font-semibold">₱{{ tx.total }}</td>
+        <td class="px-6 py-4 text-sm font-semibold">₱{{ tx.total_amount }}</td>
         <td class="px-6 py-4">
           <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
-            {{ tx.status }}
+            {{ tx.order_status }}
           </span>
         </td>
       </tr>
