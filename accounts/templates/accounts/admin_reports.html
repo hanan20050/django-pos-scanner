@@ -123,7 +123,7 @@
         data: {
             labels: ['Cash', 'Installment'],
             datasets: [{
-                data: [{{ cash_total }}, {{ installment_total }}],
+                data: [{{ cash_total|default:0 }}, {{ installment_total|default:0 }}],
                 backgroundColor: ['#10b981', '#f59e0b']
             }]
         },

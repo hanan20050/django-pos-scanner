@@ -35,7 +35,7 @@ from datetime import datetime
 
 from django.views.decorators.csrf import csrf_exempt
 
-from django.db.models import Sum, F, Expression, ExpressionWrapper, Count
+from django.db.models import Sum, F, Expression, ExpressionWrapper, Count, Q
 from django.db import models
 
 import re
@@ -94,11 +94,18 @@ def admin_reports(request):
 
     outstanding_balance = or_balance.quantize(Decimal('0.00'))
 
+    payments = Order.objects.aggregate(
+        cash=Sum('total_amount', filter=Q(payment_method='CASH')),
+        installment=Sum('total_amount', filter=Q(payment_method='INSTALLMENT'))
+    )
+
     gross_revenue = stats['total_revenue'] or 0
     cost = stats['total_cost'] or 0
     total_count = stats['total_count'] or 0
     total_transactions = stats['total_count'] or 0
     net_profit = gross_revenue - cost
+    cash_total = payments['cash'] or 0
+    installment_total = payments['installment'] or 0
 
     transactions = Order.objects.select_related('customer', 'branch').prefetch_related('orderitem_set__product').order_by('-order_date')
 
@@ -115,7 +122,7 @@ def admin_reports(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ratio': ratio, 'outstanding_balance': outstanding_balance, 'total_transactions': total_transactions, 'transactions': transactions, 'page_obj': page_obj}
+    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ratio': ratio, 'outstanding_balance': outstanding_balance, 'total_transactions': total_transactions, 'transactions': transactions, 'page_obj': page_obj, 'cash_total': cash_total, 'installment_total': installment_total}
 
     print(gross_revenue)
 
