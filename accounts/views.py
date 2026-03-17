@@ -84,14 +84,18 @@ def admin_reports(request):
 
     stats = current_month_transactions.aggregate(
         total_revenue=Sum('total_amount'),
-        total_cost=Sum(F('orderitem__quantity') * F('orderitem__cost_price'))
+        total_cost=Sum(F('orderitem__quantity') * F('orderitem__cost_price')),
+        total_count=Count('id')
     )
 
     gross_revenue = stats['total_revenue'] or 0
     cost = stats['total_cost'] or 0
+    total_count = stats['total_count'] or 0
     net_profit = gross_revenue - cost
 
-    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit}
+    aov = gross_revenue / total_count if total_count > 0 else 0
+
+    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov}
 
     print(gross_revenue)
 
@@ -124,7 +128,6 @@ def manage_installment(request, pk):
 
     inst.refresh_from_db()
 
-    # DEBUG: See the raw balance in your server log
     print(f"DEBUG: Current Balance in DB: {inst.remaining_balance}")
 
     payments = Payment.objects.filter(order=inst.payment.order).order_by('-date_paid')
