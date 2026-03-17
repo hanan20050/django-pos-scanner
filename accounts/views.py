@@ -1,4 +1,5 @@
 from contextlib import nullcontext
+from functools import total_ordering
 from http.client import responses
 from xmlrpc.client import WRAPPERS
 
@@ -99,6 +100,24 @@ def admin_reports(request):
         installment=Sum('total_amount', filter=Q(payment_method='INSTALLMENT'))
     )
 
+    branch_query = Order.objects.values('branch__name').annotate(
+        total=Sum('total_amount')
+    ).order_by('-total')
+
+    # 2. Initialize empty lists (The Safety Net)
+    branch_names = []
+    branch_totals = []
+
+    # 3. Populate only if data exists
+    if branch_query.exists():
+        for data_row in branch_query:
+            name = data_row['branch__name'] if data_row['branch__name'] else "Main Store"
+            amount = float(data_row['total']) if data_row['total'] else 0.0
+
+            branch_names.append(name)
+            branch_totals.append(amount)
+
+
     gross_revenue = stats['total_revenue'] or 0
     cost = stats['total_cost'] or 0
     total_count = stats['total_count'] or 0
@@ -122,7 +141,8 @@ def admin_reports(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ratio': ratio, 'outstanding_balance': outstanding_balance, 'total_transactions': total_transactions, 'transactions': transactions, 'page_obj': page_obj, 'cash_total': cash_total, 'installment_total': installment_total}
+    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ratio': ratio, 'outstanding_balance': outstanding_balance, 'total_transactions': total_transactions, 'transactions': transactions, 'page_obj': page_obj, 'cash_total': cash_total, 'installment_total': installment_total, 'branch_names': branch_names,
+    'branch_totals': branch_totals,}
 
     print(gross_revenue)
 

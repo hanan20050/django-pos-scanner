@@ -116,6 +116,12 @@
     </div>
 </div>
 
+<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Method Split</h3>
+    <div class="h-64"> <canvas id="branchChart"></canvas>
+    </div>
+</div>
+
 <script>
     const ctx = document.getElementById('paymentChart').getContext('2d');
     new Chart(ctx, {
@@ -130,6 +136,30 @@
         options: {
             responsive: true,
             maintainAspectRatio: false
+        }
+    });
+
+
+    const branchChart = document.getElementById('branchChart').getContext('2d');
+    new Chart(branchChart, {
+        type: 'bar',
+        data: {
+            labels: {{ branch_names|safe }},
+            datasets: [{
+                label: "Revenue by Branch",
+                data: {{ branch_totals }},
+                backgroundColor: '#6366f1',
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+            legend: { display: false }
+            },
+            scales: {
+            y: { beginAtZero: true }
+            }
         }
     });
 </script>
