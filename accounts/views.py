@@ -97,6 +97,7 @@ def admin_reports(request):
     gross_revenue = stats['total_revenue'] or 0
     cost = stats['total_cost'] or 0
     total_count = stats['total_count'] or 0
+    total_transactions = stats['total_count'] or 0
     net_profit = gross_revenue - cost
 
     if gross_revenue > 0:
@@ -106,7 +107,7 @@ def admin_reports(request):
 
     aov = gross_revenue / total_count if total_count > 0 else 0
 
-    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ration': ratio, 'outstanding_balance': outstanding_balance}
+    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ration': ratio, 'outstanding_balance': outstanding_balance, 'total_transactions': total_transactions}
 
     print(gross_revenue)
 
