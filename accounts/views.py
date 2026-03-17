@@ -88,14 +88,21 @@ def admin_reports(request):
         total_count=Count('id')
     )
 
+    or_balance = InstallmentPlan.objects.filter(
+        payment_status__in=['Pending', 'Cancelled']
+    ).aggregate(total_owed=Sum('remaining_balance'))['total_owed'] or 0
+
+    outstanding_balance = or_balance.quantize(Decimal('0.00'))
+
     gross_revenue = stats['total_revenue'] or 0
     cost = stats['total_cost'] or 0
     total_count = stats['total_count'] or 0
     net_profit = gross_revenue - cost
+    ratio = (outstanding_balance / gross_revenue) * 100
 
     aov = gross_revenue / total_count if total_count > 0 else 0
 
-    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov}
+    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ration': ratio, 'outstanding_balance': outstanding_balance}
 
     print(gross_revenue)
 
