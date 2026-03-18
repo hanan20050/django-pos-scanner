@@ -1,4 +1,5 @@
 from contextlib import nullcontext
+from functools import total_ordering
 from http.client import responses
 from xmlrpc.client import WRAPPERS
 
@@ -9,7 +10,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template.defaulttags import csrf_token
-from django.utils.text import phone2numeric
+from django.utils.text import phone2numeric, compress_string
 
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
@@ -30,10 +31,12 @@ from django.db import transaction
 from datetime import date
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
+from django.utils import timezone
+from datetime import datetime
 
 from django.views.decorators.csrf import csrf_exempt
 
-from django.db.models import Sum, F, Expression, ExpressionWrapper
+from django.db.models import Sum, F, Expression, ExpressionWrapper, Count, Q
 from django.db import models
 
 import re
@@ -72,7 +75,111 @@ class salesUpdateView(UpdateView):
 
 @login_required(login_url='login')
 def admin_reports(request):
-    return render(request, 'accounts/admin_reports.html')
+
+    now = timezone.now()
+
+    current_month_transactions = Order.objects.filter(
+        order_date__year=now.year,
+        order_date__month=now.month
+    )
+
+    stats = current_month_transactions.aggregate(
+        total_revenue=Sum('total_amount'),
+        total_cost=Sum(F('orderitem__quantity') * F('orderitem__cost_price')),
+        total_count=Count('id')
+    )
+
+    or_balance = InstallmentPlan.objects.filter(
+        payment_status__in=['Pending', 'Cancelled']
+    ).aggregate(total_owed=Sum('remaining_balance'))['total_owed'] or 0
+
+    outstanding_balance = or_balance.quantize(Decimal('0.00'))
+
+    payments = Order.objects.aggregate(
+        cash=Sum('total_amount', filter=Q(payment_method='CASH')),
+        installment=Sum('total_amount', filter=Q(payment_method='INSTALLMENT'))
+    )
+
+    branch_query = Order.objects.values('branch__name').annotate(
+        total=Sum('total_amount')
+    ).order_by('-total')
+
+
+    branch_names = []
+    branch_totals = []
+
+    if branch_query.exists():
+        for data_row in branch_query:
+            name = data_row['branch__name'] if data_row['branch__name'] else "Main Store"
+            amount = float(data_row['total']) if data_row['total'] else 0.0
+
+            branch_names.append(name)
+            branch_totals.append(amount)
+
+
+    employee_sales = Order.objects.values('employee__name').annotate(
+        total=Sum('total_amount')
+    ).order_by('-total')
+
+    employee_names = [
+        f"{item['employee__name']}" if item['employee__name'] else "System Admin"
+        for item in employee_sales
+    ]
+
+    employee_totals = [float(item['total'] or 0) for item in employee_sales]
+
+    product_sales = OrderItem.objects.values('product__product_name').annotate(
+        total=Sum('quantity')
+    ).order_by('-total')[:5]
+
+    product_name = [
+        f"{item['product__product_name']}" if item['product__product_name'] else "Out of Stock"
+        for item in product_sales
+    ]
+
+    product_totals = [float(item['total'] or 0) for item in product_sales]
+
+    print(len(product_sales))
+
+    if branch_query.exists():
+        for data_row in branch_query:
+            name = data_row['branch__name'] if data_row['branch__name'] else "Main Store"
+            amount = float(data_row['total']) if data_row['total'] else 0.0
+
+            branch_names.append(name)
+            branch_totals.append(amount)
+
+
+    gross_revenue = stats['total_revenue'] or 0
+    cost = stats['total_cost'] or 0
+    total_count = stats['total_count'] or 0
+    total_transactions = stats['total_count'] or 0
+    net_profit = gross_revenue - cost
+    cash_total = payments['cash'] or 0
+    installment_total = payments['installment'] or 0
+
+    transactions = Order.objects.select_related('customer', 'branch').prefetch_related('orderitem_set__product').order_by('-order_date')
+
+    if gross_revenue > 0:
+        ratio = float(outstanding_balance / gross_revenue)
+    else:
+        ratio = 0
+
+    aov = gross_revenue / total_count if total_count > 0 else 0
+
+
+    paginator = Paginator(transactions, 7)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ratio': ratio, 'outstanding_balance': outstanding_balance, 'total_transactions': total_transactions, 'transactions': transactions, 'page_obj': page_obj, 'cash_total': cash_total, 'installment_total': installment_total, 'branch_names': branch_names,
+    'branch_totals': branch_totals, 'employee_names': employee_names,
+    'employee_totals': employee_totals, 'product_name': product_name, 'product_totals': product_totals}
+
+    print(gross_revenue)
+
+    return render(request, 'accounts/admin_reports.html', context)
 
 
 
@@ -101,7 +208,6 @@ def manage_installment(request, pk):
 
     inst.refresh_from_db()
 
-    # DEBUG: See the raw balance in your server log
     print(f"DEBUG: Current Balance in DB: {inst.remaining_balance}")
 
     payments = Payment.objects.filter(order=inst.payment.order).order_by('-date_paid')

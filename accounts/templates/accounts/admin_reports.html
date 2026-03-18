@@ -1,6 +1,231 @@
 {% extends 'accounts/main.html' %}
 
+{% load humanize %}
+
 {% block content %}
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <p class="text-sm font-medium text-gray-500">Gross Revenue</p>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ gross_revenue|floatformat:2|intcomma }}</h3>
+  </div>
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <p class="text-sm font-medium text-gray-500">Net Profit</p>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ net_profit|floatformat:2|intcomma }}</h3>
+  </div>
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <p class="text-sm font-medium text-gray-500">Transactions</p>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ total_transactions }}</h3>
+  </div>
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <p class="text-sm font-medium text-gray-500">Avg Order Value</p>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ aov|floatformat:2|intcomma }}</h3>
+  </div>
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <p class="text-sm font-medium text-gray-500">Outstanding Receivables</p>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ outstanding_balance }}</h3>
+  </div>
+  <div class="p-6 rounded-xl shadow-sm border {% if debt_ratio > 0.3 %}bg-red-50 border-red-200{% else %}bg-green-50 border-green-200{% endif %}">
+    <p class="text-sm font-medium {% if debt_ratio > 0.3 %}text-red-600{% else %}text-green-600{% endif %}">
+      CREDIT EXPOSURE
+    </p>
+    <h3 class="text-2xl font-bold {% if debt_ratio > 0.3 %}text-red-900{% else %}text-green-900{% endif %} mt-1">
+      {% if debt_ratio > 0.3 %}
+          High Risk {{ ratio|stringformat:".0%" }}
+      {% else %}
+          Healthy {{ ratio|stringformat:".0%" }}
+      {% endif %}
+    </h3>
+    <p class="text-xs mt-2 text-gray-500">Uncollected: ₱{{ outstanding_balance }}</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Method Split</h3>
+        <div class="h-64">
+            <canvas id="paymentChart"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Revenue by Branch</h3>
+        <div class="h-64">
+            <canvas id="branchChart"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Employee Sales</h3>
+        <div class="h-64">
+            <canvas id="employeeChart"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Product Sales</h3>
+        <div class="h-64">
+            <canvas id="productChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div id="transaction-table" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+  <div class="px-6 py-4 border-b border-gray-100">
+    <h2 class="text-lg font-semibold text-gray-800">Recent Transactions</h2>
+  </div>
+  <table class="w-full text-center">
+    <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+      <tr>
+        <th class="px-6 py-4">Customer</th>
+        <th class="px-6 py-4">Employee</th>
+        <th class="px-6 py-4">Branch</th>
+        <th class="px-6 py-4">Product</th>
+        <th class="px-6 py-4">QTY</th>
+        <th class="px-6 py-4">Type</th>
+        <th class="px-6 py-4">Date</th>
+        <th class="px-6 py-4">Amount</th>
+        <th class="px-6 py-4">Status</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for tx in page_obj %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.customer }}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.employee }}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.branch }}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.orderitem_set.first.product }}</td>
+        <td class="px-6 py-4 text-sm text-gray-700">{{ tx.orderitem_set.first.quantity }}</td>
+        <td class="px-6 py-4 text-sm text-gray-500">{{ tx.payment_method }}</td>
+        <td class="px-6 py-4 text-sm text-gray-500">{{ tx.order_date }}</td>
+        <td class="px-6 py-4 text-sm font-semibold">₱{{ tx.total_amount }}</td>
+        <td class="px-6 py-4">
+          {% if tx.order_status == 'Completed' %}
+            <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Completed</span>
+          {% elif tx.order_status == 'Pending' %}
+            <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">Pending</span>
+          {% else %}
+            <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">{{ tx.order_status }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="flex items-center justify-between p-4 bg-white border-t border-gray-200">
+    <span class="text-sm text-gray-700">
+        Page <span class="font-semibold text-gray-900">{{ page_obj.number }}</span> of
+        <span class="font-semibold text-gray-900">{{ page_obj.paginator.num_pages }}</span>
+    </span>
+
+    <div class="inline-flex mt-2 xs:mt-0">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}#transaction-table"
+               class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900">
+                Prev
+            </a>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}#transaction-table"
+               class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900">
+                Next
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+
+<script>
+    const ctx = document.getElementById('paymentChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Cash', 'Installment'],
+            datasets: [{
+                data: [{{ cash_total|default:0 }}, {{ installment_total|default:0 }}],
+                backgroundColor: ['#10b981', '#f59e0b']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+
+    const branchChart = document.getElementById('branchChart').getContext('2d');
+    new Chart(branchChart, {
+        type: 'bar',
+        data: {
+            labels: {{ branch_names|safe }},
+            datasets: [{
+                label: "Revenue by Branch",
+                data: {{ branch_totals }},
+                backgroundColor: '#6366f1',
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+            legend: { display: false }
+            },
+            scales: {
+            y: { beginAtZero: true }
+            }
+        }
+    });
+
+    const employeeChart = document.getElementById('employeeChart').getContext('2d');
+    new Chart(employeeChart, {
+        type: 'bar',
+        data: {
+            labels: {{ employee_names|safe }},
+            datasets: [{
+                label: "Employee sales",
+                data: {{ employee_totals }},
+                backgroundColor: '#6366f1',
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+            legend: { display: false }
+            },
+            scales: {
+            y: { beginAtZero: true }
+            }
+        }
+    });
+
+    const productChart = document.getElementById('productChart').getContext('2d');
+    new Chart(productChart, {
+        type: 'bar',
+        data: {
+            labels: {{ product_name|safe }},
+            datasets: [{
+                label: "Product sales",
+                data: {{ product_totals }},
+                backgroundColor: '#6366f1',
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+            legend: { display: false }
+            },
+            scales: {
+            y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
 
 {% endblock %}
