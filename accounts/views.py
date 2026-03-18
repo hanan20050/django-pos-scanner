@@ -123,7 +123,7 @@ def admin_reports(request):
 
     employee_names = [
         f"{item['employee__name']}" if item['employee__name'] else "System Admin"
-        for items in employee_sales
+        for item in employee_sales
     ]
 
     employee_totals = [float(item['total'] or 0) for item in employee_sales]
@@ -162,7 +162,7 @@ def admin_reports(request):
 
     context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ratio': ratio, 'outstanding_balance': outstanding_balance, 'total_transactions': total_transactions, 'transactions': transactions, 'page_obj': page_obj, 'cash_total': cash_total, 'installment_total': installment_total, 'branch_names': branch_names,
     'branch_totals': branch_totals, 'employee_names': employee_names,
-    'employee_totals': employee_totals,}
+    'employee_totals': employee_totals}
 
     print(gross_revenue)
 
