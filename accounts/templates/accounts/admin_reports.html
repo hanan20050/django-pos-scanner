@@ -63,6 +63,13 @@
             <canvas id="employeeChart"></canvas>
         </div>
     </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Product Sales</h3>
+        <div class="h-64">
+            <canvas id="productChart"></canvas>
+        </div>
+    </div>
 </div>
 
 <div id="transaction-table" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -182,6 +189,29 @@
             datasets: [{
                 label: "Employee sales",
                 data: {{ employee_totals }},
+                backgroundColor: '#6366f1',
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+            legend: { display: false }
+            },
+            scales: {
+            y: { beginAtZero: true }
+            }
+        }
+    });
+
+    const productChart = document.getElementById('productChart').getContext('2d');
+    new Chart(productChart, {
+        type: 'bar',
+        data: {
+            labels: {{ product_name|safe }},
+            datasets: [{
+                label: "Product sales",
+                data: {{ product_totals }},
                 backgroundColor: '#6366f1',
                 borderRadius: 8
             }]
