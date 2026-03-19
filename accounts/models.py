@@ -87,7 +87,11 @@ class Supplier(models.Model):
 
     @property
     def contract_year(self):
-        return self.contract_start.year
+        if self.contract_expiration is None:
+            return 'N/A'
+        else:
+            return self.contract_start.year
+
 
     def __str__(self):
         return self.name
