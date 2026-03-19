@@ -1,3 +1,4 @@
+from datetime import timezone
 from random import choices
 
 from django.db import models
@@ -60,9 +61,33 @@ class CreditOfficer(models.Model):
         return f"Credit Officer: {self.employee.name} (Level {self.security_level})"
 
 class Supplier(models.Model):
+    OPTION = (
+    ('Renewed', 'Renewed'),
+    ('Opted Out', 'Opted Out'),
+    ('Active', 'Active'),
+    ('Expired', 'Expired')
+    )
+
     name = models.CharField(max_length=100)
     contact_person = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=100, blank=True)
+    contract_expiration = models.DateField()
+    contract_start = models.DateField(auto_now_add=True)
+
+    status = models.CharField(choices=OPTION, max_length=100, default='Active')
+
+    @property
+    def check_contract(self):
+        today = timezone.now().date()
+
+        if today > self.contract_expiration:
+            return 'Expired'
+        else:
+            return self.status
+
+    @property
+    def contract_year(self):
+        return self.contract_start.year
 
     def __str__(self):
         return self.name

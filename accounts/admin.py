@@ -31,6 +31,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('supplier', 'product_name', 'category', 'base_price', 'barcode')
     search_fields = ('product_name', 'barcode')
 
+
 @admin.register(BranchInventory)
 class BranchInventoryAdmin(admin.ModelAdmin):
     list_display = ('branch', 'product', 'quantity')
@@ -89,4 +90,4 @@ class InstallmentPlanAdmin(admin.ModelAdmin):
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ('name', 'contact_person', 'phone')
-    list_filter = ('name',)
+    # list_filter = ('name',)
