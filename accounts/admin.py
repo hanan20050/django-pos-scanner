@@ -89,6 +89,7 @@ class InstallmentPlanAdmin(admin.ModelAdmin):
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('name', 'contact_person', 'phone', 'contract_year', 'check_contract', 'contract_expiration')
+    list_display = ('name', 'contact_person', 'phone', 'contract_start', 'contract_period', 'contract_status', 'contract_expiration')
     search_fields = ('name', 'contact_person')
     list_filter = ('status',)
+

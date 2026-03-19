@@ -1,6 +1,8 @@
 from datetime import timezone
 from random import choices
 
+from django.utils import timezone
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -77,7 +79,7 @@ class Supplier(models.Model):
     status = models.CharField(choices=OPTION, max_length=100, default='Active')
 
     @property
-    def check_contract(self):
+    def contract_status(self):
         today = timezone.now().date()
 
         if today > self.contract_expiration:
@@ -86,11 +88,16 @@ class Supplier(models.Model):
             return self.status
 
     @property
-    def contract_year(self):
-        if self.contract_expiration is None:
+    def contract_period(self):
+        if not self.contract_start or not self.contract_expiration:
             return 'N/A'
-        else:
-            return self.contract_start.year
+
+        start = self.contract_start.year
+        end = self.contract_expiration.year
+
+        if start == end:
+            return f"{start}"
+        return f"{start} - {end}"
 
 
     def __str__(self):
