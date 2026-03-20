@@ -106,7 +106,7 @@ class Supplier(models.Model):
 class Product(models.Model):
     CATEGORIES = (
     ('Laptop', 'Laptop'),
-    ('Andriod Phone', 'Andriod Phone'),
+    ('Andriod', 'Andriod'),
     ('iPhone', 'iPhone'),
     ('Printer', 'Printer')
     )
