@@ -49,8 +49,8 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 @admin.register(SalesAgent)
 class SalesAgentAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales',)
-    list_filter = ('employee',)
+    list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales', 'employee__branch')
+    list_filter = ('employee__branch',)
 
 @admin.register(CreditOfficer)
 class CreditOfficerAdmin(admin.ModelAdmin):
