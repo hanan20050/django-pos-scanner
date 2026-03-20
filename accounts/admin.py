@@ -12,7 +12,7 @@ class InstallmentPlanInline(admin.TabularInline):
 
 @admin.register(Branch)
 class BranchAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone_number')
+    list_display = ('name', 'phone_number', 'address')
     search_fields = ('name',)
 
 @admin.register(Employee)
@@ -38,7 +38,7 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(BranchInventory)
 class BranchInventoryAdmin(admin.ModelAdmin):
     list_display = ('branch', 'product', 'quantity')
-    list_filter = ('branch',)
+    list_filter = ('branch', 'product')
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
