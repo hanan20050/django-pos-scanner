@@ -12,7 +12,7 @@ class InstallmentPlanInline(admin.TabularInline):
 
 @admin.register(Branch)
 class BranchAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone_number')
+    list_display = ('name', 'phone_number', 'address')
     search_fields = ('name',)
 
 @admin.register(Employee)
@@ -30,11 +30,15 @@ class CustomerAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('supplier', 'product_name', 'category', 'base_price', 'barcode')
     search_fields = ('product_name', 'barcode')
+    list_filter = ('category',)
+    list_select_related = ('supplier',)
+    ordering = ('category', 'product_name')
+
 
 @admin.register(BranchInventory)
 class BranchInventoryAdmin(admin.ModelAdmin):
     list_display = ('branch', 'product', 'quantity')
-    list_filter = ('branch',)
+    list_filter = ('branch', 'product')
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
@@ -48,8 +52,14 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 @admin.register(SalesAgent)
 class SalesAgentAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales',)
-    list_filter = ('employee',)
+    list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales', 'get_branch')
+    list_filter = ('employee__branch',)
+    list_select_related = ('employee__branch',)
+
+    def get_branch(self, obj):
+        return obj.employee.branch
+    get_branch.short_description = 'Branch'
+    get_branch.admin_order_field = 'employee__branch'
 
 @admin.register(CreditOfficer)
 class CreditOfficerAdmin(admin.ModelAdmin):
@@ -88,5 +98,7 @@ class InstallmentPlanAdmin(admin.ModelAdmin):
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('name', 'contact_person', 'phone')
-    list_filter = ('name',)
+    list_display = ('name', 'contact_person', 'phone', 'contract_start', 'contract_period', 'contract_status', 'contract_expiration')
+    search_fields = ('name', 'contact_person')
+    list_filter = ('status',)
+
