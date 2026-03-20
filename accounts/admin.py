@@ -49,8 +49,14 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 @admin.register(SalesAgent)
 class SalesAgentAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales', 'employee__branch')
+    list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales', 'get_branch')
     list_filter = ('employee__branch',)
+    list_select_related = ('employee__branch',)
+
+    def get_branch(self, obj):
+        return obj.employee.branch
+    get_branch.short_description = 'Branch'
+    get_branch.admin_order_field = 'employee__branch'
 
 @admin.register(CreditOfficer)
 class CreditOfficerAdmin(admin.ModelAdmin):
