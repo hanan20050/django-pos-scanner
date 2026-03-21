@@ -102,14 +102,14 @@
                 <td class="px-6 py-4"> {{ i.order.order_status }}</td>
                 {% if request.user.employee.branch %}
                 <td class="px-6 py-4 font-medium text-gray-900">
-                    <a href="{% url 'emp_receipt' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
+                    <a href="{% url 'emp_receipt' i.order.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
                         View
                     </a>
                 </td>
                 {% endif %}
                 {% if is_manager %}
                 <td class="px-6 py-4 font-medium text-gray-900">
-                    <a href="{% url 'sales_edit' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
+                    <a href="{% url 'sales_edit' i.order.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
                         Edit
                     </a>
                 </td>
