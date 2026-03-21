@@ -89,7 +89,7 @@ class PaymentAdmin(admin.ModelAdmin):
 @admin.register(CashPayment)
 class CashPaymentAdmin(admin.ModelAdmin):
     list_display = ('payment', 'cash_received', 'change_given')
-    list_filter = ('payment',)
+    # list_filter = ('payment',)
 
 @admin.register(InstallmentPlan)
 class InstallmentPlanAdmin(admin.ModelAdmin):
