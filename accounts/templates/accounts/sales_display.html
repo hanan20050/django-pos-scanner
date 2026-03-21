@@ -87,7 +87,7 @@
             {% for i in sales %}
             <tr class="hover:bg-gray-50 text-center">
                 {% if is_manager %}
-                <td class="px-6 py-4"> #{{ i.id }}
+                <td class="px-6 py-4"> #{{ i.order.id }}
                 <td class="px-6 py-4 font-medium text-gray-900">{{ i.order.employee }}</td>
                 {% endif %}
                 <td class="px-6 py-4">{{ i.order.customer }}</td>
