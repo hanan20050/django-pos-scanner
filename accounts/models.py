@@ -13,7 +13,7 @@ class Customer(models.Model):
     email = models.EmailField(max_length=100, blank=True)
     address = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=100, blank=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.name
