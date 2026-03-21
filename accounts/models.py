@@ -169,7 +169,8 @@ class OrderItem(models.Model):
 
     @property
     def line_total(self):
-        return self.quantity * self.order.total_amount
+        # return self.quantity * self.order.total_amount
+        return self.quantity * self.unit_price
 
 class Payment(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)

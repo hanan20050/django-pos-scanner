@@ -521,7 +521,7 @@ def checkout_cash(request):
                 data = json.loads(request.body)
 
                 cart = data.get('cart', [])
-                total_amount = data.get('totalAmount')
+                total_amount = Decimal(str(data.get('totalAmount', 0)))
                 cash_received = data.get('cashReceived')
                 change_given = data.get('changeGiven')
                 customer_data = data.get('customerData', {})
@@ -568,7 +568,7 @@ def checkout_cash(request):
                         order = order,
                         product = product,
                         quantity = item['qty'],
-                        unit_price = item['price'],
+                        unit_price = Decimal(str(item['price'])),
                         cost_price = product.cost_price
                     )
 
