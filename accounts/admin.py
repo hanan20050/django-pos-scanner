@@ -47,8 +47,8 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('or_number', 'invoice_date', 'vat_amount', 'grand_total', 'issued_by')
-    list_filter = ('or_number',)
+    list_display = ('or_number', 'invoice_date', 'vat_amount', 'grand_total', 'issued_by', 'order__customer')
+    list_filter = ('or_number', 'order__customer')
 
 @admin.register(SalesAgent)
 class SalesAgentAdmin(admin.ModelAdmin):

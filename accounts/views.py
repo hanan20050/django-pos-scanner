@@ -600,7 +600,8 @@ def checkout_cash(request):
                     or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
                     vat_amount=order.total_amount * Decimal('0.12'),
                     grand_total=order.total_amount,
-                    issued_by=order.employee
+                    issued_by=order.employee,
+                    invoice_date = order.order_date
                 )
 
                 try:
