@@ -568,7 +568,8 @@ def checkout_cash(request):
                         order = order,
                         product = product,
                         quantity = item['qty'],
-                        unit_price = item['price']
+                        unit_price = item['price'],
+                        cost_price = product.cost_price
                     )
 
                     try:
