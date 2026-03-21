@@ -79,12 +79,12 @@ class CreditOfficerAdmin(admin.ModelAdmin):
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('order', 'product', 'quantity', 'unit_price')
-    list_filter = ('order',)
+    list_filter = ('order__branch',)
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
     list_display = ('order', 'amount_paid', 'date_paid', 'payment_type')
-    list_filter = ('payment_type',)
+    list_filter = ('payment_type', 'order__branch')
 
 @admin.register(CashPayment)
 class CashPaymentAdmin(admin.ModelAdmin):
