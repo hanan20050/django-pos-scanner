@@ -84,7 +84,7 @@ class OrderItemAdmin(admin.ModelAdmin):
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
     list_display = ('order', 'amount_paid', 'date_paid', 'payment_type')
-    list_filter = ('order',)
+    list_filter = ('payment_type',)
 
 @admin.register(CashPayment)
 class CashPaymentAdmin(admin.ModelAdmin):

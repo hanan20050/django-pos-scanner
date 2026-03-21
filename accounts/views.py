@@ -587,6 +587,7 @@ def checkout_cash(request):
                     order = order,
                     amount_paid = cash_received,
                     payment_type = payment_method,
+                    date_paid = order.order_date
                 )
 
                 CashPayment.objects.create(

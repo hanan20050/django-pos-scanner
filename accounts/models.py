@@ -175,7 +175,7 @@ class OrderItem(models.Model):
 class Payment(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
-    date_paid = models.DateTimeField(auto_now_add=True)
+    date_paid = models.DateField()
     payment_type = models.CharField(max_length=100, choices=Order.PAYMENT_METHOD)
 
     def __str__(self):
