@@ -94,7 +94,7 @@ class CashPaymentAdmin(admin.ModelAdmin):
 @admin.register(InstallmentPlan)
 class InstallmentPlanAdmin(admin.ModelAdmin):
     list_display = ('payment', 'term_months', 'monthly_due', 'remaining_balance', 'next_due_date', 'payment_status')
-    list_filter = ('payment',)
+    list_filter = ('payment_status',)
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
