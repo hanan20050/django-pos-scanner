@@ -46,8 +46,8 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(BranchInventory)
 class BranchInventoryAdmin(admin.ModelAdmin):
-    list_display = ('branch', 'product', 'quantity', 'get_is_active')
-    list_filter = ('branch', 'product')
+    list_display = ('branch', 'product', 'product__category', 'quantity', 'get_is_active')
+    list_filter = ('branch', 'product', 'product__category')
 
     @admin.display(description='Product Active')
     def get_is_active(self, obj):
@@ -56,6 +56,10 @@ class BranchInventoryAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(product__is_active=True)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
