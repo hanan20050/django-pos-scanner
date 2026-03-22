@@ -92,15 +92,36 @@ def admin_reports(request):
     current_month_transactions = Order.objects.filter(
         order_date__year=now.year,
         order_date__month=now.month,
-        is_active=True,
-        branch__is_active = True
+        employee__is_active=True,
+        branch__is_active = True,
+        is_active = True
     )
 
-    stats = current_month_transactions.aggregate(
-        total_revenue=Sum('total_amount'),
-        total_cost=Sum(F('orderitem__quantity') * F('orderitem__cost_price')),
-        total_count=Count('id')
+    active_order_ids = current_month_transactions.values_list('id', flat=True)
+
+    stats = OrderItem.objects.filter(
+        order_id__in=active_order_ids,
+        product__is_active=True  # Ensure we only count active products
+    ).aggregate(
+        total_revenue=Sum(F('unit_price') * F('quantity')),
+        total_cost=Sum(F('quantity') * F('cost_price')),
+        total_count=Count('order_id', distinct=True)
     )
+
+    # orders_stats = current_month_transactions.filter(
+    #     is_active=True  # Use the Order's own status
+    # ).aggregate(
+    #     total_revenue=Sum('total_amount'),
+    #     total_count=Count('id', distinct=True)
+    # )
+    #
+    # cost_stats = OrderItem.objects.filter(
+    #     order__in=current_month_transactions,
+    #     product__is_active=True
+    # ).aggregate(
+    #     total_cost=Sum(F('quantity') * F('cost_price'))
+    # )
+
 
     or_balance = InstallmentPlan.objects.filter(
         payment_status__in=['Pending', 'Cancelled']
@@ -108,12 +129,23 @@ def admin_reports(request):
 
     outstanding_balance = or_balance.quantize(Decimal('0.00'))
 
-    payments = Order.objects.aggregate(
-        cash=Sum('total_amount', filter=Q(payment_method='CASH')),
-        installment=Sum('total_amount', filter=Q(payment_method='INSTALLMENT'))
+    payments = OrderItem.objects.filter(
+        order_id__in=active_order_ids,
+        product__is_active=True
+    ).aggregate(
+        cash=Sum(
+            F('unit_price') * F('quantity'),
+            filter=Q(order__payment_method='CASH')
+        ),
+        installment=Sum(
+            F('unit_price') * F('quantity'),
+            filter=Q(order__payment_method='INSTALLMENT')
+        )
     )
 
-    branch_query = Order.objects.filter(branch__is_active=True).values('branch__name').annotate(
+    branch_query = Order.objects.filter(
+        id__in=active_order_ids
+    ).values('branch__name').annotate(
         total=Sum('total_amount')
     ).order_by('-total')
 
@@ -129,8 +161,9 @@ def admin_reports(request):
             branch_names.append(name)
             branch_totals.append(amount)
 
-
-    employee_sales = Order.objects.filter(employee__is_active=True).values('employee__name').annotate(
+    employee_sales = Order.objects.filter(
+        id__in=active_order_ids
+    ).values('employee__name').annotate(
         total=Sum('total_amount')
     ).order_by('-total')
 
@@ -141,7 +174,10 @@ def admin_reports(request):
 
     employee_totals = [float(item['total'] or 0) for item in employee_sales]
 
-    product_sales = OrderItem.objects.filter(product__is_active=True).values('product__product_name').annotate(
+    product_sales = OrderItem.objects.filter(
+        order_id__in=active_order_ids,
+        product__is_active=True
+    ).values('product__product_name').annotate(
         total=Sum('quantity')
     ).order_by('-total')[:5]
 
@@ -154,14 +190,6 @@ def admin_reports(request):
 
     print(len(product_sales))
 
-    # if branch_query.exists():
-    #     for data_row in branch_query:
-    #         name = data_row['branch__name'] if data_row['branch__name'] else "Main Store"
-    #         amount = float(data_row['total']) if data_row['total'] else 0.0
-    #
-    #         branch_names.append(name)
-    #         branch_totals.append(amount)
-
 
     gross_revenue = stats['total_revenue'] or 0
     cost = stats['total_cost'] or 0
@@ -171,7 +199,7 @@ def admin_reports(request):
     cash_total = payments['cash'] or 0
     installment_total = payments['installment'] or 0
 
-    transactions = Order.objects.filter(is_active=True, branch__is_active=True).select_related('customer', 'branch').prefetch_related('orderitem_set__product').order_by('-order_date')
+    transactions = Order.objects.filter(employee__is_active=True, branch__is_active=True, is_active=True).select_related('customer', 'branch').prefetch_related('orderitem_set__product').order_by('-order_date')
 
     if gross_revenue > 0:
         ratio = float(outstanding_balance / gross_revenue)
