@@ -44,8 +44,16 @@ class BranchInventoryAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer', 'employee', 'branch', 'order_date', 'total_amount', 'order_status', 'payment_method')
-    list_filter = ('order_status', 'branch', 'payment_method')
+    list_display = ('id', 'customer', 'employee', 'branch', 'order_date', 'total_amount', 'order_status', 'payment_method', 'is_active')
+    list_filter = ('is_active', 'order_status', 'branch', 'payment_method')
+    search_fields = ('customer__name', 'id')
+
+    actions = ['restore_orders']
+
+    @admin.action(description='Restore selected orders')
+    def restore_orders(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f"Sucsessfully restored {updated} orders.")
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):

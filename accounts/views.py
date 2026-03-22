@@ -1,6 +1,7 @@
 from contextlib import nullcontext
 from functools import total_ordering
 from http.client import responses
+from sys import is_stack_trampoline_active
 from xmlrpc.client import WRAPPERS
 
 from django.contrib.admin.templatetags.admin_list import items_for_result, paginator_number
@@ -74,13 +75,24 @@ class salesUpdateView(UpdateView):
         return context
 
 @login_required(login_url='login')
+def delete_order(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+
+    order.soft_delete()
+
+    messages.success(request, f"Order #{order.id} has been archived")
+
+    return redirect('sales_display')
+
+@login_required(login_url='login')
 def admin_reports(request):
 
     now = timezone.now()
 
     current_month_transactions = Order.objects.filter(
         order_date__year=now.year,
-        order_date__month=now.month
+        order_date__month=now.month,
+        is_active=True
     )
 
     stats = current_month_transactions.aggregate(
@@ -313,12 +325,12 @@ def salesDisplay(request):
     is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
 
     if is_manager:
-        queryset = OrderItem.objects.all().select_related('order', 'order__customer', 'product', 'order__employee')
+        queryset = OrderItem.objects.filter(order__is_active=True).select_related('order', 'order__customer', 'product', 'order__employee')
     else:
         try:
             assigned_branch = request.user.employee.branch
 
-            queryset = OrderItem.objects.filter(order__branch=assigned_branch).select_related('order', 'product')
+            queryset = OrderItem.objects.filter(order__branch=assigned_branch, order__is_active=True).select_related('order', 'product')
         except Employee.DoesNotExist:
             queryset = OrderItem.objects.none
 

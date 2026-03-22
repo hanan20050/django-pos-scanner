@@ -151,10 +151,16 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     order_status = models.CharField(choices=ORDER_STATUS, max_length=100, default='Pending')
     payment_method = models.CharField(choices=PAYMENT_METHOD, max_length=100)
+    is_active = models.BooleanField(default=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.id} | {self.branch.name}"
 
+    def soft_delete(self):
+        self.is_active = False
+        self.deleted_at = timezone.now()
+        self.save()
 
 
 class OrderItem(models.Model):
