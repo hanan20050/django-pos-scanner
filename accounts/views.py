@@ -91,7 +91,7 @@ def admin_reports(request):
 
     or_balance = InstallmentPlan.objects.filter(
         payment_status__in=['Pending', 'Cancelled']
-    ).aggregate(total_owed=Sum('remaining_balance'))['total_owed'] or 0
+    ).aggregate(total_owed=Sum('remaining_balance'))['total_owed'] or Decimal('0.00')
 
     outstanding_balance = or_balance.quantize(Decimal('0.00'))
 
@@ -141,13 +141,13 @@ def admin_reports(request):
 
     print(len(product_sales))
 
-    if branch_query.exists():
-        for data_row in branch_query:
-            name = data_row['branch__name'] if data_row['branch__name'] else "Main Store"
-            amount = float(data_row['total']) if data_row['total'] else 0.0
-
-            branch_names.append(name)
-            branch_totals.append(amount)
+    # if branch_query.exists():
+    #     for data_row in branch_query:
+    #         name = data_row['branch__name'] if data_row['branch__name'] else "Main Store"
+    #         amount = float(data_row['total']) if data_row['total'] else 0.0
+    #
+    #         branch_names.append(name)
+    #         branch_totals.append(amount)
 
 
     gross_revenue = stats['total_revenue'] or 0
