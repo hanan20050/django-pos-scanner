@@ -14,7 +14,7 @@ class InstallmentPlanInline(admin.TabularInline):
 
 @admin.register(Branch)
 class BranchAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone_number', 'address')
+    list_display = ('name', 'phone_number', 'address', 'is_active')
     search_fields = ('name',)
 
     def get_actions(self, request):
@@ -22,6 +22,13 @@ class BranchAdmin(admin.ModelAdmin):
         if 'delete_selected' in actions:
             del actions['delete_selected']
         return actions
+
+    actions = ['restore_branch']
+
+    @admin.action(description='Restore selected branch')
+    def restore_branch(self, request, queryset):
+        count = queryset.update(is_active=True)
+        self.message_user(request, f"Successfully restored {count} branch.")
 
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):

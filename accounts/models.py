@@ -22,9 +22,15 @@ class Branch(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100, blank=True)
     phone_number = models.CharField(max_length=100, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    def delete(self, *args, **kwargs):
+        # This prevents the "Delete" button from actually deleting
+        self.is_active = False
+        self.save()
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {'(Inactive)' if not self.is_active else ''}"
 
 class Employee(models.Model):
     ROLE_CHOICES = (
