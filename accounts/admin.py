@@ -170,6 +170,18 @@ class CashPaymentAdmin(admin.ModelAdmin):
             return ", ".join([item.product.product_name for item in items])
         return "No products"
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
 @admin.register(InstallmentPlan)
 class InstallmentPlanAdmin(admin.ModelAdmin):
     list_display = ('payment', 'term_months', 'monthly_due', 'remaining_balance', 'next_due_date', 'payment_status')
