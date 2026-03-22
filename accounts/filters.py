@@ -98,7 +98,7 @@ class InventoryFilter(django_filters.FilterSet):
     )
 
     product = django_filters.ModelChoiceFilter(
-        queryset=Product.objects.all(),
+        queryset=Product.objects.filter(is_active=True),
         widget=forms.Select(attrs={
             'class': 'px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white'
         })

@@ -30,17 +30,32 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('supplier', 'product_name', 'category', 'base_price', 'barcode')
+    list_display = ('supplier', 'product_name', 'category', 'base_price', 'barcode', 'is_active')
     search_fields = ('product_name', 'barcode')
-    list_filter = ('category',)
+    list_filter = ('is_active', 'supplier', 'category',)
     list_select_related = ('supplier',)
     ordering = ('category', 'product_name')
+
+    actions = ['restore_product']
+
+    @admin.action(description='Restore selected product')
+    def restore_product(self, request, queryset):
+        count = queryset.update(is_active=True)
+        self.message_user(request, f"Successfully restored {count} products.")
 
 
 @admin.register(BranchInventory)
 class BranchInventoryAdmin(admin.ModelAdmin):
-    list_display = ('branch', 'product', 'quantity')
+    list_display = ('branch', 'product', 'quantity', 'get_is_active')
     list_filter = ('branch', 'product')
+
+    @admin.display(description='Product Active')
+    def get_is_active(self, obj):
+        return obj.product.is_active
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(product__is_active=True)
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

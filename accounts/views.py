@@ -364,19 +364,28 @@ def salesDisplay(request):
     return render(request, 'accounts/sales_display.html', context)
 
 @login_required(login_url='login')
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    product.soft_delete()
+
+    messages.success(request, f"{product.product_name} has been archived globally.")
+    return redirect('branch_inventory')
+
+@login_required(login_url='login')
 def branchInventory(request):
     is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
 
 
     if is_manager:
-        items = BranchInventory.objects.all().select_related('branch', 'product')
+        items = BranchInventory.objects.filter(product__is_active=True).select_related('branch', 'product')
         assigned_branch = 'All Branches'
     else:
         try:
             login_employee = Employee.objects.get(user=request.user)
             assigned_branch = login_employee.branch
 
-            items = BranchInventory.objects.filter(branch=assigned_branch).select_related('product', 'product__supplier')
+            items = BranchInventory.objects.filter(branch=assigned_branch, product__is_active=True).select_related('product', 'product__supplier')
 
         except Employee.DoesNotExist:
             items = BranchInventory.objects.none()
@@ -385,7 +394,7 @@ def branchInventory(request):
     myFilter = InventoryFilter(request.GET, queryset=items)
     filtered_items = myFilter.qs
 
-    paginator = Paginator(filtered_items, 10)
+    paginator = Paginator(filtered_items, 8)
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

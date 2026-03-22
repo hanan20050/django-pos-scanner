@@ -14,7 +14,7 @@ class InstallmentPaymentForm(forms.ModelForm):
 
 class ProductForm(forms.ModelForm):
     product = forms.ModelChoiceField(
-        queryset=Product.objects.all(),
+        queryset=Product.objects.filter(is_active=True),
         empty_label='--Select Product--',
         widget=forms.Select(attrs={
             'class': 'w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500',

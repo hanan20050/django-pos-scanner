@@ -27,5 +27,6 @@ urlpatterns = [
     path('admin_installment/', views.admin_installment, name='admin_installment'),
     path('accounts/<int:pk>/manage_installment', views.manage_installment, name='manage_installment'),
     path('admin_reports/', views.admin_reports, name='admin_reports'),
-    path('delete-order/<int:pk>/', views.delete_order, name='delete_order')
+    path('delete-order/<int:pk>/', views.delete_order, name='delete_order'),
+    path('delete-product/<int:pk>/', views.delete_product, name='delete_product'),
 ]
