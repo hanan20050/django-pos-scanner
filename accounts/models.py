@@ -25,7 +25,6 @@ class Branch(models.Model):
     is_active = models.BooleanField(default=True)
 
     def delete(self, *args, **kwargs):
-        # This prevents the "Delete" button from actually deleting
         self.is_active = False
         self.save()
 
@@ -47,9 +46,20 @@ class Employee(models.Model):
     phone = models.CharField(max_length=20, null=True, blank=True)
     profile_pic = models.ImageField(upload_to='media/', null=True, blank=True)
     hire_date = models.DateField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name}{'' if self.is_active else ' (Inactive)'}"
+
+    def save(self, *args, **kwargs):
+        if not self.is_active and self.user.is_active:
+            self.user.is_active = False
+            self.user.save()
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.is_active = False
+        self.save()
 
 class SalesAgent(models.Model):
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE)

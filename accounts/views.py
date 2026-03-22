@@ -92,7 +92,8 @@ def admin_reports(request):
     current_month_transactions = Order.objects.filter(
         order_date__year=now.year,
         order_date__month=now.month,
-        is_active=True
+        is_active=True,
+        branch__is_active = True
     )
 
     stats = current_month_transactions.aggregate(
@@ -112,7 +113,7 @@ def admin_reports(request):
         installment=Sum('total_amount', filter=Q(payment_method='INSTALLMENT'))
     )
 
-    branch_query = Order.objects.values('branch__name').annotate(
+    branch_query = Order.objects.filter(branch__is_active=True).values('branch__name').annotate(
         total=Sum('total_amount')
     ).order_by('-total')
 
@@ -129,7 +130,7 @@ def admin_reports(request):
             branch_totals.append(amount)
 
 
-    employee_sales = Order.objects.values('employee__name').annotate(
+    employee_sales = Order.objects.filter(employee__is_active=True).values('employee__name').annotate(
         total=Sum('total_amount')
     ).order_by('-total')
 
@@ -140,7 +141,7 @@ def admin_reports(request):
 
     employee_totals = [float(item['total'] or 0) for item in employee_sales]
 
-    product_sales = OrderItem.objects.values('product__product_name').annotate(
+    product_sales = OrderItem.objects.filter(product__is_active=True).values('product__product_name').annotate(
         total=Sum('quantity')
     ).order_by('-total')[:5]
 
@@ -170,7 +171,7 @@ def admin_reports(request):
     cash_total = payments['cash'] or 0
     installment_total = payments['installment'] or 0
 
-    transactions = Order.objects.select_related('customer', 'branch').prefetch_related('orderitem_set__product').order_by('-order_date')
+    transactions = Order.objects.filter(is_active=True, branch__is_active=True).select_related('customer', 'branch').prefetch_related('orderitem_set__product').order_by('-order_date')
 
     if gross_revenue > 0:
         ratio = float(outstanding_balance / gross_revenue)
