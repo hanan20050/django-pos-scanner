@@ -32,9 +32,23 @@ class BranchAdmin(admin.ModelAdmin):
 
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'role', 'branch', 'hire_date')
-    list_filter = ('role', 'branch')
+    list_display = ('name', 'role', 'branch', 'hire_date', 'is_active')
+    list_filter = ('role', 'branch', 'is_active')
     search_fields = ('name',)
+    ordering = ('-is_active', 'name')
+
+    actions = ['restore_employee']
+
+    @admin.action(description='Restore selected employee')
+    def restore_employee(self, request, queryset):
+        count = queryset.update(is_active=True)
+        self.message_user(request, f"Successfully restored {count} employee.")
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):

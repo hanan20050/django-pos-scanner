@@ -430,6 +430,9 @@ class EmployeeList(ListView):
     context_object_name = 'employees'
     paginate_by = 3
 
+    def get_queryset(self):
+        return Employee.objects.filter(is_active=True).order_by('-hire_date')
+
 
 
 class EmployeeCreate(SuccessMessageMixin, CreateView):
