@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.admin.templatetags.admin_list import items_for_result
+
 from . models import *
 
 # Register your models here.
@@ -88,8 +90,45 @@ class PaymentAdmin(admin.ModelAdmin):
 
 @admin.register(CashPayment)
 class CashPaymentAdmin(admin.ModelAdmin):
-    list_display = ('payment', 'cash_received', 'change_given')
+    list_display = ('payment', 'get_employee', 'get_branch', 'get_customer_name', 'get_product', 'get_total_amount', 'cash_received', 'change_given', 'get_date')
     # list_filter = ('payment',)
+
+    @admin.display(ordering='payment__order__total_amount', description='Total Amount')
+    def get_total_amount(self, obj):
+        return f"₱{obj.payment.order.total_amount}"
+
+    @admin.display(description='Customer Name')
+    def get_customer_name(self, obj):
+        customer = obj.payment.order.customer
+        return customer.name if customer else "No customer found"
+
+    @admin.display(description='Branch')
+    def get_branch(self, obj):
+        branch = obj.payment.order.branch
+        return branch.name if branch else "No branch found"
+
+    @admin.display(description='Employee')
+    def get_employee(self, obj):
+        employees = obj.payment.order.employee
+        return employees.name if employees else "No employee found"
+
+    @admin.display(description='Date')
+    def get_date(self, obj):
+        order_date = obj.payment.order.order_date
+
+        if order_date:
+            return order_date.strftime('%B %d, %Y')
+
+        return "No date found"
+
+
+    @admin.display(description='Product Name')
+    def get_product(self, obj):
+        items = obj.payment.order.orderitem_set.select_related('product').all()
+
+        if items.exists():
+            return ", ".join([item.product.product_name for item in items])
+        return "No products"
 
 @admin.register(InstallmentPlan)
 class InstallmentPlanAdmin(admin.ModelAdmin):
