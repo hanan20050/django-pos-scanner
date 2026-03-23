@@ -142,6 +142,12 @@ class InvoiceAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.filter(order__is_active=True)
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
 @admin.register(SalesAgent)
 class SalesAgentAdmin(admin.ModelAdmin):
     list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales', 'get_branch', 'get_status')
@@ -248,6 +254,12 @@ class OrderItemAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.filter(order__is_active=True)
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
@@ -257,6 +269,12 @@ class PaymentAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(order__is_active=True)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
 
 class get_active_branch(admin.SimpleListFilter):
     title = 'Active Branch'
@@ -338,8 +356,8 @@ class InstallmentPlanAdmin(admin.ModelAdmin):
     #     return qs.filter(payment__order__is_active=True)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.filter(order__is_active=True)
+        # qs = super().get_queryset(request)
+        return super().get_queryset(request).filter(payment__order__is_active=True)
 
 
 @admin.register(Supplier)
