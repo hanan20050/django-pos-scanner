@@ -148,6 +148,9 @@ class InvoiceAdmin(admin.ModelAdmin):
             del actions['delete_selected']
         return actions
 
+    def has_add_permission(self, request):
+        return False
+
 @admin.register(SalesAgent)
 class SalesAgentAdmin(admin.ModelAdmin):
     list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales', 'get_branch', 'get_status')
@@ -260,6 +263,9 @@ class OrderItemAdmin(admin.ModelAdmin):
             del actions['delete_selected']
         return actions
 
+    def has_add_permission(self, request):
+        return False
+
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
@@ -275,6 +281,9 @@ class PaymentAdmin(admin.ModelAdmin):
         if 'delete_selected' in actions:
             del actions['delete_selected']
         return actions
+
+    def has_add_permission(self, request):
+        return False
 
 class get_active_branch(admin.SimpleListFilter):
     title = 'Active Branch'
@@ -358,6 +367,9 @@ class InstallmentPlanAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         # qs = super().get_queryset(request)
         return super().get_queryset(request).filter(payment__order__is_active=True)
+
+    def has_add_permission(self, request):
+        return False
 
 
 @admin.register(Supplier)
