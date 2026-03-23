@@ -112,7 +112,10 @@ class BranchInventoryAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.filter(product__is_active=True)
+        return qs.filter(
+            product__is_active=True,
+            branch__is_active=True
+        )
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -386,9 +389,9 @@ class InstallmentPlanAdmin(admin.ModelAdmin):
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('name', 'contact_person', 'phone', 'contract_start', 'contract_period', 'contract_status', 'contract_expiration')
+    list_display = ('name', 'contact_person', 'phone', 'contract_start', 'contract_period', 'contract_status', 'contract_expiration', 'is_active')
     search_fields = ('name', 'contact_person')
-    list_filter = ('status',)
+    list_filter = ('status', 'is_active')
 
     actions = ['archive_products','restore_product']
 
@@ -409,3 +412,6 @@ class SupplierAdmin(admin.ModelAdmin):
             del actions['delete_selected']
         return actions
 
+    # @admin.display(description='Status', boolean=True)
+    # def get_status(self, obj):
+    #     return obj.is_active
