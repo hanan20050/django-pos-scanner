@@ -46,7 +46,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     ordering = ('-is_active', 'name')
 
-    actions = ['restore_employee']
+    actions = ['archive_employee','restore_employee']
 
     @admin.action(description='Restore selected employee')
     def restore_employee(self, request, queryset):
@@ -58,6 +58,11 @@ class EmployeeAdmin(admin.ModelAdmin):
         if 'delete_selected' in actions:
             del actions['delete_selected']
         return actions
+
+    @admin.action(description='Archive selected employee')
+    def archive_employee(self, request, queryset):
+        count = queryset.update(is_active=False)
+        self.message_user(request, f"Successfully archived {count} employee.")
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
