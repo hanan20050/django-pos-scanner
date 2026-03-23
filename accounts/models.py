@@ -188,7 +188,7 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, limit_choices_to={'is_active': True})
     cost_price = models.DecimalField(max_digits=10, decimal_places=2)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
@@ -203,7 +203,7 @@ class OrderItem(models.Model):
         return self.quantity * self.unit_price
 
 class Payment(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, limit_choices_to={'is_active': True})
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
     date_paid = models.DateField()
     payment_type = models.CharField(max_length=100, choices=Order.PAYMENT_METHOD)
@@ -226,7 +226,7 @@ class InstallmentPlan(models.Model):
     payment_status = models.CharField(max_length=100, choices=Order.ORDER_STATUS)
 
 class Invoice(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='invoice')
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='invoice', limit_choices_to={'is_active': True})
     or_number = models.CharField(max_length=100, unique=True)
     invoice_date = models.DateField()
     vat_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)

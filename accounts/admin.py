@@ -2,6 +2,7 @@ from itertools import count
 
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import items_for_result
+from django.template.context_processors import request
 
 from . models import *
 
@@ -102,17 +103,35 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'order_status', 'branch', 'payment_method')
     search_fields = ('customer__name', 'id')
 
-    actions = ['restore_orders']
+    actions = ['archive_orders','restore_orders']
+
+    @admin.action(description='Archive selected order')
+    def archive_orders(self, request, queryset):
+        count = 0
+        for order in queryset:
+            order.soft_delete()
+            count += 1
+        self.message_user(request, f"Successfully archive {count} orders.")
 
     @admin.action(description='Restore selected orders')
     def restore_orders(self, request, queryset):
         updated = queryset.update(is_active=True)
         self.message_user(request, f"Sucsessfully restored {updated} orders.")
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if actions and 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = ('or_number', 'invoice_date', 'vat_amount', 'grand_total', 'issued_by', 'order__customer')
     list_filter = ('or_number', 'order__customer')
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(order__is_active=True)
 
 @admin.register(SalesAgent)
 class SalesAgentAdmin(admin.ModelAdmin):
@@ -178,10 +197,19 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('order', 'product', 'quantity', 'unit_price')
     list_filter = ('order__branch',)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(order__is_active=True)
+
+
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
     list_display = ('order', 'amount_paid', 'date_paid', 'payment_type')
     list_filter = ('payment_type', 'order__branch')
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(order__is_active=True)
 
 class get_active_branch(admin.SimpleListFilter):
     title = 'Active Branch'
@@ -249,10 +277,19 @@ class CashPaymentAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(payment__order__is_active=True)
+
 @admin.register(InstallmentPlan)
 class InstallmentPlanAdmin(admin.ModelAdmin):
     list_display = ('payment', 'term_months', 'monthly_due', 'remaining_balance', 'next_due_date', 'payment_status')
     list_filter = ('payment_status',)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(payment__order__is_active=True)
+
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
