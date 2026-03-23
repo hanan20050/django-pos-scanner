@@ -148,7 +148,7 @@ class Product(models.Model):
         self.save()
 
 class BranchInventory(models.Model):
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, limit_choices_to={'is_active': True})
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
 
