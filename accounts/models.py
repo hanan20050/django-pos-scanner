@@ -92,8 +92,12 @@ class Supplier(models.Model):
     phone = models.CharField(max_length=100, blank=True)
     contract_expiration = models.DateField()
     contract_start = models.DateField(auto_now_add=True)
-
     status = models.CharField(choices=OPTION, max_length=100, default='Active')
+    is_active = models.BooleanField(default=True)
+
+    def soft_delete(self):
+        self.is_active = False
+        self.save()
 
     @property
     def contract_status(self):
@@ -118,7 +122,7 @@ class Supplier(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {'(Archived)' if not self.is_active else ''}"
 
 class Product(models.Model):
     CATEGORIES = (

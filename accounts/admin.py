@@ -390,3 +390,22 @@ class SupplierAdmin(admin.ModelAdmin):
     search_fields = ('name', 'contact_person')
     list_filter = ('status',)
 
+    actions = ['archive_products','restore_product']
+
+    @admin.action(description='Restore selected product')
+    def restore_product(self, request, queryset):
+        count = queryset.update(is_active=True)
+        self.message_user(request, f"Successfully restored {count} products.")
+
+    @admin.action(description='Archive selected products')
+    def archive_products(self, request, queryset):
+        for product in queryset:
+            product.soft_delete()
+        self.message_user(request, f"Successfully archived {queryset.count()} products.")
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if actions and 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
