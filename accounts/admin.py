@@ -66,12 +66,21 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'email', 'address', 'date_created')
+    list_display = ('name', 'phone', 'email', 'address', 'date_created', 'is_active')
     search_fields = ('name', 'phone', 'email')
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(order__is_active=True)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if actions and 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
+    def has_add_permission(self, request):
+        return False
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):

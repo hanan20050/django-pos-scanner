@@ -14,9 +14,10 @@ class Customer(models.Model):
     address = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=100, blank=True)
     date_created = models.DateField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {'(Inactive)' if not self.is_active else ''}"
 
 class Branch(models.Model):
     name = models.CharField(max_length=100)
@@ -171,7 +172,7 @@ class Order(models.Model):
     ('INSTALLMENT', 'INSTALLMENT'),
     )
 
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'is_active': True})
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
 
