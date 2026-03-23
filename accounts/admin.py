@@ -148,6 +148,44 @@ class SalesAgentAdmin(admin.ModelAdmin):
     get_branch.short_description = 'Branch'
     get_branch.admin_order_field = 'employee__branch'
 
+    actions = ['archive_officer', 'restore_officer']
+
+    @admin.display(description='Officer Name', ordering='employee__name')
+    def get_name(self, obj):
+        return obj.employee.name
+
+    @admin.display(description='Status', boolean=True)
+    def get_status(self, obj):
+        return obj.employee.is_active
+
+    @admin.display(description='Total Applications')
+    def get_plans_count(self, obj):
+        return obj.installmentplan_set.count()
+
+    @admin.action(description='Archive selected officer')
+    def archive_officer(self, request, queryset):
+        count = 0
+        for officer in queryset:
+            officer.employee.is_active = False
+            officer.employee.save()
+            count += 1
+        self.message_user(request, f"Successfully archived {count} officers.")
+
+    @admin.action(description='Restore selected officer')
+    def restore_officer(self, request, queryset):
+        count = 0
+        for officer in queryset:
+            officer.employee.is_active = True
+            officer.employee.save()
+            count += 1
+        self.message_user(request, f"Successfully restored {count} officers.")
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if actions is not None and 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
 @admin.register(CreditOfficer)
 class CreditOfficerAdmin(admin.ModelAdmin):
     list_display = ('get_name', 'approval_limit', 'security_level', 'get_plans_count', 'get_status')
