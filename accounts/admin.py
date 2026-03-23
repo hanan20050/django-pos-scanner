@@ -64,6 +64,10 @@ class CustomerAdmin(admin.ModelAdmin):
     list_display = ('name', 'phone', 'email', 'address', 'date_created')
     search_fields = ('name', 'phone', 'email')
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(order__is_active=True)
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('supplier', 'product_name', 'category', 'base_price', 'barcode', 'is_active')
@@ -286,9 +290,13 @@ class InstallmentPlanAdmin(admin.ModelAdmin):
     list_display = ('payment', 'term_months', 'monthly_due', 'remaining_balance', 'next_due_date', 'payment_status')
     list_filter = ('payment_status',)
 
+    # def get_queryset(self, request):
+    #     qs = super().get_queryset(request)
+    #     return qs.filter(payment__order__is_active=True)
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.filter(payment__order__is_active=True)
+        return qs.filter(order__is_active=True)
 
 
 @admin.register(Supplier)
