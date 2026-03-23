@@ -139,8 +139,8 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 @admin.register(SalesAgent)
 class SalesAgentAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales', 'get_branch')
-    list_filter = ('employee__branch',)
+    list_display = ('employee', 'commission_rate', 'total_commission_earned', 'total_sales', 'get_branch', 'get_status')
+    list_filter = ('employee__branch', 'employee__is_active')
     list_select_related = ('employee__branch',)
 
     def get_branch(self, obj):
