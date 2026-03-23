@@ -71,7 +71,7 @@ class SalesAgent(models.Model):
         return f"Sales Agent: {self.employee.name}"
 
 class CreditOfficer(models.Model):
-    employee = models.OneToOneField(Employee, on_delete=models.PROTECT)
+    employee = models.OneToOneField(Employee, on_delete=models.PROTECT, limit_choices_to={'is_active': True})
     approval_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     security_level = models.IntegerField(default=1)
     is_active = models.BooleanField(default=True)
