@@ -1,3 +1,5 @@
+from itertools import count
+
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import items_for_result
 
@@ -125,18 +127,51 @@ class SalesAgentAdmin(admin.ModelAdmin):
 
 @admin.register(CreditOfficer)
 class CreditOfficerAdmin(admin.ModelAdmin):
-    list_display = ('get_name', 'approval_limit', 'security_level', 'get_plans_count')
+    list_display = ('get_name', 'approval_limit', 'security_level', 'get_plans_count', 'get_status')
     search_fields = ('employee__name',)
+    list_filter = ('employee__is_active',)
 
     inlines = [InstallmentPlanInline]
+
+    actions = ['archive_officer', 'restore_officer']
 
     @admin.display(description='Officer Name', ordering='employee__name')
     def get_name(self, obj):
         return obj.employee.name
 
+    @admin.display(description='Status', boolean=True)
+    def get_status(self, obj):
+        return obj.employee.is_active
+
     @admin.display(description='Total Applications')
     def get_plans_count(self, obj):
         return obj.installmentplan_set.count()
+
+    @admin.action(description='Archive selected officer')
+    def archive_officer(self, request, queryset):
+        count = 0
+        for officer in queryset:
+            officer.employee.is_active = False
+            officer.employee.save()
+            count += 1
+        self.message_user(request, f"Successfully archived {count} officers.")
+
+    @admin.action(description='Restore selected officer')
+    def restore_officer(self, request, queryset):
+        count = 0
+        for officer in queryset:
+            officer.employee.is_active = True
+            officer.employee.save()
+            count += 1
+        self.message_user(request, f"Successfully restored {count} officers.")
+
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if actions is not None and 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
@@ -148,10 +183,22 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ('order', 'amount_paid', 'date_paid', 'payment_type')
     list_filter = ('payment_type', 'order__branch')
 
+class get_active_branch(admin.SimpleListFilter):
+    title = 'Active Branch'
+    parameter_name = 'branch'
+    def lookups(self, request, model_admin):
+        return [(branch.id, branch.name) for branch in Branch.objects.filter(is_active=True)]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(payment__order__branch_id=self.value())
+        else:
+            return queryset
+
 @admin.register(CashPayment)
 class CashPaymentAdmin(admin.ModelAdmin):
     list_display = ('payment', 'get_employee', 'get_branch', 'get_customer_name', 'get_product', 'get_total_amount', 'cash_received', 'change_given', 'get_date')
-    # list_filter = ('payment',)
+    list_filter = (get_active_branch,)
 
     @admin.display(ordering='payment__order__total_amount', description='Total Amount')
     def get_total_amount(self, obj):
