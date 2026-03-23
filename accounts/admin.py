@@ -23,12 +23,18 @@ class BranchAdmin(admin.ModelAdmin):
             del actions['delete_selected']
         return actions
 
-    actions = ['restore_branch']
+    actions = ['restore_branch', 'archive_branch']
 
     @admin.action(description='Restore selected branch')
     def restore_branch(self, request, queryset):
         count = queryset.update(is_active=True)
         self.message_user(request, f"Successfully restored {count} branch.")
+
+    @admin.action(description='Archive selected branches')
+    def archive_branch(self, request, queryset):
+        count = queryset.update(is_active=False)
+        self.message_user(request, f"Successfully archived {count} branches.")
+
 
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
