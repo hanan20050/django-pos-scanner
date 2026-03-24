@@ -55,7 +55,7 @@
                 <th class="px-6 py-3">Barcode</th>
                 <th class="px-6 py-3">Status</th>
                 {% if is_manager %}
-                <th class="px-6 py-3">Option</th>
+                <th class="px-6 py-3 text-center">Option</th>
                 {% endif %}
             </tr>
         </thead>
@@ -88,9 +88,14 @@
                     {% endif %}
                 </td>
                 {% if is_manager %}
-                <td class="px-6 py-4 font-medium text-gray-900">
+                <td class="py-4 font-medium text-gray-900 flex justify-center item-center gap-4">
                     <a href="{% url 'inventory_update' i.id %}" class="px-4 py-2 bg-blue-700 text-white text-sm rounded-md hover:bg-blue-500 transition">
                         Edit Stock
+                    </a>
+                    <a href="{% url 'delete_product' i.product.pk %}" class="px-4 py-2 bg-red-700 text-white text-sm rounded-md hover:bg-red-500 transition"
+                       onclick="return confirm('Archive this product across ALL branches?');"
+                       class="text-red-600 hover:text-red-900">
+                       Archive Product
                     </a>
                 </td>
                 {% endif %}

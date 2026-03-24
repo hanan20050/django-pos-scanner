@@ -13,18 +13,24 @@ class Customer(models.Model):
     email = models.EmailField(max_length=100, blank=True)
     address = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=100, blank=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {'(Inactive)' if not self.is_active else ''}"
 
 class Branch(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100, blank=True)
     phone_number = models.CharField(max_length=100, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    def delete(self, *args, **kwargs):
+        self.is_active = False
+        self.save()
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {'(Inactive)' if not self.is_active else ''}"
 
 class Employee(models.Model):
     ROLE_CHOICES = (
@@ -41,12 +47,23 @@ class Employee(models.Model):
     phone = models.CharField(max_length=20, null=True, blank=True)
     profile_pic = models.ImageField(upload_to='media/', null=True, blank=True)
     hire_date = models.DateField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name}{'' if self.is_active else ' (Inactive)'}"
+
+    def save(self, *args, **kwargs):
+        if not self.is_active and self.user.is_active:
+            self.user.is_active = False
+            self.user.save()
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.is_active = False
+        self.save()
 
 class SalesAgent(models.Model):
-    employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, limit_choices_to={'is_active': True})
     commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     total_commission_earned = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     total_sales = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
@@ -55,9 +72,10 @@ class SalesAgent(models.Model):
         return f"Sales Agent: {self.employee.name}"
 
 class CreditOfficer(models.Model):
-    employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
+    employee = models.OneToOneField(Employee, on_delete=models.PROTECT, limit_choices_to={'is_active': True})
     approval_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     security_level = models.IntegerField(default=1)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Credit Officer: {self.employee.name} (Level {self.security_level})"
@@ -75,8 +93,12 @@ class Supplier(models.Model):
     phone = models.CharField(max_length=100, blank=True)
     contract_expiration = models.DateField()
     contract_start = models.DateField(auto_now_add=True)
-
     status = models.CharField(choices=OPTION, max_length=100, default='Active')
+    is_active = models.BooleanField(default=True)
+
+    def soft_delete(self):
+        self.is_active = False
+        self.save()
 
     @property
     def contract_status(self):
@@ -101,12 +123,12 @@ class Supplier(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {'(Archived)' if not self.is_active else ''}"
 
 class Product(models.Model):
     CATEGORIES = (
     ('Laptop', 'Laptop'),
-    ('Andriod', 'Andriod'),
+    ('Android', 'Android'),
     ('iPhone', 'iPhone'),
     ('Printer', 'Printer')
     )
@@ -119,12 +141,19 @@ class Product(models.Model):
     cost_price = models.DecimalField(max_digits=10, decimal_places=2)
     min_stock_level = models.PositiveIntegerField(default=3)
     image = models.ImageField(upload_to='media/', null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.product_name} | {self.barcode}"
 
+    def soft_delete(self):
+        self.is_active = False
+        self.deleted_at = timezone.now()
+        self.save()
+
 class BranchInventory(models.Model):
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, limit_choices_to={'is_active': True})
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
 
@@ -143,7 +172,7 @@ class Order(models.Model):
     ('INSTALLMENT', 'INSTALLMENT'),
     )
 
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'is_active': True})
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
 
@@ -151,14 +180,20 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     order_status = models.CharField(choices=ORDER_STATUS, max_length=100, default='Pending')
     payment_method = models.CharField(choices=PAYMENT_METHOD, max_length=100)
+    is_active = models.BooleanField(default=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.id} | {self.branch.name}"
 
+    def soft_delete(self):
+        self.is_active = False
+        self.deleted_at = timezone.now()
+        self.save()
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, limit_choices_to={'is_active': True})
     cost_price = models.DecimalField(max_digits=10, decimal_places=2)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
@@ -169,12 +204,13 @@ class OrderItem(models.Model):
 
     @property
     def line_total(self):
-        return self.quantity * self.order.total_amount
+        # return self.quantity * self.order.total_amount
+        return self.quantity * self.unit_price
 
 class Payment(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, limit_choices_to={'is_active': True})
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
-    date_paid = models.DateTimeField(auto_now_add=True)
+    date_paid = models.DateField()
     payment_type = models.CharField(max_length=100, choices=Order.PAYMENT_METHOD)
 
     def __str__(self):
@@ -195,9 +231,9 @@ class InstallmentPlan(models.Model):
     payment_status = models.CharField(max_length=100, choices=Order.ORDER_STATUS)
 
 class Invoice(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='invoice')
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='invoice', limit_choices_to={'is_active': True})
     or_number = models.CharField(max_length=100, unique=True)
-    invoice_date = models.DateTimeField(auto_now_add=True)
+    invoice_date = models.DateField()
     vat_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     grand_total = models.DecimalField(max_digits=10, decimal_places=2)
     issued_by = models.ForeignKey(Employee, on_delete=models.CASCADE)

@@ -1,6 +1,7 @@
 from contextlib import nullcontext
 from functools import total_ordering
 from http.client import responses
+from sys import is_stack_trampoline_active
 from xmlrpc.client import WRAPPERS
 
 from django.contrib.admin.templatetags.admin_list import items_for_result, paginator_number
@@ -74,33 +75,77 @@ class salesUpdateView(UpdateView):
         return context
 
 @login_required(login_url='login')
+def delete_order(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+
+    order.soft_delete()
+
+    messages.success(request, f"Order #{order.id} has been archived")
+
+    return redirect('sales_display')
+
+@login_required(login_url='login')
 def admin_reports(request):
 
     now = timezone.now()
 
     current_month_transactions = Order.objects.filter(
         order_date__year=now.year,
-        order_date__month=now.month
+        order_date__month=now.month,
+        employee__is_active=True,
+        branch__is_active = True,
+        is_active = True
     )
 
-    stats = current_month_transactions.aggregate(
-        total_revenue=Sum('total_amount'),
-        total_cost=Sum(F('orderitem__quantity') * F('orderitem__cost_price')),
-        total_count=Count('id')
+    active_order_ids = current_month_transactions.values_list('id', flat=True)
+
+    stats = OrderItem.objects.filter(
+        order_id__in=active_order_ids,
+        product__is_active=True  # Ensure we only count active products
+    ).aggregate(
+        total_revenue=Sum(F('unit_price') * F('quantity')),
+        total_cost=Sum(F('quantity') * F('cost_price')),
+        total_count=Count('order_id', distinct=True)
     )
+
+    # orders_stats = current_month_transactions.filter(
+    #     is_active=True  # Use the Order's own status
+    # ).aggregate(
+    #     total_revenue=Sum('total_amount'),
+    #     total_count=Count('id', distinct=True)
+    # )
+    #
+    # cost_stats = OrderItem.objects.filter(
+    #     order__in=current_month_transactions,
+    #     product__is_active=True
+    # ).aggregate(
+    #     total_cost=Sum(F('quantity') * F('cost_price'))
+    # )
+
 
     or_balance = InstallmentPlan.objects.filter(
         payment_status__in=['Pending', 'Cancelled']
-    ).aggregate(total_owed=Sum('remaining_balance'))['total_owed'] or 0
+    ).aggregate(total_owed=Sum('remaining_balance'))['total_owed'] or Decimal('0.00')
 
     outstanding_balance = or_balance.quantize(Decimal('0.00'))
 
-    payments = Order.objects.aggregate(
-        cash=Sum('total_amount', filter=Q(payment_method='CASH')),
-        installment=Sum('total_amount', filter=Q(payment_method='INSTALLMENT'))
+    payments = OrderItem.objects.filter(
+        order_id__in=active_order_ids,
+        product__is_active=True
+    ).aggregate(
+        cash=Sum(
+            F('unit_price') * F('quantity'),
+            filter=Q(order__payment_method='CASH')
+        ),
+        installment=Sum(
+            F('unit_price') * F('quantity'),
+            filter=Q(order__payment_method='INSTALLMENT')
+        )
     )
 
-    branch_query = Order.objects.values('branch__name').annotate(
+    branch_query = Order.objects.filter(
+        id__in=active_order_ids
+    ).values('branch__name').annotate(
         total=Sum('total_amount')
     ).order_by('-total')
 
@@ -116,8 +161,9 @@ def admin_reports(request):
             branch_names.append(name)
             branch_totals.append(amount)
 
-
-    employee_sales = Order.objects.values('employee__name').annotate(
+    employee_sales = Order.objects.filter(
+        id__in=active_order_ids
+    ).values('employee__name').annotate(
         total=Sum('total_amount')
     ).order_by('-total')
 
@@ -128,7 +174,10 @@ def admin_reports(request):
 
     employee_totals = [float(item['total'] or 0) for item in employee_sales]
 
-    product_sales = OrderItem.objects.values('product__product_name').annotate(
+    product_sales = OrderItem.objects.filter(
+        order_id__in=active_order_ids,
+        product__is_active=True
+    ).values('product__product_name').annotate(
         total=Sum('quantity')
     ).order_by('-total')[:5]
 
@@ -141,14 +190,6 @@ def admin_reports(request):
 
     print(len(product_sales))
 
-    if branch_query.exists():
-        for data_row in branch_query:
-            name = data_row['branch__name'] if data_row['branch__name'] else "Main Store"
-            amount = float(data_row['total']) if data_row['total'] else 0.0
-
-            branch_names.append(name)
-            branch_totals.append(amount)
-
 
     gross_revenue = stats['total_revenue'] or 0
     cost = stats['total_cost'] or 0
@@ -158,7 +199,7 @@ def admin_reports(request):
     cash_total = payments['cash'] or 0
     installment_total = payments['installment'] or 0
 
-    transactions = Order.objects.select_related('customer', 'branch').prefetch_related('orderitem_set__product').order_by('-order_date')
+    transactions = Order.objects.filter(employee__is_active=True, branch__is_active=True, is_active=True).select_related('customer', 'branch').prefetch_related('orderitem_set__product').order_by('-order_date')
 
     if gross_revenue > 0:
         ratio = float(outstanding_balance / gross_revenue)
@@ -313,12 +354,12 @@ def salesDisplay(request):
     is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
 
     if is_manager:
-        queryset = OrderItem.objects.all().select_related('order', 'order__customer', 'product', 'order__employee')
+        queryset = OrderItem.objects.filter(order__is_active=True).select_related('order', 'order__customer', 'product', 'order__employee')
     else:
         try:
             assigned_branch = request.user.employee.branch
 
-            queryset = OrderItem.objects.filter(order__branch=assigned_branch).select_related('order', 'product')
+            queryset = OrderItem.objects.filter(order__branch=assigned_branch, order__is_active=True).select_related('order', 'product')
         except Employee.DoesNotExist:
             queryset = OrderItem.objects.none
 
@@ -352,19 +393,28 @@ def salesDisplay(request):
     return render(request, 'accounts/sales_display.html', context)
 
 @login_required(login_url='login')
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    product.soft_delete()
+
+    messages.success(request, f"{product.product_name} has been archived globally.")
+    return redirect('branch_inventory')
+
+@login_required(login_url='login')
 def branchInventory(request):
     is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
 
 
     if is_manager:
-        items = BranchInventory.objects.all().select_related('branch', 'product')
+        items = BranchInventory.objects.filter(product__is_active=True).select_related('branch', 'product')
         assigned_branch = 'All Branches'
     else:
         try:
             login_employee = Employee.objects.get(user=request.user)
             assigned_branch = login_employee.branch
 
-            items = BranchInventory.objects.filter(branch=assigned_branch).select_related('product', 'product__supplier')
+            items = BranchInventory.objects.filter(branch=assigned_branch, product__is_active=True).select_related('product', 'product__supplier')
 
         except Employee.DoesNotExist:
             items = BranchInventory.objects.none()
@@ -373,7 +423,7 @@ def branchInventory(request):
     myFilter = InventoryFilter(request.GET, queryset=items)
     filtered_items = myFilter.qs
 
-    paginator = Paginator(filtered_items, 10)
+    paginator = Paginator(filtered_items, 8)
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -407,6 +457,9 @@ class EmployeeList(ListView):
     template_name = 'accounts/employee_list.html'
     context_object_name = 'employees'
     paginate_by = 3
+
+    def get_queryset(self):
+        return Employee.objects.filter(is_active=True).order_by('-hire_date')
 
 
 
@@ -521,7 +574,7 @@ def checkout_cash(request):
                 data = json.loads(request.body)
 
                 cart = data.get('cart', [])
-                total_amount = data.get('totalAmount')
+                total_amount = Decimal(str(data.get('totalAmount', 0)))
                 cash_received = data.get('cashReceived')
                 change_given = data.get('changeGiven')
                 customer_data = data.get('customerData', {})
@@ -568,7 +621,8 @@ def checkout_cash(request):
                         order = order,
                         product = product,
                         quantity = item['qty'],
-                        unit_price = item['price']
+                        unit_price = Decimal(str(item['price'])),
+                        cost_price = product.cost_price
                     )
 
                     try:
@@ -586,6 +640,7 @@ def checkout_cash(request):
                     order = order,
                     amount_paid = cash_received,
                     payment_type = payment_method,
+                    date_paid = order.order_date
                 )
 
                 CashPayment.objects.create(
@@ -599,7 +654,8 @@ def checkout_cash(request):
                     or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
                     vat_amount=order.total_amount * Decimal('0.12'),
                     grand_total=order.total_amount,
-                    issued_by=order.employee
+                    issued_by=order.employee,
+                    invoice_date = order.order_date
                 )
 
                 try:
