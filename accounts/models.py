@@ -240,3 +240,38 @@ class Invoice(models.Model):
 
     def __str__(self):
         return f"Invoice {self.or_number}"
+
+
+class WarrantyClaims(models.Model):
+    CLAIM_TYPES = (
+    ('Repair', 'Repair'),
+    ('Replacement', 'Replacement')
+    )
+
+    STATUS_CHOICES = (
+    ('Pending', 'Pending'),
+    ('In-Progress', 'In-Progress'),
+    ('Completed', 'Completed'),
+    ('Released', 'Released'),
+    )
+
+    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, related_name='warranty_claims')
+    claim_type = models.CharField(max_length=20, choices=CLAIM_TYPES, default='Repair')
+    faulty_serial = models.CharField(max_length=100)
+    issue_description = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    date_filed = models.DateTimeField(auto_now_add=True)
+    resolution_date = models.DateTimeField(null=True, blank=True)
+    handled_by = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'is_active': True})
+
+    def __str__(self):
+        return f"{self.claim_type} Claim - {self.order_item.product.product_name}"
+
+class ReplacementRecord(models.Model):
+    warranty_claims = models.OneToOneField(WarrantyClaims, on_delete=models.CASCADE)
+    old_serial = models.CharField(max_length=100)
+    new_serial = models.CharField(max_length=100)
+    replacement_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Replacement for Claim #{self.warranty_claims}"
