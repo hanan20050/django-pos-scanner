@@ -441,7 +441,13 @@ class WarrantyClaimsAdmin(admin.ModelAdmin):
 
     readonly_fields = ('date_filed',)
 
+    def has_add_permission(self, request):
+        return False
+
 
 @admin.register(ReplacementRecord)
 class ReplacementRecordAdmin(admin.ModelAdmin):
     list_display = ('warranty_claims', 'old_serial', 'new_serial', 'replacement_date')
+
+    def has_add_permission(self, request):
+        return False
