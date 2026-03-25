@@ -831,6 +831,15 @@ def warranty(request, pk):
         product = order_item.product
         branch = request.user.employee.branch
         inventory_item = BranchInventory.objects.filter(branch=branch, product=product).first()
+        days_since_purchase = (timezone.now() - sales.order_date).days
+
+        if claim_type == 'Replacement' and days_since_purchase > 7:
+            messages.error(request, f"Replacement denied. Item is {days_since_purchase} days old (Limit: 7).")
+            return redirect('warranty', pk=pk)
+
+        if claim_type == 'Repair' and days_since_purchase > 30:
+            messages.error(request, f"Warranty expired. Item is {days_since_purchase} days old (Limit: 30).")
+            return redirect('warranty', pk=pk)
 
 
         if claim_type == 'Replacement':
