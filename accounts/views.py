@@ -822,6 +822,12 @@ def warranty(request, pk):
     if not is_manager:
         raise PermissionDenied
 
+    if request.method == 'POST':
+        item_id =  request.POST.get('order_item_id')
+        order_item = get_object_or_404(OrderItem, order=sales, id=item_id)
+        faulty_serial = request.POST.get('faulty_serial')
+        claim_type = request.POST.get('claim_type')
+
     context = {'sales': sales}
 
     return render(request, 'accounts/warranty.html', context)
