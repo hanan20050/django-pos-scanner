@@ -808,3 +808,12 @@ def installment_checkout(request):
             return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=405)
+
+@login_required(login_url='login')
+def warranty(request, pk):
+
+    sales = get_object_or_404(Order, pk=pk)
+
+    context = {'sales': sales}
+
+    return render(request, 'accounts/warranty.html', context)
