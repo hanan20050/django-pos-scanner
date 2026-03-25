@@ -6,6 +6,7 @@ from xmlrpc.client import WRAPPERS
 
 from django.contrib.admin.templatetags.admin_list import items_for_result, paginator_number
 from django.contrib.auth import authenticate, login, logout
+from django.core.exceptions import PermissionDenied
 from django.forms import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
@@ -815,6 +816,11 @@ def installment_checkout(request):
 def warranty(request, pk):
 
     sales = get_object_or_404(Order, pk=pk)
+
+    is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
+
+    if not is_manager:
+        raise PermissionDenied
 
     context = {'sales': sales}
 
