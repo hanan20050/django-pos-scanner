@@ -1,7 +1,7 @@
 from contextlib import nullcontext
 from functools import total_ordering
 from http.client import responses
-from sys import is_stack_trampoline_active
+from sys import is_stack_trampoline_active, exception
 from xmlrpc.client import WRAPPERS
 
 from django.contrib.admin.templatetags.admin_list import items_for_result, paginator_number
@@ -16,7 +16,7 @@ from django.utils.text import phone2numeric, compress_string
 
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
-    CreditOfficer, InstallmentPlan, Invoice
+    CreditOfficer, InstallmentPlan, Invoice, WarrantyClaims
 from .filters import InventoryFilter, salesFilter, installmentFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
@@ -827,6 +827,39 @@ def warranty(request, pk):
         order_item = get_object_or_404(OrderItem, order=sales, id=item_id)
         faulty_serial = request.POST.get('faulty_serial')
         claim_type = request.POST.get('claim_type')
+        issue_description = request.POST.get('issue_description')
+        product = order_item.product
+        branch = request.user.employee.branch
+        inventory_item = BranchInventory.objects.filter(branch=branch, product=product).first()
+
+
+        if claim_type == 'Replacement':
+            if inventory_item is None:
+                messages.error(request, "Branch doesnt have the product.")
+                return redirect('warranty', pk=pk)
+            elif inventory_item.quantity < 1:
+                messages.error(request, "Product out of stock.")
+                return redirect('warranty', pk=pk)
+
+        try:
+            with transaction.atomic():
+                WarrantyClaims.objects.create(
+                    item_id=item_id,
+                    order_item=order_item,
+                    faulty_serial=faulty_serial,
+                    user=request.user,
+                    issue_description=issue_description,
+                )
+
+                if claim_type == 'Replacement':
+                    inventory_item.quantity = F('quantity') - 1
+                    inventory_item.save()
+        except Exception as e:
+            messages.error(f"Database Error: {e}")
+            return redirect('warranty', pk=pk)
+
+        messages.success(request, 'Successful!')
+        return redirect('warranty', pk=pk)
 
     context = {'sales': sales}
 
