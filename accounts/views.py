@@ -809,6 +809,8 @@ def installment_checkout(request):
 
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=405)
 
+
+
 @login_required(login_url='login')
 def warranty(request, pk):
 
