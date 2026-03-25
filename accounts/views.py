@@ -861,7 +861,7 @@ def warranty(request, pk):
                     item_id=item_id,
                     order_item=order_item,
                     faulty_serial=faulty_serial,
-                    user=request.user,
+                    handled_by=request.user.employee,
                     issue_description=issue_description,
                     cost_impact=cost_impact
                 )

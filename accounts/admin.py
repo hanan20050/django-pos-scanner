@@ -424,3 +424,24 @@ class SupplierAdmin(admin.ModelAdmin):
     # @admin.display(description='Status', boolean=True)
     # def get_status(self, obj):
     #     return obj.is_active
+
+
+from django.contrib import admin
+from .models import WarrantyClaims, ReplacementRecord
+
+
+@admin.register(WarrantyClaims)
+class WarrantyClaimsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'order_item', 'claim_type', 'status', 'cost_impact', 'handled_by', 'date_filed')
+
+    list_filter = ('claim_type', 'status', 'handled_by')
+
+    search_fields = ('fault_serial', 'order_item__product__product_name', 'issue_description')
+
+
+    readonly_fields = ('date_filed',)
+
+
+@admin.register(ReplacementRecord)
+class ReplacementRecordAdmin(admin.ModelAdmin):
+    list_display = ('warranty_claims', 'old_serial', 'new_serial', 'replacement_date')
