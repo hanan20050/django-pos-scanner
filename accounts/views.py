@@ -834,12 +834,17 @@ def warranty(request, pk):
 
 
         if claim_type == 'Replacement':
+            cost_impact = order_item.product.cost_price
             if inventory_item is None:
                 messages.error(request, "Branch doesnt have the product.")
                 return redirect('warranty', pk=pk)
             elif inventory_item.quantity < 1:
                 messages.error(request, "Product out of stock.")
                 return redirect('warranty', pk=pk)
+        elif claim_type == 'Repair':
+            cost_impact = 1500.00
+        else:
+            cost_impact = 0.00
 
         try:
             with transaction.atomic():
@@ -849,6 +854,7 @@ def warranty(request, pk):
                     faulty_serial=faulty_serial,
                     user=request.user,
                     issue_description=issue_description,
+                    cost_impact=cost_impact
                 )
 
                 if claim_type == 'Replacement':

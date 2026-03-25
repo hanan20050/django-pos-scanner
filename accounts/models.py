@@ -262,6 +262,7 @@ class WarrantyClaims(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     date_filed = models.DateTimeField(auto_now_add=True)
     resolution_date = models.DateTimeField(null=True, blank=True)
+    cost_impact = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=True, blank=True)
     handled_by = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'is_active': True})
 
     def __str__(self):
