@@ -451,3 +451,12 @@ class ReplacementRecordAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+@admin.register(DefectiveInventory)
+class DefectiveInventoryAdmin(admin.ModelAdmin):
+    list_display = ('product', 'branch', 'faulty_serial', 'reason', 'date_received', 'is_disposed')
+    list_filter = ('branch', 'faulty_serial')
+
+    def has_add_permission(self, request):
+        return False
+
