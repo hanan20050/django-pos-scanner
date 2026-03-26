@@ -276,3 +276,15 @@ class ReplacementRecord(models.Model):
 
     def __str__(self):
         return f"Replacement for Claim #{self.warranty_claims}"
+
+
+class DefectiveInventory(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    faulty_serial = models.CharField(max_length=100)
+    reason = models.TextField()
+    date_received = models.DateTimeField(auto_now_add=True)
+    is_disposed = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Defective {self.product.product_name} - {self.faulty_serial}"
