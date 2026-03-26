@@ -825,12 +825,28 @@ def warranty(request, pk):
     if request.method == 'POST':
         item_id =  request.POST.get('order_item_id')
         order_item = get_object_or_404(OrderItem, order=sales, id=item_id)
+        product = order_item.product
+
+        if request.user.is_superuser:
+            inventory_item = BranchInventory.objects.filter(branch=branch, product=product).first()
+            if not inventory_item:
+                messages.error(request, 'Product not found in any branch inventory')
+                return redirect('warranty', pk=pk)
+            branch = inventory_item.branch
+            handle_by_profile = getattr(request.user, 'employee', None)
+        else:
+            try:
+                employee_profile = request.user.employee
+                branch = employee_profile.branch
+                inventory_item = BranchInventory.ojects.filter(branch=branch, product=product).first()
+                handle_by_profile = employee_profile
+            except AttributeError:
+                messages.error(request, "You do not have an associated Employee profile.")
+                return redirect('warranty', pk=pk)
+
         faulty_serial = request.POST.get('faulty_serial')
         claim_type = request.POST.get('claim_type')
         issue_description = request.POST.get('issue_description')
-        product = order_item.product
-        branch = request.user.employee.branch
-        inventory_item = BranchInventory.objects.filter(branch=branch, product=product).first()
         days_since_purchase = (timezone.now() - sales.order_date).days
 
         if claim_type == 'Replacement' and days_since_purchase > 7:
@@ -866,7 +882,7 @@ def warranty(request, pk):
                     item_id=item_id,
                     order_item=order_item,
                     faulty_serial=faulty_serial,
-                    handled_by=request.user.employee,
+                    handled_by=handle_by_profile,
                     issue_description=issue_description,
                     cost_impact=cost_impact
                 )
