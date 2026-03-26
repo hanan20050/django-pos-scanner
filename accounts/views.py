@@ -16,7 +16,7 @@ from django.utils.text import phone2numeric, compress_string
 
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
-    CreditOfficer, InstallmentPlan, Invoice, WarrantyClaims
+    CreditOfficer, InstallmentPlan, Invoice, WarrantyClaims, DefectiveInventory
 from .filters import InventoryFilter, salesFilter, installmentFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
@@ -855,7 +855,10 @@ def warranty(request, pk):
         else:
             cost_impact = 0.00
 
-        existing_claim = WarrantyClaims.objects.filter(order_item=order_item, status__in=['Completed'])
+        existing_claim = WarrantyClaims.objects.filter(order_item=order_item, status__in=['Completed', 'Released']).exists()
+        if existing_claim:
+            messages.error(request, "Warranty already claimed.")
+            return redirect('warranty', pk=pk)
 
         try:
             with transaction.atomic():
@@ -871,6 +874,13 @@ def warranty(request, pk):
                 if claim_type == 'Replacement':
                     inventory_item.quantity = F('quantity') - 1
                     inventory_item.save()
+
+                    DefectiveInventory.objects.create(
+                        product=product,
+                        branch=branch,
+                        faulty_serial=faulty_serial,
+                        reason=issue_description
+                    )
         except Exception as e:
             messages.error(f"Database Error: {e}")
             return redirect('warranty', pk=pk)
