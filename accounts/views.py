@@ -855,6 +855,8 @@ def warranty(request, pk):
         else:
             cost_impact = 0.00
 
+        existing_claim = WarrantyClaims.objects.filter(order_item=order_item, status__in=['Completed'])
+
         try:
             with transaction.atomic():
                 WarrantyClaims.objects.create(
