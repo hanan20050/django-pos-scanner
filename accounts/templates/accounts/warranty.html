@@ -26,6 +26,7 @@
                         <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Product Description</th>
                         <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Qty</th>
                         <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Faulty Serial Number</th>
+                        <th class="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">New Serial Number</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -45,7 +46,11 @@
                             {{ item.quantity }}
                         </td>
                         <td class="p-4">
-                            <input type="text" name="faulty_serial" placeholder="Scan or Type Serial"
+                            <input type="text" name="faulty_serial_{{ item.id }}" placeholder="Scan or Type Serial"
+                                   class="w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 sm:text-sm py-2 px-3 border">
+                        </td>
+                        <td class="p-4">
+                            <input type="text" name="new_serial_{{ item.id }}" placeholder="Scan or Type Serial"
                                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 sm:text-sm py-2 px-3 border">
                         </td>
                     </tr>

@@ -16,7 +16,7 @@ from django.utils.text import phone2numeric, compress_string
 
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
-    CreditOfficer, InstallmentPlan, Invoice, WarrantyClaims, DefectiveInventory
+    CreditOfficer, InstallmentPlan, Invoice, WarrantyClaims, DefectiveInventory, ReplacementRecord
 from .filters import InventoryFilter, salesFilter, installmentFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
@@ -826,12 +826,14 @@ def warranty(request, pk):
         item_id =  request.POST.get('order_item_id')
         order_item = get_object_or_404(OrderItem, order=sales, id=item_id)
         product = order_item.product
+        claim_type = request.POST.get('claim_type')
 
         if request.user.is_superuser:
             inventory_item = BranchInventory.objects.filter(product=product).first()
             if not inventory_item:
                 messages.error(request, 'Product not found in any branch inventory')
                 return redirect('warranty', pk=pk)
+            # inv_check = BranchInventory.objects.filter(product=product).first()
             branch = inventory_item.branch
             handle_by_profile = getattr(request.user, 'employee', None)
         else:
@@ -844,8 +846,7 @@ def warranty(request, pk):
                 messages.error(request, "You do not have an associated Employee profile.")
                 return redirect('warranty', pk=pk)
 
-        faulty_serial = request.POST.get('faulty_serial')
-        claim_type = request.POST.get('claim_type')
+        faulty_serial = request.POST.get(f'faulty_serial_{item_id}')
         issue_description = request.POST.get('issue_description')
         days_since_purchase = (timezone.now().date() - sales.order_date).days
 
@@ -871,6 +872,29 @@ def warranty(request, pk):
         else:
             cost_impact = 0.00
 
+        # if claim_type == 'Replacement':
+        #     # ONLY Check inventory here
+        #     inventory_item = BranchInventory.objects.filter(branch=branch, product=product).first() if branch else None
+        #
+        #     if not inventory_item or inventory_item.quantity < 1:
+        #         messages.error(request, "Branch has no stock for replacement.")
+        #         return redirect('warranty', pk=pk)
+        #
+        #     if days_since_purchase > 7:
+        #         messages.error(request, f"Replacement denied. Item is {days_since_purchase} days old.")
+        #         return redirect('warranty', pk=pk)
+        #
+        #     cost_impact = product.cost_price
+        #
+        # elif claim_type == 'Repair':
+        #     if days_since_purchase > 30:
+        #         messages.error(request, f"Repair denied. Warranty expired ({days_since_purchase} days).")
+        #         return redirect('warranty', pk=pk)
+        #
+        #     cost_impact = 1500.00
+        # else:
+        #     cost_impact = 0.00
+
         existing_claim = WarrantyClaims.objects.filter(order_item=order_item, status__in=['Completed', 'Released']).exists()
         if existing_claim:
             messages.error(request, "Warranty already claimed.")
@@ -878,17 +902,18 @@ def warranty(request, pk):
 
         try:
             with transaction.atomic():
-                WarrantyClaims.objects.create(
+                claim = WarrantyClaims.objects.create(
                     order_item=order_item,
                     claim_type=claim_type,
-                    faulty_serial=faulty_serial,
+                    faulty_serial=faulty_serial if faulty_serial else "N/A",
                     handled_by=handle_by_profile,
                     issue_description=issue_description,
                     cost_impact=cost_impact,
-                    status='Completed'
+                    status='Completed' if claim_type == 'Replacement' else 'Pending'
                 )
 
                 if claim_type == 'Replacement':
+                    inventory_item.refresh_from_db()
                     inventory_item.quantity = F('quantity') - 1
                     inventory_item.save()
 
@@ -899,6 +924,16 @@ def warranty(request, pk):
                         reason=issue_description,
                         is_disposed=False
                     )
+
+                    new_serial_input = request.POST.get(f'new_serial_{item_id}', 'N/A')
+
+                    ReplacementRecord.objects.create(
+                        warranty_claims=claim,
+                        old_serial=faulty_serial,
+                        new_serial=new_serial_input,
+                    )
+                # elif claim_type == 'Repair':
+                #     print(f"DEBUG: Repair logged for {product.product_name}. Cost: {cost_impact}")
         except Exception as e:
             messages.error(request, f"Database Error: {e}")
             return redirect('warranty', pk=pk)
