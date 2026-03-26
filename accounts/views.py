@@ -828,7 +828,7 @@ def warranty(request, pk):
         product = order_item.product
 
         if request.user.is_superuser:
-            inventory_item = BranchInventory.objects.filter(branch=branch, product=product).first()
+            inventory_item = BranchInventory.objects.filter(product=product).first()
             if not inventory_item:
                 messages.error(request, 'Product not found in any branch inventory')
                 return redirect('warranty', pk=pk)
@@ -838,7 +838,7 @@ def warranty(request, pk):
             try:
                 employee_profile = request.user.employee
                 branch = employee_profile.branch
-                inventory_item = BranchInventory.ojects.filter(branch=branch, product=product).first()
+                inventory_item = BranchInventory.objects.filter(branch=branch, product=product).first()
                 handle_by_profile = employee_profile
             except AttributeError:
                 messages.error(request, "You do not have an associated Employee profile.")
@@ -847,7 +847,7 @@ def warranty(request, pk):
         faulty_serial = request.POST.get('faulty_serial')
         claim_type = request.POST.get('claim_type')
         issue_description = request.POST.get('issue_description')
-        days_since_purchase = (timezone.now() - sales.order_date).days
+        days_since_purchase = (timezone.now().date() - sales.order_date).days
 
         if claim_type == 'Replacement' and days_since_purchase > 7:
             messages.error(request, f"Replacement denied. Item is {days_since_purchase} days old (Limit: 7).")
@@ -879,12 +879,13 @@ def warranty(request, pk):
         try:
             with transaction.atomic():
                 WarrantyClaims.objects.create(
-                    item_id=item_id,
                     order_item=order_item,
+                    claim_type=claim_type,
                     faulty_serial=faulty_serial,
                     handled_by=handle_by_profile,
                     issue_description=issue_description,
-                    cost_impact=cost_impact
+                    cost_impact=cost_impact,
+                    status='Completed'
                 )
 
                 if claim_type == 'Replacement':
@@ -895,10 +896,11 @@ def warranty(request, pk):
                         product=product,
                         branch=branch,
                         faulty_serial=faulty_serial,
-                        reason=issue_description
+                        reason=issue_description,
+                        is_disposed=False
                     )
         except Exception as e:
-            messages.error(f"Database Error: {e}")
+            messages.error(request, f"Database Error: {e}")
             return redirect('warranty', pk=pk)
 
         messages.success(request, 'Successful!')
