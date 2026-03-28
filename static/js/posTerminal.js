@@ -340,7 +340,7 @@ function updateInstallmentCalculation(){
 
     const monthly = finalBalance / term
 
-    document.getElementById('inst-balance-display').textContent = `₱${finalBalance.toLocaleString()}`
+    document.getElementById('inst-balance-display').textContent = `₱${finalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
     document.getElementById('inst-monthly-display').textContent = `₱${monthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
 

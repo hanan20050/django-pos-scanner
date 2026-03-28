@@ -53,11 +53,11 @@ function renderCart(){
                 </div>
                 <div class="flex justify-between text-gray-400 font-bold">
                     <span>Tax (12%)</span>
-                    <span>₱${tax.toLocaleString()}</span>
+                    <span>₱${tax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                 </div>
                 <div class="flex justify-between text-2xl font-black pt-3 border-t border-gray-100">
                     <span>Total</span>
-                    <span class="text-blue-700" id="total-display">₱${grandTotal.toLocaleString()}</span>
+                    <span class="text-blue-700" id="total-display">₱${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                 </div>
         `
 
@@ -141,7 +141,7 @@ function openCheckoutModal(type){
         const installmentTotalDisplay = document.getElementById('installment-total-display')
 
         installmentCartItems.innerHTML = cartRows
-        installmentTotalDisplay.textContent = `₱${currentGrandTotal.toLocaleString()}`;
+        installmentTotalDisplay.textContent = `₱${currentGrandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     }
 }
@@ -271,7 +271,7 @@ function updateInstallmentCalculation(){
     const monthly = totalAmountToPay / term;
 
     document.getElementById('inst-balance-display').textContent = `₱${totalAmountToPay.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-    document.getElementById('inst-monthly-display').textContent = `₱${monthly.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+    document.getElementById('inst-monthly-display').textContent = `₱${monthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function calculateChange(){
