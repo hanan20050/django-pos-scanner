@@ -270,7 +270,7 @@ function updateInstallmentCalculation(){
 
     const monthly = totalAmountToPay / term;
 
-    document.getElementById('inst-balance-display').textContent = `₱${totalAmountToPay.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+    document.getElementById('inst-balance-display').textContent = `₱${totalAmountToPay.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     document.getElementById('inst-monthly-display').textContent = `₱${monthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 

@@ -695,7 +695,7 @@ def installment_checkout(request):
             data = json.loads(request.body)
 
             cart = data.get('cart', [])
-            total_amount = data.get('totalAmount')
+            total_amount = clean_currency(data.get('totalAmount'))
             installment_total = data.get('installmentTotal')
             installment_data = data.get('installmentData')
             payment_method = data.get('paymentMethod')
@@ -753,7 +753,8 @@ def installment_checkout(request):
                     order=order,
                     product=product,
                     quantity=item['qty'],
-                    unit_price=item['price']
+                    unit_price=item['price'],
+                    cost_price = product.cost_price
                 )
 
                 try:
@@ -771,6 +772,7 @@ def installment_checkout(request):
                 order=order,
                 amount_paid=payment,
                 payment_type=payment_method,
+                date_paid=timezone.now().date()
             )
 
             InstallmentPlan.objects.create(
@@ -788,7 +790,8 @@ def installment_checkout(request):
                 or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
                 vat_amount=order.total_amount * Decimal('0.12'),
                 grand_total=order.total_amount,
-                issued_by=order.employee
+                issued_by=order.employee,
+                invoice_date=timezone.now().date()
             )
 
             try:
