@@ -43,7 +43,8 @@
             <table class="w-full text-sm">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="p-3 text-left">Date</th>
+                        <th class="p-3 text-left w-1/2">Date</th>
+                        <th class="p-3 text-left w-1/4">Status</th>
                         <th class="p-3 text-right">Amount Paid</th>
                     </tr>
                 </thead>
@@ -51,7 +52,37 @@
                     {% for i in payments %}
                     <tr class="border-2">
                         <td class="p-3">{{ i.date_paid }}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                                Paid
+                            </span>
+                        </td>
                         <td class="p-3 text-right font-bold">₱{{ i.amount_paid }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <hr>
+            <h3 class="p-4 font-bold border-b">Upcoming Payments</h3>
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="p-3 text-left w-1/2">Schedule</th>
+                        <th class="p-3 text-left w-1/4">Status</th>
+                        <th class="p-3 text-right">Monthly payment</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    {% for due_date in schedule %}
+                    <tr class="border-2">
+                        <td class="p-3">{{ due_date }}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                                Unpaid
+                            </span>
+                        </td>
+                        <td class="p-3 text-right font-bold">₱{{ inst.monthly_due }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

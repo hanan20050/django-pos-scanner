@@ -252,6 +252,14 @@ def manage_installment(request, pk):
 
     print(f"DEBUG: Current Balance in DB: {inst.remaining_balance}")
 
+    rows = inst.remaining_balance / inst.monthly_due
+
+    schedule = []
+
+    for i in range(int(rows)):
+        future_date = inst.next_due_date + relativedelta(months=i)
+        schedule.append(future_date)
+
     payments = Payment.objects.filter(order=inst.payment.order).order_by('-date_paid')
 
     if request.method == 'POST':
@@ -269,7 +277,8 @@ def manage_installment(request, pk):
                     new_payment = form.save(commit=False)
                     new_payment.order = inst.payment.order
                     new_payment.payment_type = 'INSTALLMENT'
-                    new_payment.save()  # <--- IF THIS FAILS, THE WHOLE BLOCK STOPS
+                    new_payment.date_paid = timezone.now().date()
+                    new_payment.save()
 
                     inst.remaining_balance -= amount
                     inst.next_due_date += timedelta(days=30)
@@ -290,7 +299,7 @@ def manage_installment(request, pk):
     print(f"DEBUG: Looking for payments for Order ID: {inst.payment.order.id}")
     print(f"DEBUG: Found {payments.count()} payments.")
 
-    context = {'inst': inst, 'form': form, 'payment': payment, 'payments': payments}
+    context = {'inst': inst, 'form': form, 'payment': payment, 'payments': payments, 'schedule': schedule}
 
     return render(request, 'accounts/manage_installment.html', context)
 
