@@ -252,6 +252,14 @@ def manage_installment(request, pk):
 
     print(f"DEBUG: Current Balance in DB: {inst.remaining_balance}")
 
+    rows = inst.remaining_balance / inst.monthly_due
+
+    schedule = []
+
+    for i in range(int(rows)):
+        future_date = inst.next_due_date + relativedelta(months=i)
+        schedule.append(future_date)
+
     payments = Payment.objects.filter(order=inst.payment.order).order_by('-date_paid')
 
     if request.method == 'POST':
@@ -269,7 +277,8 @@ def manage_installment(request, pk):
                     new_payment = form.save(commit=False)
                     new_payment.order = inst.payment.order
                     new_payment.payment_type = 'INSTALLMENT'
-                    new_payment.save()  # <--- IF THIS FAILS, THE WHOLE BLOCK STOPS
+                    new_payment.date_paid = timezone.now().date()
+                    new_payment.save()
 
                     inst.remaining_balance -= amount
                     inst.next_due_date += timedelta(days=30)
@@ -290,7 +299,7 @@ def manage_installment(request, pk):
     print(f"DEBUG: Looking for payments for Order ID: {inst.payment.order.id}")
     print(f"DEBUG: Found {payments.count()} payments.")
 
-    context = {'inst': inst, 'form': form, 'payment': payment, 'payments': payments}
+    context = {'inst': inst, 'form': form, 'payment': payment, 'payments': payments, 'schedule': schedule}
 
     return render(request, 'accounts/manage_installment.html', context)
 
@@ -695,7 +704,7 @@ def installment_checkout(request):
             data = json.loads(request.body)
 
             cart = data.get('cart', [])
-            total_amount = data.get('totalAmount')
+            total_amount = clean_currency(data.get('totalAmount'))
             installment_total = data.get('installmentTotal')
             installment_data = data.get('installmentData')
             payment_method = data.get('paymentMethod')
@@ -753,7 +762,8 @@ def installment_checkout(request):
                     order=order,
                     product=product,
                     quantity=item['qty'],
-                    unit_price=item['price']
+                    unit_price=item['price'],
+                    cost_price = product.cost_price
                 )
 
                 try:
@@ -771,6 +781,7 @@ def installment_checkout(request):
                 order=order,
                 amount_paid=payment,
                 payment_type=payment_method,
+                date_paid=timezone.now().date()
             )
 
             InstallmentPlan.objects.create(
@@ -788,7 +799,8 @@ def installment_checkout(request):
                 or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
                 vat_amount=order.total_amount * Decimal('0.12'),
                 grand_total=order.total_amount,
-                issued_by=order.employee
+                issued_by=order.employee,
+                invoice_date=timezone.now().date()
             )
 
             try:
