@@ -1,5 +1,7 @@
 {% extends 'accounts/main.html' %}
 
+{% load humanize %}
+
 {% block content %}
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -10,7 +12,7 @@
         <div class="relative z-10 flex items-center justify-between">
             <div>
                 <p class="text-xs font-bold text-blue-400 uppercase tracking-widest opacity-80">Weekly Sales</p>
-                <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ weekly_total|floatformat:2 }}</h3>
+                <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ weekly_total|floatformat:2|intcomma }}</h3>
             </div>
             <div class="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl backdrop-blur-md">
                 <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d=" incumbents-7 7l-3-3m0 0l-3 3m3-3v12"></path></svg>
@@ -26,7 +28,7 @@
         <div class="relative z-10 flex items-center justify-between">
             <div>
                 <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest opacity-80">Monthly Volume</p>
-                <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ monthly_total|floatformat:2 }}</h3>
+                <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ monthly_total|floatformat:2|intcomma }}</h3>
             </div>
             <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl backdrop-blur-md">
                 <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
@@ -42,7 +44,7 @@
         <div class="relative z-10 flex items-center justify-between">
             <div>
                 <p class="text-xs font-bold text-violet-400 uppercase tracking-widest opacity-80">Annual Revenue</p>
-                <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ yearly_total|floatformat:2 }}</h3>
+                <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ yearly_total|floatformat:2|intcomma }}</h3>
             </div>
             <div class="p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl backdrop-blur-md">
                 <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>

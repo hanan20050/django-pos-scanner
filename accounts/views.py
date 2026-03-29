@@ -38,7 +38,7 @@ from datetime import datetime
 
 from django.views.decorators.csrf import csrf_exempt
 
-from django.db.models import Sum, F, Expression, ExpressionWrapper, Count, Q
+from django.db.models import Sum, F, Expression, ExpressionWrapper, Count, Q, DecimalField
 from django.db.models.functions import Coalesce
 from django.db import models
 
@@ -969,11 +969,16 @@ def dashboard(request):
     start_of_year = now.replace(month=1, day=1, hour=0, minute=0, second=0)
 
     def get_total(start_date):
-        return Order.objects.filter(
-            order_date__gte=start_date,
-            is_active=True,
+        return OrderItem.objects.filter(
+            order__order_date__gte=start_date,
+            order__is_active=True,
+            product__is_active=True
         ).aggregate(
-            total=Coalesce(Sum('total_amount'), Decimal('0.00'))
+            total=Coalesce(
+                Sum(F('unit_price') * F('quantity')),
+                Decimal('0.00'),
+                output_field=DecimalField()
+            )
         )['total']
 
     weekly_total = get_total(start_of_week)
