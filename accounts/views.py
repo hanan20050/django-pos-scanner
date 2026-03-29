@@ -956,3 +956,8 @@ def warranty(request, pk):
     context = {'sales': sales}
 
     return render(request, 'accounts/warranty.html', context)
+
+
+@login_required(login_url='login')
+def dashboard(request):
+    return render(request, 'accounts/dashboard.html')
