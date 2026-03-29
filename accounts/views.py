@@ -980,10 +980,40 @@ def dashboard(request):
     monthly_total = get_total(start_of_month)
     yearly_total = get_total(start_of_year)
 
+    pending_claims = WarrantyClaims.objects.filter(
+        status='Pending',
+    ).count()
+
+    in_progress_claims = WarrantyClaims.objects.filter(
+        status='In-Progress',
+    ).count()
+
+    completed_claims = WarrantyClaims.objects.filter(
+        status='Completed',
+    ).count()
+
+    released_claims = WarrantyClaims.objects.filter(
+        status='Released',
+    ).count()
+
+    repair = WarrantyClaims.objects.filter(
+        claim_type='Repair',
+    ).count()
+
+    replacement = WarrantyClaims.objects.filter(
+        claim_type='Replacement',
+    ).count()
+
     context = {
         'weekly_total': weekly_total,
         'monthly_total': monthly_total,
         'yearly_total': yearly_total,
+        'pending_claims': pending_claims,
+        'in_progress_claims': in_progress_claims,
+        'completed_claims': completed_claims,
+        'released_claims': released_claims,
+        'repair': repair,
+        'replacement': replacement,
     }
 
     return render(request, 'accounts/dashboard.html', context)
