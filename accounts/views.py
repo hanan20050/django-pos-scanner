@@ -39,6 +39,7 @@ from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 
 from django.db.models import Sum, F, Expression, ExpressionWrapper, Count, Q
+from django.db.models.functions import Coalesce
 from django.db import models
 
 import re
@@ -102,7 +103,7 @@ def admin_reports(request):
 
     stats = OrderItem.objects.filter(
         order_id__in=active_order_ids,
-        product__is_active=True  # Ensure we only count active products
+        product__is_active=True
     ).aggregate(
         total_revenue=Sum(F('unit_price') * F('quantity')),
         total_cost=Sum(F('quantity') * F('cost_price')),
@@ -956,3 +957,33 @@ def warranty(request, pk):
     context = {'sales': sales}
 
     return render(request, 'accounts/warranty.html', context)
+
+
+@login_required(login_url='login')
+def dashboard(request):
+
+    now = timezone.now()
+
+    start_of_week = now - timedelta(days=7)
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0)
+    start_of_year = now.replace(month=1, day=1, hour=0, minute=0, second=0)
+
+    def get_total(start_date):
+        return Order.objects.filter(
+            order_date__gte=start_date,
+            is_active=True,
+        ).aggregate(
+            total=Coalesce(Sum('total_amount'), Decimal('0.00'))
+        )['total']
+
+    weekly_total = get_total(start_of_week)
+    monthly_total = get_total(start_of_month)
+    yearly_total = get_total(start_of_year)
+
+    context = {
+        'weekly_total': weekly_total,
+        'monthly_total': monthly_total,
+        'yearly_total': yearly_total,
+    }
+
+    return render(request, 'accounts/dashboard.html', context)
