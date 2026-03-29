@@ -2,4 +2,44 @@
 
 {% block content %}
 
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-blue-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Weekly Sales</p>
+                <h3 class="text-2xl font-black text-gray-900 mt-1">₱{{ weekly_total|floatformat:2 }}</h3>
+            </div>
+            <div class="p-3 bg-blue-50 rounded-lg text-blue-500">
+                </div>
+        </div>
+        <p class="text-xs text-blue-600 mt-4 font-bold">Last 7 Days</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-green-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Monthly Sales</p>
+                <h3 class="text-2xl font-black text-gray-900 mt-1">₱{{ monthly_total|floatformat:2 }}</h3>
+            </div>
+            <div class="p-3 bg-green-50 rounded-lg text-green-500">
+                </div>
+        </div>
+        <p class="text-xs text-green-600 mt-4 font-bold">Current Month</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-purple-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Yearly Sales</p>
+                <h3 class="text-2xl font-black text-gray-900 mt-1">₱{{ yearly_total|floatformat:2 }}</h3>
+            </div>
+            <div class="p-3 bg-purple-50 rounded-lg text-purple-500">
+                </div>
+        </div>
+        <p class="text-xs text-purple-600 mt-4 font-bold">2026 Revenue</p>
+    </div>
+
+</div>
+
 {% endblock %}
