@@ -4,40 +4,54 @@
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-blue-500">
-        <div class="flex items-center justify-between">
+<!--    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">-->
+
+    <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
+        <div class="relative z-10 flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Weekly Sales</p>
-                <h3 class="text-2xl font-black text-gray-900 mt-1">₱{{ weekly_total|floatformat:2 }}</h3>
+                <p class="text-xs font-bold text-blue-400 uppercase tracking-widest opacity-80">Weekly Sales</p>
+                <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ weekly_total|floatformat:2 }}</h3>
             </div>
-            <div class="p-3 bg-blue-50 rounded-lg text-blue-500">
-                </div>
+            <div class="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl backdrop-blur-md">
+                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d=" incumbents-7 7l-3-3m0 0l-3 3m3-3v12"></path></svg>
+            </div>
         </div>
-        <p class="text-xs text-blue-600 mt-4 font-bold">Last 7 Days</p>
+        <div class="mt-4 flex items-center">
+            <span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full font-bold">LATEST 7 DAYS</span>
+        </div>
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 blur-3xl rounded-full"></div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-green-500">
-        <div class="flex items-center justify-between">
+    <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
+        <div class="relative z-10 flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Monthly Sales</p>
-                <h3 class="text-2xl font-black text-gray-900 mt-1">₱{{ monthly_total|floatformat:2 }}</h3>
+                <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest opacity-80">Monthly Volume</p>
+                <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ monthly_total|floatformat:2 }}</h3>
             </div>
-            <div class="p-3 bg-green-50 rounded-lg text-green-500">
-                </div>
+            <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl backdrop-blur-md">
+                <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            </div>
         </div>
-        <p class="text-xs text-green-600 mt-4 font-bold">Current Month</p>
+        <div class="mt-4 flex items-center">
+            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">CURRENT MONTH</span>
+        </div>
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 blur-3xl rounded-full"></div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-purple-500">
-        <div class="flex items-center justify-between">
+    <div class="relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
+        <div class="relative z-10 flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Yearly Sales</p>
-                <h3 class="text-2xl font-black text-gray-900 mt-1">₱{{ yearly_total|floatformat:2 }}</h3>
+                <p class="text-xs font-bold text-violet-400 uppercase tracking-widest opacity-80">Annual Revenue</p>
+                <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ yearly_total|floatformat:2 }}</h3>
             </div>
-            <div class="p-3 bg-purple-50 rounded-lg text-purple-500">
-                </div>
+            <div class="p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl backdrop-blur-md">
+                <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
         </div>
-        <p class="text-xs text-purple-600 mt-4 font-bold">2026 Revenue</p>
+        <div class="mt-4 flex items-center">
+            <span class="text-[10px] bg-violet-500/20 text-violet-300 px-2 py-0.5 rounded-full font-bold">FISCAL 2026</span>
+        </div>
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-violet-500/10 blur-3xl rounded-full"></div>
     </div>
 
 
