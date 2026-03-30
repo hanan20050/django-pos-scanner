@@ -1032,6 +1032,13 @@ def warranty_list(request):
     else:
         claims = WarrantyClaims.objects.all().select_related('order_item__product', 'order_item__order__customer').order_by('-date_filed')
 
+    search_query = request.GET.get('q')
+    if search_query:
+        claims = claims.filter(
+            Q(faulty_serial__icontains=search_query) |
+            Q(order_item__order__customer__name__icontains=search_query)
+        )
+
     context = {'claims': claims}
 
     return render(request, 'accounts/warranty_list.html', context)
