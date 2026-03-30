@@ -1022,3 +1022,7 @@ def dashboard(request):
     }
 
     return render(request, 'accounts/dashboard.html', context)
+
+@login_required(login_url='login')
+def warranty_list(request):
+    return render(request, 'accounts/warranty_list.html')
