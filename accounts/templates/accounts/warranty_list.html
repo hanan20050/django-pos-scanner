@@ -41,8 +41,9 @@
            RELEASED
         </a>
 
-        <form method="get">
-            <input name="q" placeholder="Enter SN.." class="border-2 border-gray-700 rounded" value="{{ request.GET.q }}">
+        <form method="get" class="flex justify-center items-center gap-2">
+            <input name="q" placeholder="Enter SN.." class="border-2 border-gray-700 rounded">
+            <input name="q" placeholder="Enter Customer name.." class="border-2 border-gray-700 rounded">
 
             <button type="submit" class="bg-blue-500 px-4 rounded">Search</button>
         </form>
