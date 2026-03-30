@@ -32,4 +32,5 @@ urlpatterns = [
     path('warranty/<int:pk>/', views.warranty, name='warranty'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('warrnty_list/', views.warranty_list, name='warranty_list'),
+    path('update_claim_status/<int:pk>/', views.update_claim_status, name='update_claim_status'),
 ]

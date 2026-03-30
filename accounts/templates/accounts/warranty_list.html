@@ -42,8 +42,7 @@
         </a>
 
         <form method="get" class="flex justify-center items-center gap-2">
-            <input name="q" placeholder="Enter SN.." class="border-2 border-gray-700 rounded">
-            <input name="q" placeholder="Enter Customer name.." class="border-2 border-gray-700 rounded">
+            <input name="q" placeholder="Enter SN or customer name.." class="w-80 border-2 border-gray-700 rounded">
 
             <button type="submit" class="bg-blue-500 px-4 rounded">Search</button>
         </form>
@@ -77,10 +76,23 @@
                         </span>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="flex items-center gap-1.5 text-xs font-bold {% if claim.status == 'Pending' %}text-slate-400{% elif claim.status == 'In-Progress' %}text-indigo-600{% else %}text-emerald-600{% endif %}">
-                            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-                            {{ claim.status }}
-                        </span>
+                        <form method="POST" action="{% url 'update_claim_status' claim.id %}">
+                            {% csrf_token %}
+                            <select name="status"
+                                    onchange="this.closest('form').submit()"
+                                    class="bg-transparent border-none focus:ring-0 cursor-pointer text-xs font-bold p-0
+                                    {% if claim.status == 'Pending' %}text-slate-400
+                                    {% elif claim.status == 'In-Progress' %}text-indigo-600
+                                    {% elif claim.status == 'Completed' %}text-emerald-600
+                                    {% else %}text-purple-600{% endif %}">
+
+                                <option value="Pending" {% if claim.status == 'Pending' %}selected{% endif %}>● Pending</option>
+                                <option value="In-Progress" {% if claim.status == 'In-Progress' %}selected{% endif %}>● In-Progress</option>
+                                <option value="Completed" {% if claim.status == 'Completed' %}selected{% endif %}>● Completed</option>
+                                <option value="Released" {% if claim.status == 'Released' %}selected{% endif %}>● Released</option>
+
+                            </select>
+                        </form>
                     </td>
                     <td class="px-6 py-4 text-sm text-slate-500">
                         {{ claim.date_filed|date:"M d, Y" }}

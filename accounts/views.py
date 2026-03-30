@@ -1042,3 +1042,22 @@ def warranty_list(request):
     context = {'claims': claims}
 
     return render(request, 'accounts/warranty_list.html', context)
+
+
+def update_claim_status(request, pk):
+    print(request.POST)
+
+    if request.method == 'POST':
+        claim = get_object_or_404(WarrantyClaims, pk=pk)
+        new_status = request.POST.get('status')
+
+        if new_status:
+            claim.status = new_status
+
+            if new_status in ['Released', 'Completed'] and not claim.resolution_date:
+                claim.resolution_date = timezone.now()
+
+            claim.save()
+            messages.success(request, f"Claim #{claim.id} updated to {new_status}")
+
+    return redirect('warranty_list')
