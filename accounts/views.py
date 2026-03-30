@@ -1026,9 +1026,9 @@ def dashboard(request):
 @login_required(login_url='login')
 def warranty_list(request):
 
-    status_filter = request.POST.get('status')
+    status_filter = request.GET.get('status')
     if status_filter and status_filter != 'All':
-        claims = WarrantyClaims.objects.filter(status=status_filter)
+        claims = WarrantyClaims.objects.filter(status=status_filter).select_related('order_item__product', 'order_item__order__customer').order_by('-date_filed')
     else:
         claims = WarrantyClaims.objects.all()
 
