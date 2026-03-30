@@ -1025,4 +1025,13 @@ def dashboard(request):
 
 @login_required(login_url='login')
 def warranty_list(request):
-    return render(request, 'accounts/warranty_list.html')
+
+    status_filter = request.POST.get('status')
+    if status_filter and status_filter != 'All':
+        claims = WarrantyClaims.objects.filter(status=status_filter)
+    else:
+        claims = WarrantyClaims.objects.all()
+
+    context = {'claims': claims}
+
+    return render(request, 'accounts/warranty_list.html', context)
