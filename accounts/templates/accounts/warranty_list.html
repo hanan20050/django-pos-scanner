@@ -7,20 +7,39 @@
             <h1 class="text-3xl font-black text-slate-900 tracking-tight">Warranty Workbench</h1>
             <p class="text-slate-500 text-sm mt-1">Manage service lifecycle and customer replacements.</p>
         </div>
-        <div class="flex gap-3">
-            <a href="#" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 transition-all flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                New Claim
-            </a>
-        </div>
+<!--        <div class="flex gap-3">-->
+<!--            <a href="#" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 transition-all flex items-center gap-2">-->
+<!--                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>-->
+<!--                New Claim-->
+<!--            </a>-->
+<!--        </div>-->
     </div>
 
     <div class="flex flex-wrap gap-2 mb-6">
-        <a href="?status=All" class="px-4 py-2 rounded-full text-xs font-bold {% if not request.GET.status or request.GET.status == 'All' %}bg-slate-900 text-white{% else %}bg-white text-slate-500 border border-slate-200{% endif %}">ALL CLAIMS</a>
-        <a href="?status=Pending" class="px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition">PENDING</a>
-        <a href="?status=In-Progress" class="px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition">IN-PROGRESS</a>
-        <a href="?status=Completed" class="px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition">COMPLETED</a>
-        <a href="?status=Released" class="px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition">RELEASED</a>
+        <a href="?status=All"
+           class="px-4 py-2 rounded-full text-xs font-bold {% if not request.GET.status or request.GET.status == 'All' %}bg-slate-900 text-white{% else %}bg-white text-slate-500 border border-slate-200{% endif %}">
+           ALL CLAIMS
+        </a>
+
+        <a href="?status=Pending"
+           class="px-4 py-2 rounded-full text-xs font-bold {% if request.GET.status == 'Pending' %}bg-slate-900 text-white shadow-md shadow-slate-200{% else %}bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition{% endif %}">
+           PENDING
+        </a>
+
+        <a href="?status=In-Progress"
+           class="px-4 py-2 rounded-full text-xs font-bold {% if request.GET.status == 'In-Progress' %}bg-slate-900 text-white shadow-md shadow-slate-200{% else %}bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition{% endif %}">
+           IN-PROGRESS
+        </a>
+
+        <a href="?status=Completed"
+           class="px-4 py-2 rounded-full text-xs font-bold {% if request.GET.status == 'Completed' %}bg-slate-900 text-white shadow-md shadow-slate-200{% else %}bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition{% endif %}">
+           COMPLETED
+        </a>
+
+        <a href="?status=Released"
+           class="px-4 py-2 rounded-full text-xs font-bold {% if request.GET.status == 'Released' %}bg-slate-900 text-white shadow-md shadow-slate-200{% else %}bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition{% endif %}">
+           RELEASED
+        </a>
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -42,7 +61,7 @@
                         <span class="font-mono text-xs font-bold text-slate-400">#WC-{{ claim.id }}</span>
                     </td>
                     <td class="px-6 py-4">
-                        <div class="font-bold text-slate-900">{{ claim.orderitem.order.customer }}</div>
+                        <div class="font-bold text-slate-900">{{ claim.order_item.order.customer }}</div>
                         <div class="text-xs text-slate-500">{{ claim.order_item.product.product_name }} (SN: {{ claim.faulty_serial }})</div>
                     </td>
                     <td class="px-6 py-4">
@@ -61,7 +80,7 @@
                     </td>
                     <td class="px-6 py-4 text-right">
                         <div class="flex justify-end gap-2">
-                            <a href="{#}" class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                            <a href="{% url 'warranty' claim.id %}" class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                             </a>
                             <button class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition">

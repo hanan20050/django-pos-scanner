@@ -1030,7 +1030,7 @@ def warranty_list(request):
     if status_filter and status_filter != 'All':
         claims = WarrantyClaims.objects.filter(status=status_filter).select_related('order_item__product', 'order_item__order__customer').order_by('-date_filed')
     else:
-        claims = WarrantyClaims.objects.all()
+        claims = WarrantyClaims.objects.all().select_related('order_item__product', 'order_item__order__customer').order_by('-date_filed')
 
     context = {'claims': claims}
 
