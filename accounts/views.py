@@ -1009,6 +1009,24 @@ def dashboard(request):
         claim_type='Replacement',
     ).count()
 
+    claims = WarrantyClaims.objects.select_related('order_item__product','order_item__order__customer').all()
+
+    total_cost_impact = claims.aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
+    repair_cost_impact = claims.filter(
+        claim_type='Repair',
+    ).aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
+    replacement_cost_impact = claims.filter(
+        claim_type='Replacement',
+    ).aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
     context = {
         'weekly_total': weekly_total,
         'monthly_total': monthly_total,
@@ -1019,6 +1037,72 @@ def dashboard(request):
         'released_claims': released_claims,
         'repair': repair,
         'replacement': replacement,
+        'total_cost_impact': total_cost_impact,
+        'repair_cost_impact': repair_cost_impact,
+        'replacement_cost_impact': replacement_cost_impact
     }
 
     return render(request, 'accounts/dashboard.html', context)
+
+@login_required(login_url='login')
+def warranty_list(request):
+
+    status_filter = request.GET.get('status')
+    if status_filter and status_filter != 'All':
+        claims = WarrantyClaims.objects.filter(status=status_filter).select_related('order_item__product', 'order_item__order__customer').order_by('-date_filed')
+    else:
+        claims = WarrantyClaims.objects.all().select_related('order_item__product', 'order_item__order__customer').order_by('-date_filed')
+
+    search_query = request.GET.get('q')
+    if search_query:
+        claims = claims.filter(
+            Q(faulty_serial__icontains=search_query) |
+            Q(order_item__order__customer__name__icontains=search_query)
+        )
+
+    total_cost_impact = claims.aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
+    repair_cost_impact = claims.filter(
+        claim_type='Repair',
+    ).aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
+    replacement_cost_impact = claims.filter(
+        claim_type='Replacement',
+    ).aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
+    paginator = Paginator(claims, 5)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {'claims': claims, 'total_cost_impact': total_cost_impact, 'repair_cost_impact': repair_cost_impact, 'replacement_cost_impact': replacement_cost_impact, 'page_obj': page_obj}
+
+
+    return render(request, 'accounts/warranty_list.html', context)
+
+@login_required(login_url='login')
+def update_claim_status(request, pk):
+    print(request.POST)
+
+
+    if request.method == 'POST':
+        claim = get_object_or_404(WarrantyClaims, pk=pk)
+        new_status = request.POST.get('status')
+
+        if new_status:
+            claim.status = new_status
+
+            if new_status in ['Released', 'Completed'] and not claim.resolution_date:
+                claim.resolution_date = timezone.now()
+
+            claim.save()
+            messages.success(request, f"Claim #{claim.id} updated to {new_status}")
+
+
+    return redirect('warranty_list')

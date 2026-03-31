@@ -1,0 +1,171 @@
+{% extends 'accounts/main.html' %}
+
+{% load humanize %}
+
+{% block content %}
+<div class="p-6 bg-slate-50 min-h-screen">
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight">Warranty Workbench</h1>
+            <p class="text-slate-500 text-sm mt-1">Manage service lifecycle and customer replacements.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-800">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Liability</p>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-3xl font-black text-white">₱{{ total_cost_impact|floatformat:2|intcomma }}</h2>
+                    <div class="p-2 bg-slate-800 rounded-lg">
+                        <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3 1.343 3-3-1.343-3-3-3zM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Repair Logistics</p>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-3xl font-black text-slate-900">₱{{ repair_cost_impact|floatformat:2|intcomma }}</h2>
+                    <span class="text-[10px] font-bold bg-blue-50 text-blue-600 px-2 py-1 rounded-md">SERVICE</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Inventory Loss</p>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-3xl font-black text-slate-900">₱{{ replacement_cost_impact|floatformat:2|intcomma }}</h2>
+                    <span class="text-[10px] font-bold bg-amber-50 text-amber-600 px-2 py-1 rounded-md">HARDWARE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-wrap gap-2 mb-6">
+        <a href="?status=All"
+           class="px-4 py-2 rounded-full text-xs font-bold {% if not request.GET.status or request.GET.status == 'All' %}bg-slate-900 text-white{% else %}bg-white text-slate-500 border border-slate-200{% endif %}">
+           ALL CLAIMS
+        </a>
+
+        <a href="?status=Pending"
+           class="px-4 py-2 rounded-full text-xs font-bold {% if request.GET.status == 'Pending' %}bg-slate-900 text-white shadow-md shadow-slate-200{% else %}bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition{% endif %}">
+           PENDING
+        </a>
+
+        <a href="?status=In-Progress"
+           class="px-4 py-2 rounded-full text-xs font-bold {% if request.GET.status == 'In-Progress' %}bg-slate-900 text-white shadow-md shadow-slate-200{% else %}bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition{% endif %}">
+           IN-PROGRESS
+        </a>
+
+        <a href="?status=Completed"
+           class="px-4 py-2 rounded-full text-xs font-bold {% if request.GET.status == 'Completed' %}bg-slate-900 text-white shadow-md shadow-slate-200{% else %}bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition{% endif %}">
+           COMPLETED
+        </a>
+
+        <a href="?status=Released"
+           class="px-4 py-2 rounded-full text-xs font-bold {% if request.GET.status == 'Released' %}bg-slate-900 text-white shadow-md shadow-slate-200{% else %}bg-white text-slate-500 border border-slate-200 hover:border-indigo-300 transition{% endif %}">
+           RELEASED
+        </a>
+
+        <form method="get" class="flex justify-center items-center gap-2">
+            <input name="q" placeholder="Enter SN or customer name.." class="w-80 border-2 border-gray-700 rounded">
+
+            <button type="submit" class="bg-blue-500 px-4 rounded">Search</button>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 border-b border-slate-200">
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Claim ID</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Customer / Item</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Type</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Status</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Date Filed</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for claim in page_obj %}
+                <tr class="hover:bg-slate-50/50 transition">
+                    <td class="px-6 py-4">
+                        <span class="font-mono text-xs font-bold text-slate-400">#WC-{{ claim.id }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-slate-900">{{ claim.order_item.order.customer }}</div>
+                        <div class="text-xs text-slate-500">{{ claim.order_item.product.product_name }} (SN: {{ claim.faulty_serial }})</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded text-[10px] font-black uppercase {% if claim.claim_type == 'Repair' %}bg-blue-50 text-blue-600{% else %}bg-amber-50 text-amber-600{% endif %}">
+                            {{ claim.claim_type }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <form method="POST" action="{% url 'update_claim_status' claim.id %}">
+                            {% csrf_token %}
+                            <select name="status"
+                                    onchange="this.closest('form').submit()"
+                                    class="bg-transparent border-none focus:ring-0 cursor-pointer text-xs font-bold p-0
+                                    {% if claim.status == 'Pending' %}text-slate-400
+                                    {% elif claim.status == 'In-Progress' %}text-indigo-600
+                                    {% elif claim.status == 'Completed' %}text-emerald-600
+                                    {% else %}text-purple-600{% endif %}">
+
+                                <option value="Pending" {% if claim.status == 'Pending' %}selected{% endif %}>● Pending</option>
+                                <option value="In-Progress" {% if claim.status == 'In-Progress' %}selected{% endif %}>● In-Progress</option>
+                                <option value="Completed" {% if claim.status == 'Completed' %}selected{% endif %}>● Completed</option>
+                                <option value="Released" {% if claim.status == 'Released' %}selected{% endif %}>● Released</option>
+
+                            </select>
+                        </form>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-slate-500">
+                        {{ claim.date_filed|date:"M d, Y" }}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex justify-end gap-2">
+                            <a href="{% url 'warranty' claim.id %}" class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            </a>
+                            <button class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-20 text-center text-slate-400">
+                        No warranty claims found. Start by filing a new one.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+           <div class="flex items-center justify-between p-4 bg-white border-t border-gray-200">
+            <span class="text-sm text-gray-700">
+                Page <span class="font-semibold text-gray-900">{{ page_obj.number }}</span> of
+                <span class="font-semibold text-gray-900">{{ page_obj.paginator.num_pages }}</span>
+            </span>
+
+            <div class="inline-flex mt-2 xs:mt-0">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+                       class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900">
+                        Prev
+                    </a>
+                {% endif %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+                       class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900">
+                        Next
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+</div>
+
+
+{% endblock %}

@@ -30,5 +30,7 @@ urlpatterns = [
     path('delete-order/<int:pk>/', views.delete_order, name='delete_order'),
     path('delete-product/<int:pk>/', views.delete_product, name='delete_product'),
     path('warranty/<int:pk>/', views.warranty, name='warranty'),
-    path('dashboard/', views.dashboard, name='dashboard')
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('warrnty_list/', views.warranty_list, name='warranty_list'),
+    path('update_claim_status/<int:pk>/', views.update_claim_status, name='update_claim_status'),
 ]
