@@ -1027,6 +1027,16 @@ def dashboard(request):
         total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
     )['total']
 
+    low_stock = BranchInventory.objects.filter(quantity__lte=F('product__min_stock_level'), quantity__gt=0, product__is_active=True).count()
+
+    out_of_stocks = BranchInventory.objects.filter(quantity=0, product__is_active=True).count()
+
+    healthy_stocks = BranchInventory.objects.filter(quantity__gt=F('product__min_stock_level'), product__is_active=True).count()
+
+    last_24_hrs = timezone.now() - timedelta(days=1)
+
+    recent_stock = BranchInventory.objects.filter(date_added__gte=last_24_hrs).count()
+
     context = {
         'weekly_total': weekly_total,
         'monthly_total': monthly_total,
@@ -1039,7 +1049,11 @@ def dashboard(request):
         'replacement': replacement,
         'total_cost_impact': total_cost_impact,
         'repair_cost_impact': repair_cost_impact,
-        'replacement_cost_impact': replacement_cost_impact
+        'replacement_cost_impact': replacement_cost_impact,
+        'low_stock': low_stock,
+        'out_of_stocks': out_of_stocks,
+        'healthy_stocks': healthy_stocks,
+        'recent_stock': recent_stock
     }
 
     return render(request, 'accounts/dashboard.html', context)
