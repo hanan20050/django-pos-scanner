@@ -84,7 +84,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-                {% for claim in claims %}
+                {% for claim in page_obj %}
                 <tr class="hover:bg-slate-50/50 transition">
                     <td class="px-6 py-4">
                         <span class="font-mono text-xs font-bold text-slate-400">#WC-{{ claim.id }}</span>
@@ -141,6 +141,31 @@
             </tbody>
         </table>
     </div>
+
+           <div class="flex items-center justify-between p-4 bg-white border-t border-gray-200">
+            <span class="text-sm text-gray-700">
+                Page <span class="font-semibold text-gray-900">{{ page_obj.number }}</span> of
+                <span class="font-semibold text-gray-900">{{ page_obj.paginator.num_pages }}</span>
+            </span>
+
+            <div class="inline-flex mt-2 xs:mt-0">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+                       class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900">
+                        Prev
+                    </a>
+                {% endif %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+                       class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900">
+                        Next
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
 </div>
+
 
 {% endblock %}

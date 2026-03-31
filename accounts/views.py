@@ -1076,7 +1076,13 @@ def warranty_list(request):
         total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
     )['total']
 
-    context = {'claims': claims, 'total_cost_impact': total_cost_impact, 'repair_cost_impact': repair_cost_impact, 'replacement_cost_impact': replacement_cost_impact}
+    paginator = Paginator(claims, 5)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {'claims': claims, 'total_cost_impact': total_cost_impact, 'repair_cost_impact': repair_cost_impact, 'replacement_cost_impact': replacement_cost_impact, 'page_obj': page_obj}
+
 
     return render(request, 'accounts/warranty_list.html', context)
 
