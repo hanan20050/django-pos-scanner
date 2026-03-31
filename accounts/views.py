@@ -1039,13 +1039,30 @@ def warranty_list(request):
             Q(order_item__order__customer__name__icontains=search_query)
         )
 
-    context = {'claims': claims}
+    total_cost_impact = claims.aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
+    repair_cost_impact = claims.filter(
+        claim_type='Repair',
+    ).aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
+    replacement_cost_impact = claims.filter(
+        claim_type='Replacement',
+    ).aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
+    context = {'claims': claims, 'total_cost_impact': total_cost_impact, 'repair_cost_impact': repair_cost_impact, 'replacement_cost_impact': replacement_cost_impact}
 
     return render(request, 'accounts/warranty_list.html', context)
 
-
+@login_required(login_url='login')
 def update_claim_status(request, pk):
     print(request.POST)
+
 
     if request.method == 'POST':
         claim = get_object_or_404(WarrantyClaims, pk=pk)
@@ -1059,5 +1076,6 @@ def update_claim_status(request, pk):
 
             claim.save()
             messages.success(request, f"Claim #{claim.id} updated to {new_status}")
+
 
     return redirect('warranty_list')

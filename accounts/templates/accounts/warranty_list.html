@@ -1,5 +1,7 @@
 {% extends 'accounts/main.html' %}
 
+{% load humanize %}
+
 {% block content %}
 <div class="p-6 bg-slate-50 min-h-screen">
     <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
@@ -7,12 +9,33 @@
             <h1 class="text-3xl font-black text-slate-900 tracking-tight">Warranty Workbench</h1>
             <p class="text-slate-500 text-sm mt-1">Manage service lifecycle and customer replacements.</p>
         </div>
-<!--        <div class="flex gap-3">-->
-<!--            <a href="#" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 transition-all flex items-center gap-2">-->
-<!--                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>-->
-<!--                New Claim-->
-<!--            </a>-->
-<!--        </div>-->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-800">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Liability</p>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-3xl font-black text-white">₱{{ total_cost_impact|floatformat:2|intcomma }}</h2>
+                    <div class="p-2 bg-slate-800 rounded-lg">
+                        <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3 1.343 3-3-1.343-3-3-3zM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Repair Logistics</p>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-3xl font-black text-slate-900">₱{{ repair_cost_impact|floatformat:2|intcomma }}</h2>
+                    <span class="text-[10px] font-bold bg-blue-50 text-blue-600 px-2 py-1 rounded-md">SERVICE</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Inventory Loss</p>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-3xl font-black text-slate-900">₱{{ replacement_cost_impact|floatformat:2|intcomma }}</h2>
+                    <span class="text-[10px] font-bold bg-amber-50 text-amber-600 px-2 py-1 rounded-md">HARDWARE</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="flex flex-wrap gap-2 mb-6">
@@ -119,4 +142,5 @@
         </table>
     </div>
 </div>
+
 {% endblock %}
