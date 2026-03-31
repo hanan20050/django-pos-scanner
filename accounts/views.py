@@ -1009,6 +1009,24 @@ def dashboard(request):
         claim_type='Replacement',
     ).count()
 
+    claims = WarrantyClaims.objects.select_related('order_item__product','order_item__order__customer').all()
+
+    total_cost_impact = claims.aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
+    repair_cost_impact = claims.filter(
+        claim_type='Repair',
+    ).aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
+    replacement_cost_impact = claims.filter(
+        claim_type='Replacement',
+    ).aggregate(
+        total=Coalesce(Sum('cost_impact'), Decimal('0.00'))
+    )['total']
+
     context = {
         'weekly_total': weekly_total,
         'monthly_total': monthly_total,
@@ -1019,6 +1037,9 @@ def dashboard(request):
         'released_claims': released_claims,
         'repair': repair,
         'replacement': replacement,
+        'total_cost_impact': total_cost_impact,
+        'repair_cost_impact': repair_cost_impact,
+        'replacement_cost_impact': replacement_cost_impact
     }
 
     return render(request, 'accounts/dashboard.html', context)
