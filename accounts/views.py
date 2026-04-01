@@ -1060,6 +1060,8 @@ def dashboard(request):
 
     recent_stock = BranchInventory.objects.filter(date_added__gte=last_24_hrs).count()
 
+    overdue_count = InstallmentPlan.objects.filter(next_due_date__lt=now, payment_status__in=['Pending']).count()
+
     context = {
         'weekly_total': weekly_total,
         'monthly_total': monthly_total,
@@ -1076,7 +1078,8 @@ def dashboard(request):
         'low_stock': low_stock,
         'out_of_stocks': out_of_stocks,
         'healthy_stocks': healthy_stocks,
-        'recent_stock': recent_stock
+        'recent_stock': recent_stock,
+        'overdue_count': overdue_count
     }
 
     return render(request, 'accounts/dashboard.html', context)
