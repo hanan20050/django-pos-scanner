@@ -90,10 +90,10 @@ def delete_order(request, pk):
 def admin_reports(request):
 
     now = timezone.now()
+    last_30_days = now - timedelta(days=30)
 
     current_month_transactions = Order.objects.filter(
-        order_date__year=now.year,
-        order_date__month=now.month,
+        order_date__gte=last_30_days,
         employee__is_active=True,
         branch__is_active = True,
         is_active = True
@@ -962,11 +962,11 @@ def warranty(request, pk):
 @login_required(login_url='login')
 def dashboard(request):
 
-    now = timezone.now()
+    now = timezone.localtime(timezone.now())
 
-    start_of_week = now - timedelta(days=7)
-    start_of_month = now.replace(day=1, hour=0, minute=0, second=0)
-    start_of_year = now.replace(month=1, day=1, hour=0, minute=0, second=0)
+    start_of_week = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    start_of_month = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+    start_of_year = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
 
     def get_total(start_date):
         return OrderItem.objects.filter(
