@@ -114,6 +114,7 @@ class ProductAdmin(admin.ModelAdmin):
 class BranchInventoryAdmin(admin.ModelAdmin):
     list_display = ('branch', 'product', 'product__category', 'quantity', 'get_is_active')
     list_filter = ('branch', 'product', 'product__category')
+    date_hierarchy = 'date_added'
 
     @admin.display(description='Product Active')
     def get_is_active(self, obj):

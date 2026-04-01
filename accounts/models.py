@@ -156,6 +156,10 @@ class BranchInventory(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, limit_choices_to={'is_active': True})
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date_added']
 
     def __str__(self):
         return f"{self.branch} | {self.product} | {self.quantity}"
