@@ -1060,6 +1060,62 @@ def dashboard(request):
 
     recent_stock = BranchInventory.objects.filter(date_added__gte=last_24_hrs).count()
 
+    overdue_count = InstallmentPlan.objects.filter(next_due_date__lt=now, payment_status__in=['Pending']).count()
+
+    collections_query = InstallmentPlan.objects.filter(next_due_date=now.date(), payment_status__in=['Pending']).aggregate(
+        total=Coalesce(Sum('monthly_due'), Decimal('0.00'))
+    )
+
+    collections_today = collections_query['total']
+
+    paid_today = InstallmentPlan.objects.filter(
+        next_due_date=now.date(),
+        payment_status='Completed'
+    ).aggregate(
+        total=Coalesce(Sum('monthly_due'), Decimal('0.00'))
+    )['total']
+
+    total_target = collections_today + paid_today
+    if total_target > 0:
+        collection_progress = (paid_today / total_target) * 100
+    else:
+        collection_progress = 0
+
+    total_debt = InstallmentPlan.objects.filter(
+        payment_status__in=['Pending']
+    ).aggregate(
+        total=Coalesce(Sum('remaining_balance'), Decimal('0.00'))
+    )
+
+    debt_value = total_debt['total']
+
+    last_30_days = now - timedelta(days=30)
+
+    current_month_transactions = Order.objects.filter(
+        order_date__gte=last_30_days,
+        employee__is_active=True,
+        branch__is_active=True,
+        is_active=True
+    )
+
+    active_order_ids = current_month_transactions.values_list('id', flat=True)
+
+    stats = OrderItem.objects.filter(
+        order_id__in=active_order_ids,
+        product__is_active=True
+    ).aggregate(
+        total_revenue=Sum(F('unit_price') * F('quantity')),
+    )
+
+    gross_revenue = stats['total_revenue']
+    revenue_value = gross_revenue if gross_revenue else Decimal('0.00')
+
+    if revenue_value > 0:
+        ratio = float(debt_value / revenue_value)
+    else:
+        ratio = 1.0 if debt_value > 0 else 0.0
+
+
     context = {
         'weekly_total': weekly_total,
         'monthly_total': monthly_total,
@@ -1076,7 +1132,12 @@ def dashboard(request):
         'low_stock': low_stock,
         'out_of_stocks': out_of_stocks,
         'healthy_stocks': healthy_stocks,
-        'recent_stock': recent_stock
+        'recent_stock': recent_stock,
+        'overdue_count': overdue_count,
+        'collections_today': collections_today,
+        'collection_progress': collection_progress,
+        'ratio': ratio,
+        'outstanding_balance': debt_value
     }
 
     return render(request, 'accounts/dashboard.html', context)
