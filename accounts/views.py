@@ -110,6 +110,29 @@ def admin_reports(request):
         total_count=Count('order_id', distinct=True)
     )
 
+    now1 = timezone.localtime(timezone.now())
+
+    start_of_week = now1.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    start_of_month = (now1 - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+    start_of_year = now1.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    def get_total(start_date):
+        return OrderItem.objects.filter(
+            order__order_date__gte=start_date,
+            order__is_active=True,
+            product__is_active=True
+        ).aggregate(
+            total=Coalesce(
+                Sum(F('unit_price') * F('quantity')),
+                Decimal('0.00'),
+                output_field=DecimalField()
+            )
+        )['total']
+
+    weekly_total = get_total(start_of_week)
+    monthly_total = get_total(start_of_month)
+    yearly_total = get_total(start_of_year)
+
     # orders_stats = current_month_transactions.filter(
     #     is_active=True  # Use the Order's own status
     # ).aggregate(
@@ -218,7 +241,7 @@ def admin_reports(request):
 
     context = {'gross_revenue': gross_revenue, 'cost': cost, 'net_profit': net_profit, 'aov': aov, 'ratio': ratio, 'outstanding_balance': outstanding_balance, 'total_transactions': total_transactions, 'transactions': transactions, 'page_obj': page_obj, 'cash_total': cash_total, 'installment_total': installment_total, 'branch_names': branch_names,
     'branch_totals': branch_totals, 'employee_names': employee_names,
-    'employee_totals': employee_totals, 'product_name': product_name, 'product_totals': product_totals}
+    'employee_totals': employee_totals, 'product_name': product_name, 'product_totals': product_totals, 'weekly_total': weekly_total, 'monthly_total': monthly_total, 'yearly_total': yearly_total}
 
     print(gross_revenue)
 

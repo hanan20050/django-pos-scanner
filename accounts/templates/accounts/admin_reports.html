@@ -139,6 +139,74 @@
     </div>
 </div>
 
+<div class="bg-slate-900 rounded-2xl shadow-xl border border-slate-800 overflow-hidden mb-8">
+    <div class="px-6 py-4 border-b border-slate-800 bg-slate-900/50">
+        <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Revenue Performance Ledger</h2>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-slate-950/50 text-slate-500 uppercase text-[10px] font-black tracking-tighter">
+                <tr>
+                    <th class="px-6 py-3">Reporting Period</th>
+                    <th class="px-6 py-3">Reference Date</th>
+                    <th class="px-6 py-3 text-right">Total Revenue</th>
+                    <th class="px-6 py-3 text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+                <tr class="hover:bg-slate-800/30 transition">
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-bold text-slate-100">Weekly Sales</div>
+                        <p class="text-[10px] text-slate-500">Fixed Calendar Week</p>
+                    </td>
+                    <td class="px-6 py-4 text-xs text-slate-400 font-mono">
+                        {{ start_of_week|date:"M d, Y" }} - Present
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <span class="text-sm font-black text-blue-400">₱{{ weekly_total|floatformat:2|intcomma }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-bold rounded uppercase">Active</span>
+                    </td>
+                </tr>
+
+                <tr class="hover:bg-slate-800/30 transition">
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-bold text-slate-100">Monthly Volume</div>
+                        <p class="text-[10px] text-slate-500">Current Month ({{ now|date:"F" }})</p>
+                    </td>
+                    <td class="px-6 py-4 text-xs text-slate-400 font-mono">
+                        {{ start_of_month|date:"M d, Y" }} - Present
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <span class="text-sm font-black text-emerald-400">₱{{ monthly_total|floatformat:2|intcomma }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded uppercase">Current</span>
+                    </td>
+                </tr>
+
+                <tr class="hover:bg-slate-800/30 transition">
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-bold text-slate-100">Annual Revenue</div>
+                        <p class="text-[10px] text-slate-500">Fiscal Year {{ now|date:"Y" }}</p>
+                    </td>
+                    <td class="px-6 py-4 text-xs text-slate-400 font-mono">
+                        Jan 01, {{ now|date:"Y" }} - Present
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <span class="text-sm font-black text-violet-400">₱{{ yearly_total|floatformat:2|intcomma }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2 py-0.5 bg-violet-500/10 text-violet-400 text-[10px] font-bold rounded uppercase">Fiscal</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 
 <script>
     const ctx = document.getElementById('paymentChart').getContext('2d');
