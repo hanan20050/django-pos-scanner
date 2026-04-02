@@ -998,7 +998,7 @@ def dashboard(request):
             product__is_active=True
         ).aggregate(
             total=Coalesce(
-                Sum(F('unit_price') * F('quantity')),
+                Sum(F('order__total_amount') * F('quantity')),
                 Decimal('0.00'),
                 output_field=DecimalField()
             )
@@ -1120,7 +1120,7 @@ def dashboard(request):
     yesterday = timezone.localtime(timezone.now()).date() - timedelta(days=1)
 
     today_total = OrderItem.objects.filter(order__order_date=today, order__is_active=True).aggregate(
-        total=Coalesce(Sum(F('unit_price') * F('quantity')), Decimal('0.00'))
+        total=Coalesce(Sum(F('order__total_amount') * F('quantity')), Decimal('0.00'))
     )['total']
 
     yesterday_total = OrderItem.objects.filter(order__order_date=yesterday, order__is_active=True).aggregate(
