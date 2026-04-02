@@ -1119,15 +1119,20 @@ def dashboard(request):
 
     yesterday = timezone.localtime(timezone.now()).date() - timedelta(days=1)
 
-    today_revenue = OrderItem.objects.filter(order__order_date=today).aggregate(
-        total=Sum(F('unit_price') * F('quantity'))
+    today_total = OrderItem.objects.filter(order__order_date=today, order__is_active=True).aggregate(
+        total=Coalesce(Sum(F('unit_price') * F('quantity')), Decimal('0.00'))
     )['total']
 
-    yesterday_revenue = OrderItem.objects.filter(order__order_date=yesterday).aggregate(
-        total=Sum(F('unit_price') * F('quantity'))
+    yesterday_total = OrderItem.objects.filter(order__order_date=yesterday, order__is_active=True).aggregate(
+        total=Coalesce(Sum(F('unit_price') * F('quantity')), Decimal('0.00'))
     )['total']
 
-    growth_percent = ((today_revenue - yesterday_revenue) / yesterday_revenue) * 100
+    if yesterday_total > 0:
+        growth_percent = ((today_total - yesterday_total) / yesterday_total) * 100
+    elif today_total > 0:
+        growth_percent = 100.0
+    else:
+        growth_percent = 0.0
 
 
     context = {
@@ -1151,7 +1156,10 @@ def dashboard(request):
         'collections_today': collections_today,
         'collection_progress': collection_progress,
         'ratio': ratio,
-        'outstanding_balance': debt_value
+        'outstanding_balance': debt_value,
+        'growth_percent': growth_percent,
+        'today_total': today_total,
+        'yesterday_total': yesterday_total
     }
 
     return render(request, 'accounts/dashboard.html', context)
