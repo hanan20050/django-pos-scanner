@@ -266,6 +266,49 @@
 
         </div>
     </div>
+
+
+
+    <div class="flex items-center gap-3 px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl">
+        <div class="flex-shrink-0">
+            {% if growth_percent > 0 %}
+                <div class="p-2 bg-emerald-500/10 rounded-lg">
+                    <svg class="w-5 h-5 text-emerald-400 animate-bounce-subtle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                </div>
+            {% elif growth_percent < 0 %}
+                <div class="p-2 bg-rose-500/10 rounded-lg">
+                    <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path>
+                    </svg>
+                </div>
+            {% else %}
+                <div class="p-2 bg-slate-500/10 rounded-lg">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 12h14"></path>
+                    </svg>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Daily Momentum</span>
+            <div class="flex items-baseline gap-2">
+                <span class="text-lg font-black text-white tracking-tighter">
+                    ₱{{ today_total|floatformat:2|intcomma }}
+                </span>
+                <span class="text-xs font-bold {% if growth_percent > 0 %}text-emerald-400{% elif growth_percent < 0 %}text-rose-400{% else %}text-slate-500{% endif %}">
+                    {% if growth_percent > 0 %}+{% endif %}{{ growth_percent|floatformat:1 }}%
+                </span>
+            </div>
+        </div>
+
+        <div class="ml-auto pl-4 border-l border-slate-800 hidden md:block">
+            <p class="text-[9px] font-bold text-slate-500 uppercase">Yesterday</p>
+            <p class="text-xs font-mono text-slate-400">₱{{ yesterday_total|floatformat:0|intcomma }}</p>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

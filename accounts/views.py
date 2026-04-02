@@ -1115,6 +1115,20 @@ def dashboard(request):
     else:
         ratio = 1.0 if debt_value > 0 else 0.0
 
+    today = timezone.localtime(timezone.now()).date()
+
+    yesterday = timezone.localtime(timezone.now()).date() - timedelta(days=1)
+
+    today_revenue = OrderItem.objects.filter(order__order_date=today).aggregate(
+        total=Sum(F('unit_price') * F('quantity'))
+    )['total']
+
+    yesterday_revenue = OrderItem.objects.filter(order__order_date=yesterday).aggregate(
+        total=Sum(F('unit_price') * F('quantity'))
+    )['total']
+
+    growth_percent = ((today_revenue - yesterday_revenue) / yesterday_revenue) * 100
+
 
     context = {
         'weekly_total': weekly_total,
