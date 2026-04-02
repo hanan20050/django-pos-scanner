@@ -1115,6 +1115,25 @@ def dashboard(request):
     else:
         ratio = 1.0 if debt_value > 0 else 0.0
 
+    today = timezone.localtime(timezone.now()).date()
+
+    yesterday = timezone.localtime(timezone.now()).date() - timedelta(days=1)
+
+    today_total = OrderItem.objects.filter(order__order_date=today, order__is_active=True).aggregate(
+        total=Coalesce(Sum(F('unit_price') * F('quantity')), Decimal('0.00'))
+    )['total']
+
+    yesterday_total = OrderItem.objects.filter(order__order_date=yesterday, order__is_active=True).aggregate(
+        total=Coalesce(Sum(F('unit_price') * F('quantity')), Decimal('0.00'))
+    )['total']
+
+    if yesterday_total > 0:
+        growth_percent = ((today_total - yesterday_total) / yesterday_total) * 100
+    elif today_total > 0:
+        growth_percent = 100.0
+    else:
+        growth_percent = 0.0
+
 
     context = {
         'weekly_total': weekly_total,
@@ -1137,7 +1156,10 @@ def dashboard(request):
         'collections_today': collections_today,
         'collection_progress': collection_progress,
         'ratio': ratio,
-        'outstanding_balance': debt_value
+        'outstanding_balance': debt_value,
+        'growth_percent': growth_percent,
+        'today_total': today_total,
+        'yesterday_total': yesterday_total
     }
 
     return render(request, 'accounts/dashboard.html', context)
