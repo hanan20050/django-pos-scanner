@@ -402,6 +402,7 @@ def logoutPage(request):
         try:
             emp = request.user.employee
             emp.is_logged_in = False
+            emp.last_logout_time = timezone.now()
             emp.save()
         except Exception as e:
             print(f"Logout status update skipped: {e}")

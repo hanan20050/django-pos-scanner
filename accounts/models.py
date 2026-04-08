@@ -50,6 +50,7 @@ class Employee(models.Model):
     is_active = models.BooleanField(default=True)
     is_logged_in = models.BooleanField(default=False)
     last_login_time = models.DateTimeField(null=True, blank=True)
+    last_logout_time = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.name}{'' if self.is_active else ' (Inactive)'}"

@@ -23,6 +23,8 @@
                         <th class="px-10 py-6">Employee Name</th>
                         <th class="px-10 py-6">Branch & Role</th>
                         <th class="px-10 py-6">Contact & Status</th>
+                        <th class="px-10 py-6">Presence</th>
+                        <th class="px-10 py-6">Clock In</th>
                         <th class="px-10 py-6">Joining Date</th>
                         <th class="px-10 py-6 text-right">Management</th>
                     </tr>
@@ -62,6 +64,26 @@
                                 <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
                                 <span class="text-sm font-bold text-green-700 uppercase">Active Staff</span>
                             </div>
+                        </td>
+
+                        <td class="px-10 py-8 whitespace-nowrap">
+                            <div class="flex items-center gap-1.5 mt-2">
+                                {% if employee.is_logged_in %}
+                                <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                                <p class="text-lg font-semibold text-gray-800 tracking-tight">Logged in</p>
+                                {% else %}
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                                <p class="text-lg font-semibold text-gray-800 tracking-tight">Logged out</p>
+                                {% endif %}
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {% if employee.is_logged_in %}
+                                <span class="text-emerald-500 font-bold">In: {{ employee.last_login_time|date:"M d, h:i A" }} </span>
+                            {% else %}
+                                <span class="text-slate-400 font-medium">Out: {{ employee.last_login_time|date:"M d, h:i A" }} </span>
+                            {% endif %}
                         </td>
 
                         <td class="px-10 py-8 whitespace-nowrap">
