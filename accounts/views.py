@@ -359,6 +359,7 @@ def instCalculator(request):
 
 @login_required(login_url='login')
 def home(request):
+    print(f"DEBUG: User {request.user.username} reached home. Role: {request.user.employee.role}")
     return render(request, 'accounts/main.html')
 
 @unauthenticated_user
@@ -370,8 +371,28 @@ def loginPage(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            print(f"AUTHENTICATION FAILED for username: {username}")
             login(request, user)
-            return redirect('home')
+            try:
+                if hasattr(user, 'employee'):
+                    employee = user.employee
+                    employee.is_logged_in = True
+                    employee.last_login_time = timezone.now()
+                    employee.save()
+            except Exception as e:
+                print(f"Status update failed: {e}")
+
+            is_manager = False
+            if hasattr(user, 'employee'):
+                is_manager = (user.employee.role == 'Manager')
+
+            if user.is_superuser or is_manager:
+                return redirect('dashboard')
+            else:
+                return redirect('home')
+        else:
+            messages.info(request, 'Username or password is incorrect.')
+
             # else:
             # messages.info(request, 'Username or password is incorrect.')
 
@@ -379,6 +400,15 @@ def loginPage(request):
     return render(request, 'accounts/login.html')
 
 def logoutPage(request):
+    if request.user.is_authenticated:
+        try:
+            emp = request.user.employee
+            emp.is_logged_in = False
+            emp.last_logout_time = timezone.now()
+            emp.save()
+        except Exception as e:
+            print(f"Logout status update skipped: {e}")
+
     logout(request)
     return redirect('login')
 
@@ -988,7 +1018,7 @@ def dashboard(request):
     now = timezone.localtime(timezone.now())
 
     start_of_week = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    start_of_month = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     start_of_year = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
 
     def get_total(start_date):
@@ -1134,8 +1164,10 @@ def dashboard(request):
     else:
         growth_percent = 0.0
 
+    active_staff = Employee.objects.filter(is_logged_in=True)
 
     context = {
+        'active_staff': active_staff,
         'weekly_total': weekly_total,
         'monthly_total': monthly_total,
         'yearly_total': yearly_total,
