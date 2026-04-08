@@ -372,7 +372,7 @@ def loginPage(request):
         if user is not None:
             login(request, user)
             try:
-                if hasattr(user, 'employee')
+                if hasattr(user, 'employee'):
                     employee = user.employee
                     employee.is_logged_in = True
                     employee.last_login_time = timezone.now()
@@ -1161,7 +1161,10 @@ def dashboard(request):
     else:
         growth_percent = 0.0
 
+    active_staff = Employee.objects.filter(is_logged_in=True)
+
     context = {
+        'active_staff': active_staff,
         'weekly_total': weekly_total,
         'monthly_total': monthly_total,
         'yearly_total': yearly_total,
