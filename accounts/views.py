@@ -371,15 +371,23 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            # return redirect('home')
             try:
-                employee = user.employee
-                employee.is_logged_in = True
-                employee.save()
+                if hasattr(user, 'employee')
+                    employee = user.employee
+                    employee.is_logged_in = True
+                    employee.last_login_time = timezone.now()
+                    employee.save()
             except Exception as e:
-                pass
+                print(f"Status update failed: {e}")
 
-            return redirect('dashboard')
+            is_manager = False
+            if hasattr(user, 'employee'):
+                is_manager = (user.employee.role == 'Manager')
+
+            if user.is_superuser or is_manager:
+                return redirect('dashboard')
+            else:
+                return redirect('home')
         else:
             messages.info(request, 'Username or password is incorrect.')
 
@@ -390,6 +398,14 @@ def loginPage(request):
     return render(request, 'accounts/login.html')
 
 def logoutPage(request):
+    if request.user.is_authenticated:
+        try:
+            emp = request.user.employee
+            emp.is_logged_in = False
+            emp.save()
+        except Exception as e:
+            print(f"Logout status update skipped: {e}")
+
     logout(request)
     return redirect('login')
 
