@@ -13,3 +13,8 @@ venv/
 .env
 
 db.sqlite3
+backup.sql
+data.json.backup
+data_backup.json
+data_backup.json.backup
+data_backup_filtered.json
