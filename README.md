@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # 🏪 Django POS Scanner System
 
 > A comprehensive, production-ready Point of Sale (POS) management system built with Django for **Galos Gadget Hub** — featuring multi-branch inventory, installment credit management, warranty claims, real-time sales analytics, and role-based employee access.
@@ -1121,4 +1119,3 @@ When opening an issue, please include:
 *Last Updated: April 2026 • Version 1.0.0*
 
 </div>
->>>>>>> b77e62cc37e8c78e199605499fb8fbc3be8d8e0d
