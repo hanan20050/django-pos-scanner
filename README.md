@@ -1089,9 +1089,12 @@ Types: feat | fix | docs | style | refactor | chore | test
 
 ## 📄 License & Support
 
-### License
+## License
+This project is licensed under the **CC BY-NC-SA 4.0**. 
+- **Non-Commercial:** You may not use this material for commercial purposes.
+- **Attribution:** You must give appropriate credit to the original author.
+- **ShareAlike:** If you remix or transform the material, you must distribute your contributions under the same license.
 
-This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
 
 ### Support & Contact
 
