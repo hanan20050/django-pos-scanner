@@ -359,6 +359,7 @@ def instCalculator(request):
 
 @login_required(login_url='login')
 def home(request):
+    print(f"DEBUG: User {request.user.username} reached home. Role: {request.user.employee.role}")
     return render(request, 'accounts/main.html')
 
 @unauthenticated_user
@@ -370,6 +371,7 @@ def loginPage(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            print(f"AUTHENTICATION FAILED for username: {username}")
             login(request, user)
             try:
                 if hasattr(user, 'employee'):
