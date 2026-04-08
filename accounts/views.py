@@ -371,7 +371,18 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home')
+            # return redirect('home')
+            try:
+                employee = user.employee
+                employee.is_logged_in = True
+                employee.save()
+            except Exception as e:
+                pass
+
+            return redirect('dashboard')
+        else:
+            messages.info(request, 'Username or password is incorrect.')
+
             # else:
             # messages.info(request, 'Username or password is incorrect.')
 
@@ -1133,7 +1144,6 @@ def dashboard(request):
         growth_percent = 100.0
     else:
         growth_percent = 0.0
-
 
     context = {
         'weekly_total': weekly_total,

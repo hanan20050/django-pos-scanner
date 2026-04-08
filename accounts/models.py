@@ -48,6 +48,8 @@ class Employee(models.Model):
     profile_pic = models.ImageField(upload_to='media/', null=True, blank=True)
     hire_date = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    is_logged_in = models.BooleanField(default=False)
+    last_login_time = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.name}{'' if self.is_active else ' (Inactive)'}"
