@@ -38,6 +38,9 @@ from datetime import datetime
 
 from django.views.decorators.csrf import csrf_exempt
 
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+
 from django.db.models import Sum, F, Expression, ExpressionWrapper, Count, Q, DecimalField
 from django.db.models.functions import Coalesce
 from django.db import models
@@ -730,6 +733,8 @@ def checkout_cash(request):
                     agent_profile.save()
                 except Exception:
                     pass
+
+                subject = f"Order confirmation - {order.invoice.or_number}"
 
 
                 return JsonResponse({'success': True, 'order_id': order.id})
