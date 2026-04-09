@@ -40,6 +40,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.conf import settings
 
 from django.db.models import Sum, F, Expression, ExpressionWrapper, Count, Q, DecimalField
 from django.db.models.functions import Coalesce
@@ -716,7 +717,7 @@ def checkout_cash(request):
                     change_given = change_given,
                 )
 
-                Invoice.objects.create(
+                invoice = Invoice.objects.create(
                     order=order,
                     or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
                     vat_amount=order.total_amount * Decimal('0.12'),
@@ -736,22 +737,22 @@ def checkout_cash(request):
 
                 if order.customer and order.customer.email:
                     try:
-                        invoice = order.invoice_set.first()
                         or_no = invoice.or_number if invoice else "N/A"
 
                         subject = f"Order confirmation - {or_no}"
                         message = f"Hi {order.customer.name},\n\nThank you for purchasing at Galos Gadget Hub! Your order total is ₱{order.total_amount}.\n\nOfficial Receipt: {or_no}"
                         recipient_list = [order.customer.email]
 
-                        send_email(
+                        send_mail(
                             subject,
                             message,
                             settings.DEFAULT_FROM_EMAIL,
                             recipient_list,
                             fail_silently=False,
                         )
+                        print(f"✅ SUCCESS: Email for {or_no} printed to console!")
                     except Exception as email_err:
-                        print(f"Email failed to send: {email_err}")
+                        print(f"❌ Email Logic Error: {email_err}")
 
 
 
