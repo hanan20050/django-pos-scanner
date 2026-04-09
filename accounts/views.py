@@ -735,6 +735,10 @@ def checkout_cash(request):
                     pass
 
                 subject = f"Order confirmation - {order.invoice.or_number}"
+                message = f"Hi {order.customer}, thank you for purchasing at Galos Gadget Hub"
+                recipient_list = [order.customer.email]
+
+                send_mail(subject, message, None, recipient_list, fail_silently=False)
 
 
                 return JsonResponse({'success': True, 'order_id': order.id})
