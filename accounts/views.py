@@ -748,7 +748,7 @@ def checkout_cash(request):
                             message,
                             settings.DEFAULT_FROM_EMAIL,
                             recipient_list,
-                            fail_silently=True,
+                            fail_silently=False,
                         )
                     except Exception as email_err:
                         print(f"Email failed to send: {email_err}")
