@@ -734,11 +734,25 @@ def checkout_cash(request):
                 except Exception:
                     pass
 
-                subject = f"Order confirmation - {order.invoice.or_number}"
-                message = f"Hi {order.customer}, thank you for purchasing at Galos Gadget Hub"
-                recipient_list = [order.customer.email]
+                if order.customer and order.customer.email:
+                    try:
+                        invoice = order.invoice_set.first()
+                        or_no = invoice.or_number if invoice else "N/A"
 
-                send_mail(subject, message, None, recipient_list, fail_silently=False)
+                        subject = f"Order confirmation - {or_no}"
+                        message = f"Hi {order.customer.name},\n\nThank you for purchasing at Galos Gadget Hub! Your order total is ₱{order.total_amount}.\n\nOfficial Receipt: {or_no}"
+                        recipient_list = [order.customer.email]
+
+                        send_email(
+                            subject,
+                            message,
+                            settings.DEFAULT_FROM_EMAIL,
+                            recipient_list,
+                            fail_silently=True,
+                        )
+                    except Exception as email_err:
+                        print(f"Email failed to send: {email_err}")
+
 
 
                 return JsonResponse({'success': True, 'order_id': order.id})
