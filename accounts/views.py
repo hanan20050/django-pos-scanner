@@ -915,7 +915,10 @@ def installment_checkout(request):
                     context = {
                         'order': order,
                         'invoice': invoice,
-                        'installment': installmentplan,
+                        'term': installmentplan.term_months,
+                        'downpayment': payment.amount_paid,
+                        'monthly': installmentplan.monthly_due,
+                        'total': order.total_amount
                     }
 
                     html_content = render_to_string('accounts/emails/installment_receipt.html', context)

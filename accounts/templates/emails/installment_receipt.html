@@ -1,81 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-</head>
+<head><meta charset="utf-8"></head>
 <body style="margin: 0; padding: 20px; background-color: #f4f4f4; font-family: 'Courier New', Courier, monospace;">
-    <div style="max-width: 500px; margin: auto; background: #ffffff; padding: 30px; border-top: 8px solid #2563eb; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+    <div style="max-width: 500px; margin: auto; background: #ffffff; padding: 30px; border-top: 8px solid #2563eb;">
 
         <div style="text-align: center; margin-bottom: 20px;">
-            <h1 style="font-size: 22px; font-weight: 900; margin: 0; letter-spacing: -1px; color: #111827;">GALOS GADGET HUB RECEIPT</h1>
-            <p style="font-size: 14px; color: #4b5563; margin: 5px 0;">{{ order.branch.name|upper }}</p>
+            <h1 style="font-size: 22px; font-weight: 900; margin: 0; color: #111827;">INSTALLMENT PLAN RECEIPT</h1>
+            <p style="font-size: 14px; color: #4b5563; margin: 5px 0;">GALOS GADGET HUB - {{ order.branch.name|upper }}</p>
             <p style="font-size: 14px; color: #4b5563; margin: 0;">OR #: {{ invoice.or_number|upper }}</p>
             <div style="border-bottom: 2px dashed #d1d5db; margin: 20px 0;"></div>
         </div>
 
         <table style="width: 100%; font-size: 12px; margin-bottom: 20px;">
             <tr>
-                <td style="text-align: left;">
-                    <p style="margin: 0;"><strong>DATE:</strong> {{ order.order_date }}</p>
-                    <p style="margin: 0;"><strong>CUST:</strong> {{ order.customer.name|upper }}</p>
-                </td>
-                <td style="text-align: right;">
-                    <p style="margin: 0;"><strong>ORDER:</strong> #{{ order.id }}</p>
-                    <p style="margin: 0;"><strong>CASHIER:</strong> {{ order.employee.user.username|upper }}</p>
-                </td>
+                <td><strong>DATE:</strong> {{ order.order_date }}<br><strong>CUST:</strong> {{ order.customer.name|upper }}</td>
+                <td style="text-align: right;"><strong>ORDER:</strong> #{{ order.id }}<br><strong>TERM:</strong> {{ term }} Months</td>
             </tr>
         </table>
 
-        <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px;">
-            <thead style="border-bottom: 1px solid #111827;">
-                <tr>
-                    <th style="text-align: left; padding: 10px 0;">ITEM</th>
-                    <th style="text-align: center; padding: 10px 0;">QTY</th>
-                    <th style="text-align: right; padding: 10px 0;">TOTAL</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in order.orderitem_set.all %}
-                <tr style="border-bottom: 1px dashed #e5e7eb;">
-                    <td style="padding: 12px 0;">
-                        <p style="margin: 0; font-weight: bold; color: #1f2937;">{{ item.product.product_name }}</p>
-                        <p style="margin: 0; font-size: 12px; color: #6b7280;">@ ₱{{ item.unit_price }}</p>
-                    </td>
-                    <td style="text-align: center; vertical-align: middle;">{{ item.quantity }}</td>
-                    <td style="text-align: right; font-weight: bold; vertical-align: middle;">₱{{ item.line_total }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <div style="border-top: 2px solid #111827; padding-top: 15px;">
+        <div style="background-color: #f9fafb; padding: 15px; border: 1px solid #e5e7eb; margin-bottom: 20px;">
+            <h3 style="font-size: 14px; margin-top: 0;">PAYMENT PLAN DETAILS</h3>
             <table style="width: 100%; font-size: 14px;">
                 <tr>
-                    <td>SUBTOTAL</td>
-                    <td style="text-align: right;">₱{{ order.total_amount }}</td>
-                </tr>
-                <tr style="font-size: 18px; font-weight: 900;">
-                    <td style="padding-top: 10px;">GRAND TOTAL</td>
-                    <td style="text-align: right; padding-top: 10px;">₱{{ order.total_amount }}</td>
-                </tr>
-                <tr style="font-style: italic; font-size: 12px;">
-                    <td style="padding-top: 10px;">PAYMENT ({{ order.payment_method|upper }})</td>
-                    <td style="text-align: right; padding-top: 10px;">PAID</td>
+                    <td>Downpayment Paid:</td>
+                    <td style="text-align: right;"><strong>₱{{ downpayment }}</strong></td>
                 </tr>
                 <tr>
-                    <td>DOWNPAYMENT</td>
-                    <td style="text-align: right;">₱{{ installment.downpayment }}</td>
-                </tr>
-                <tr>
-                    <td>MONTHLY DUE</td>
-                    <td style="text-align: right;">₱{{ installment.monthly_due }}</td>
+                    <td>Monthly Amortization:</td>
+                    <td style="text-align: right;"><strong>₱{{ monthly }}</strong></td>
                 </tr>
             </table>
         </div>
 
-        <div style="margin-top: 40px; text-align: center; border-top: 1px dashed #d1d5db; pt-20px;">
-            <p style="font-size: 12px; color: #9ca3af; margin-top: 20px;">THANK YOU FOR SHOPPING WITH US!</p>
-            <p style="font-size: 10px; color: #9ca3af; font-style: italic;">Please keep this receipt for warranty purposes.</p>
+        <div style="margin-top: 40px; text-align: center; border-top: 1px dashed #d1d5db;">
+            <p style="font-size: 12px; color: #9ca3af; margin-top: 20px;">THANK YOU FOR TRUSTING GALOS GADGET HUB!</p>
         </div>
     </div>
 </body>
