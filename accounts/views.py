@@ -816,7 +816,7 @@ def installment_checkout(request):
             remaining_balance = clean_currency(installment_data.get('balanceToFinance'))
 
             if phone:
-                customer, created = Customer.objects.get_or_create(
+                customer, created = Customer.objects.update_or_create(
                     phone=phone,
                     defaults={
                         'name': installment_data.get('name', 'Walk-in'),
@@ -872,7 +872,7 @@ def installment_checkout(request):
                 payment_status=Order.ORDER_STATUS[0][0],
             )
 
-            Invoice.objects.create(
+            invoice = Invoice.objects.create(
                 order=order,
                 or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
                 vat_amount=order.total_amount * Decimal('0.12'),
@@ -889,6 +889,25 @@ def installment_checkout(request):
                 # //how to save the installment data to credit_officer
             except Exception:
                 pass
+
+            if order.customer and order.customer.email:
+                try:
+                    or_no = invoice.or_number if invoice else "N/A"
+
+                    subject = f"Order confirmation - {or_no}"
+                    message = f"Hi {order.customer.name},\n\nThank you for purchasing at Galos Gadget Hub! Your order total is ₱{order.total_amount}.\n\nOfficial Receipt: {or_no}"
+                    recipient_list = [order.customer.email]
+
+                    send_mail(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,
+                        recipient_list,
+                        fail_silently=False,
+                    )
+                    print(f"✅ SUCCESS: Email for {or_no} printed to console!")
+                except Exception as email_err:
+                    print(f"❌ Email Logic Error: {email_err}")
 
 
             return JsonResponse({'success': True, 'order_id': order.id})
