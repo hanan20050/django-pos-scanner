@@ -183,7 +183,7 @@ class Order(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
 
-    order_date = models.DateField(auto_now_add=True)
+    order_date = models.DateTimeField(auto_now_add=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     order_status = models.CharField(choices=ORDER_STATUS, max_length=100, default='Pending')
     payment_method = models.CharField(choices=PAYMENT_METHOD, max_length=100)

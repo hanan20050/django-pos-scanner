@@ -665,7 +665,7 @@ def checkout_cash(request):
                 phone = customer_data.get('phone')
 
                 if phone:
-                    customer, created = Customer.objects.update_or_create(
+                    customer, created = Customer.objects.get_or_create(
                         phone = phone,
                         defaults={
                             'name': customer_data.get('name', 'Walk-in'),
@@ -817,7 +817,7 @@ def installment_checkout(request):
             remaining_balance = clean_currency(installment_data.get('balanceToFinance'))
 
             if phone:
-                customer, created = Customer.objects.update_or_create(
+                customer, created = Customer.objects.get_or_create(
                     phone=phone,
                     defaults={
                         'name': installment_data.get('name', 'Walk-in'),
