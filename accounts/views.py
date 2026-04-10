@@ -863,7 +863,7 @@ def installment_checkout(request):
                 date_paid=timezone.now().date()
             )
 
-            InstallmentPlan.objects.create(
+            installmentplan = InstallmentPlan.objects.create(
                 payment=payment,
                 credit_officer = credit_officer,
                 term_months=term_months,
@@ -915,13 +915,15 @@ def installment_checkout(request):
                     context = {
                         'order': order,
                         'invoice': invoice,
+                        'installment': installmentplan,
                         'term': installmentplan.term_months,
                         'downpayment': payment.amount_paid,
                         'monthly': installmentplan.monthly_due,
                         'total': order.total_amount
                     }
 
-                    html_content = render_to_string('accounts/emails/installment_receipt.html', context)
+                    html_content = render_to_string('emails/installment_receipt.html', context)
+
 
                     email = EmailMessage(
                         subject=f"Installment Plan Confirmed - {invoice.or_number}",
