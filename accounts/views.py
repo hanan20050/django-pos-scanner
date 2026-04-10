@@ -39,6 +39,7 @@ from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 
 from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 
@@ -890,24 +891,49 @@ def installment_checkout(request):
             except Exception:
                 pass
 
+            # if order.customer and order.customer.email:
+            #     try:
+            #         or_no = invoice.or_number if invoice else "N/A"
+            #
+            #         subject = f"Order confirmation - {or_no}"
+            #         message = f"Hi {order.customer.name},\n\nThank you for purchasing at Galos Gadget Hub! Your order total is ₱{order.total_amount}.\n\nOfficial Receipt: {or_no}"
+            #         recipient_list = [order.customer.email]
+            #
+            #         send_mail(
+            #             subject,
+            #             message,
+            #             settings.DEFAULT_FROM_EMAIL,
+            #             recipient_list,
+            #             fail_silently=False,
+            #         )
+            #         print(f"✅ SUCCESS: Email for {or_no} printed to console!")
+            #     except Exception as email_err:
+            #         print(f"❌ Email Logic Error: {email_err}")
+
             if order.customer and order.customer.email:
                 try:
-                    or_no = invoice.or_number if invoice else "N/A"
+                    context = {
+                        'order': order,
+                        'invoice': invoice,
+                        'installment': installmentplan,
+                    }
 
-                    subject = f"Order confirmation - {or_no}"
-                    message = f"Hi {order.customer.name},\n\nThank you for purchasing at Galos Gadget Hub! Your order total is ₱{order.total_amount}.\n\nOfficial Receipt: {or_no}"
-                    recipient_list = [order.customer.email]
+                    html_content = render_to_string('accounts/emails/installment_receipt.html', context)
 
-                    send_mail(
-                        subject,
-                        message,
-                        settings.DEFAULT_FROM_EMAIL,
-                        recipient_list,
-                        fail_silently=False,
+                    email = EmailMessage(
+                        subject=f"Installment Plan Confirmed - {invoice.or_number}",
+                        body=html_content,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[order.customer.email],
                     )
-                    print(f"✅ SUCCESS: Email for {or_no} printed to console!")
-                except Exception as email_err:
-                    print(f"❌ Email Logic Error: {email_err}")
+
+                    email.content_subtype = "html"
+                    email.send(fail_silently=False)
+
+                    print(f"✅ HTML Installment Receipt for {invoice.or_number} sent to console!")
+
+                except Exception as e:
+                    print(f"❌ HTML Email Error: {e}")
 
 
             return JsonResponse({'success': True, 'order_id': order.id})
