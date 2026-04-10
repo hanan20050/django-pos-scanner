@@ -738,22 +738,28 @@ def checkout_cash(request):
 
                 if order.customer and order.customer.email:
                     try:
-                        or_no = invoice.or_number if invoice else "N/A"
+                        context = {
+                            'order': order,
+                            'invoice': invoice,
+                            'cash_received': cash_received,
+                            'change_given': change_given,
+                        }
 
-                        subject = f"Order confirmation - {or_no}"
-                        message = f"Hi {order.customer.name},\n\nThank you for purchasing at Galos Gadget Hub! Your order total is ₱{order.total_amount}.\n\nOfficial Receipt: {or_no}"
-                        recipient_list = [order.customer.email]
+                        html_content = render_to_string('emails/cash_receipt.html', context)
 
-                        send_mail(
-                            subject,
-                            message,
-                            settings.DEFAULT_FROM_EMAIL,
-                            recipient_list,
-                            fail_silently=False,
+                        email = EmailMessage(
+                            subject=f"Cash Receipt - {invoice.or_number}",
+                            body=html_content,
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            to=[order.customer.email],
                         )
-                        print(f"✅ SUCCESS: Email for {or_no} printed to console!")
+                        email.content_subtype = "html"
+                        email.send(fail_silently=False)
+
+                        print(f"✅ SUCCESS: Thermal Cash Receipt for {invoice.or_number} printed to console!")
+
                     except Exception as email_err:
-                        print(f"❌ Email Logic Error: {email_err}")
+                        print(f"❌ HTML Email Error: {email_err}")
 
 
 
@@ -887,28 +893,9 @@ def installment_checkout(request):
                 sales_agent.total_commission_earned += (order.total_amount * sales_agent.commission_rate)
                 sales_agent.save()
 
-                # //how to save the installment data to credit_officer
             except Exception:
                 pass
 
-            # if order.customer and order.customer.email:
-            #     try:
-            #         or_no = invoice.or_number if invoice else "N/A"
-            #
-            #         subject = f"Order confirmation - {or_no}"
-            #         message = f"Hi {order.customer.name},\n\nThank you for purchasing at Galos Gadget Hub! Your order total is ₱{order.total_amount}.\n\nOfficial Receipt: {or_no}"
-            #         recipient_list = [order.customer.email]
-            #
-            #         send_mail(
-            #             subject,
-            #             message,
-            #             settings.DEFAULT_FROM_EMAIL,
-            #             recipient_list,
-            #             fail_silently=False,
-            #         )
-            #         print(f"✅ SUCCESS: Email for {or_no} printed to console!")
-            #     except Exception as email_err:
-            #         print(f"❌ Email Logic Error: {email_err}")
 
             if order.customer and order.customer.email:
                 try:

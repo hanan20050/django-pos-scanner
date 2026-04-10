@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin: 0; padding: 20px; background-color: #f4f4f4; font-family: 'Courier New', Courier, monospace;">
+    <div style="max-width: 500px; margin: auto; background: #ffffff; padding: 30px; border-top: 8px solid #10b981; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="font-size: 22px; font-weight: 900; margin: 0; color: #111827;">GALOS GADGET HUB RECEIPT</h1>
+            <p style="font-size: 14px; color: #4b5563; margin: 5px 0;">{{ order.branch.name|upper }}</p>
+            <p style="font-size: 14px; color: #4b5563; margin: 0;">OR #: {{ invoice.or_number|upper }}</p>
+            <div style="border-bottom: 2px dashed #d1d5db; margin: 20px 0;"></div>
+        </div>
+
+        <table style="width: 100%; font-size: 12px; margin-bottom: 20px;">
+            <tr>
+                <td><strong>DATE:</strong> {{ order.order_date|date:"d-M-Y H:i" }}<br><strong>CUST:</strong> {{ order.customer.name|upper|default:"WALK-IN" }}</td>
+                <td style="text-align: right;"><strong>ORDER:</strong> #{{ order.id }}<br><strong>CASHIER:</strong> {{ order.employee.user.username|upper }}</td>
+            </tr>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px;">
+            <thead style="border-bottom: 1px solid #111827;">
+                <tr>
+                    <th style="text-align: left; padding: 10px 0;">ITEM</th>
+                    <th style="text-align: center;">QTY</th>
+                    <th style="text-align: right;">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.orderitem_set.all %}
+                <tr style="border-bottom: 1px dashed #e5e7eb;">
+                    <td style="padding: 12px 0;">
+                        <p style="margin: 0; font-weight: bold;">{{ item.product.product_name }}</p>
+                        <p style="margin: 0; font-size: 12px; color: #6b7280;">@ ₱{{ item.unit_price|floatformat:2 }}</p>
+                    </td>
+                    <td style="text-align: center;">{{ item.quantity }}</td>
+                    <td style="text-align: right; font-weight: bold;">₱{{ item.line_total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div style="border-top: 2px solid #111827; padding-top: 15px;">
+            <table style="width: 100%; font-size: 14px;">
+                <tr>
+                    <td>SUBTOTAL</td>
+                    <td style="text-align: right;">₱{{ order.total_amount|floatformat:2 }}</td>
+                </tr>
+                <tr style="font-size: 18px; font-weight: 900;">
+                    <td style="padding-top: 10px;">GRAND TOTAL</td>
+                    <td style="text-align: right; padding-top: 10px;">₱{{ order.total_amount|floatformat:2 }}</td>
+                </tr>
+                <tr style="font-style: italic; font-size: 12px;">
+                    <td style="padding-top: 10px;">PAYMENT (CASH)</td>
+                    <td style="text-align: right; padding-top: 10px;">PAID</td>
+                </tr>
+                <tr>
+                    <td>CASH RECEIVED</td>
+                    <td style="text-align: right;">₱{{ cash_received|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; color: #059669;">CHANGE</td>
+                    <td style="text-align: right; font-weight: bold; color: #059669;">₱{{ change_given|floatformat:2 }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="margin-top: 40px; text-align: center; border-top: 1px dashed #d1d5db;">
+            <p style="font-size: 12px; color: #9ca3af; margin-top: 20px;">THANK YOU FOR YOUR PURCHASE!</p>
+        </div>
+    </div>
+</body>
+</html>
