@@ -117,8 +117,9 @@ def admin_reports(request):
 
     now1 = timezone.localtime(timezone.now())
 
-    start_of_week = now1.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    start_of_month = (now1 - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    start_of_week = (now1 - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+    start_of_month = now1.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     start_of_year = now1.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
 
     def get_total(start_date):
