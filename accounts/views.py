@@ -1079,7 +1079,7 @@ def dashboard(request):
 
     now = timezone.localtime(timezone.now())
 
-    start_of_week = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    start_of_week = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     start_of_year = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
 
