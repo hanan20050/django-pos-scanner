@@ -1089,7 +1089,7 @@ def dashboard(request):
             product__is_active=True
         ).aggregate(
             total=Coalesce(
-                Sum(F('order__total_amount') * F('quantity')),
+                Sum(F('unit_price') * F('quantity')),
                 Decimal('0.00'),
                 output_field=DecimalField()
             )
