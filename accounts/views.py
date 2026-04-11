@@ -38,6 +38,11 @@ from datetime import datetime
 
 from django.views.decorators.csrf import csrf_exempt
 
+from django.core.mail import send_mail
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.conf import settings
+
 from django.db.models import Sum, F, Expression, ExpressionWrapper, Count, Q, DecimalField
 from django.db.models.functions import Coalesce
 from django.db import models
@@ -713,7 +718,7 @@ def checkout_cash(request):
                     change_given = change_given,
                 )
 
-                Invoice.objects.create(
+                invoice = Invoice.objects.create(
                     order=order,
                     or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
                     vat_amount=order.total_amount * Decimal('0.12'),
@@ -730,6 +735,32 @@ def checkout_cash(request):
                     agent_profile.save()
                 except Exception:
                     pass
+
+                if order.customer and order.customer.email:
+                    try:
+                        context = {
+                            'order': order,
+                            'invoice': invoice,
+                            'cash_received': cash_received,
+                            'change_given': change_given,
+                        }
+
+                        html_content = render_to_string('emails/cash_receipt.html', context)
+
+                        email = EmailMessage(
+                            subject=f"Cash Receipt - {invoice.or_number}",
+                            body=html_content,
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            to=[order.customer.email],
+                        )
+                        email.content_subtype = "html"
+                        email.send(fail_silently=False)
+
+                        print(f"✅ SUCCESS: Thermal Cash Receipt for {invoice.or_number} printed to console!")
+
+                    except Exception as email_err:
+                        print(f"❌ HTML Email Error: {email_err}")
+
 
 
                 return JsonResponse({'success': True, 'order_id': order.id})
@@ -838,7 +869,7 @@ def installment_checkout(request):
                 date_paid=timezone.now().date()
             )
 
-            InstallmentPlan.objects.create(
+            installmentplan = InstallmentPlan.objects.create(
                 payment=payment,
                 credit_officer = credit_officer,
                 term_months=term_months,
@@ -848,7 +879,7 @@ def installment_checkout(request):
                 payment_status=Order.ORDER_STATUS[0][0],
             )
 
-            Invoice.objects.create(
+            invoice = Invoice.objects.create(
                 order=order,
                 or_number=f"OR-{uuid.uuid4().hex[:8].upper()}",
                 vat_amount=order.total_amount * Decimal('0.12'),
@@ -862,9 +893,39 @@ def installment_checkout(request):
                 sales_agent.total_commission_earned += (order.total_amount * sales_agent.commission_rate)
                 sales_agent.save()
 
-                # //how to save the installment data to credit_officer
             except Exception:
                 pass
+
+
+            if order.customer and order.customer.email:
+                try:
+                    context = {
+                        'order': order,
+                        'invoice': invoice,
+                        'installment': installmentplan,
+                        'term': installmentplan.term_months,
+                        'downpayment': payment.amount_paid,
+                        'monthly': installmentplan.monthly_due,
+                        'total': order.total_amount
+                    }
+
+                    html_content = render_to_string('emails/installment_receipt.html', context)
+
+
+                    email = EmailMessage(
+                        subject=f"Installment Plan Confirmed - {invoice.or_number}",
+                        body=html_content,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[order.customer.email],
+                    )
+
+                    email.content_subtype = "html"
+                    email.send(fail_silently=False)
+
+                    print(f"✅ HTML Installment Receipt for {invoice.or_number} sent to console!")
+
+                except Exception as e:
+                    print(f"❌ HTML Email Error: {e}")
 
 
             return JsonResponse({'success': True, 'order_id': order.id})

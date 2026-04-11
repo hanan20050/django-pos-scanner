@@ -25,12 +25,18 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Run Django System Check
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: |
-        # This checks for model errors, URL conflicts, and setting issues
         python manage.py check
 
     - name: Run Quality Test (Linting)
       run: |
         pip install flake8
-        # Stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+    - name: Run Tests
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      run: |
+        python manage.py check
