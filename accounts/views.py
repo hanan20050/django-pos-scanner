@@ -155,7 +155,7 @@ def admin_reports(request):
 
 
     or_balance = InstallmentPlan.objects.filter(
-        payment_status__in=['Pending', 'Cancelled']
+        payment_status__in=['Pending']
     ).aggregate(total_owed=Sum('remaining_balance'))['total_owed'] or Decimal('0.00')
 
     outstanding_balance = or_balance.quantize(Decimal('0.00'))
