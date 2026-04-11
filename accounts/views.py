@@ -117,8 +117,9 @@ def admin_reports(request):
 
     now1 = timezone.localtime(timezone.now())
 
-    start_of_week = now1.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    start_of_month = (now1 - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    start_of_week = (now1 - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+    start_of_month = now1.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     start_of_year = now1.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
 
     def get_total(start_date):
@@ -154,7 +155,7 @@ def admin_reports(request):
 
 
     or_balance = InstallmentPlan.objects.filter(
-        payment_status__in=['Pending', 'Cancelled']
+        payment_status__in=['Pending']
     ).aggregate(total_owed=Sum('remaining_balance'))['total_owed'] or Decimal('0.00')
 
     outstanding_balance = or_balance.quantize(Decimal('0.00'))
@@ -1078,7 +1079,7 @@ def dashboard(request):
 
     now = timezone.localtime(timezone.now())
 
-    start_of_week = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    start_of_week = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     start_of_year = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
 
@@ -1089,7 +1090,7 @@ def dashboard(request):
             product__is_active=True
         ).aggregate(
             total=Coalesce(
-                Sum(F('order__total_amount') * F('quantity')),
+                Sum(F('unit_price') * F('quantity')),
                 Decimal('0.00'),
                 output_field=DecimalField()
             )
