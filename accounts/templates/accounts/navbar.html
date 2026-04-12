@@ -32,6 +32,7 @@
         <li><a href="{% url 'admin_reports' %}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">Reports</a></li>
         <li><a href="{% url 'employee_list' %}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">Employees</a></li>
           <li><a href="{% url 'warranty_list' %}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">Warranty</a></li>
+        <li><a href="{% url 'audit_logs' %}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:text-blue-600 md:p-0">Audit Logs</a></li>
 
 
             {% if request.user.is_superuser %}

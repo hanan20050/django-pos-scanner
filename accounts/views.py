@@ -1320,3 +1320,7 @@ def update_claim_status(request, pk):
 
 
     return redirect('warranty_list')
+
+@login_required(login_url='login')
+def audit_logs(request):
+    return render(request, 'accounts/audit_logs.html')
