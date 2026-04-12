@@ -16,7 +16,7 @@ from django.utils.text import phone2numeric, compress_string
 
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
-    CreditOfficer, InstallmentPlan, Invoice, WarrantyClaims, DefectiveInventory, ReplacementRecord
+    CreditOfficer, InstallmentPlan, Invoice, WarrantyClaims, DefectiveInventory, ReplacementRecord, AuditTrail
 from .filters import InventoryFilter, salesFilter, installmentFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
@@ -1323,4 +1323,9 @@ def update_claim_status(request, pk):
 
 @login_required(login_url='login')
 def audit_logs(request):
-    return render(request, 'accounts/audit_logs.html')
+
+    logs = AuditTrail.objects.all().order_by('-timestamp')
+
+    context = {'logs': logs}
+
+    return render(request, 'accounts/audit_logs.html', context)
