@@ -11,6 +11,7 @@ from django.forms import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.template.defaulttags import csrf_token
 from django.utils.text import phone2numeric, compress_string
 
