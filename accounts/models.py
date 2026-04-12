@@ -5,6 +5,8 @@ from django.utils import timezone
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 # Create your models here.
 
@@ -295,3 +297,19 @@ class DefectiveInventory(models.Model):
 
     def __str__(self):
         return f"Defective {self.product.product_name} - {self.faulty_serial}"
+
+class AuditTrail(models.Model):
+    ACTION_OPTIONS = [
+        ('CREATE', 'CREATE'),
+        ('UPDATE', 'UPDATE'),
+        ('DELETE', 'DELETE'),
+    ]
+
+    user = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True)
+    action = models.CharField(max_length=20, choices=ACTION_OPTIONS, default='CREATE')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    change_log = models.JSONField(default=dict)
+    ip_address = models.GenericIPAddressField(null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
