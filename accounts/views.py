@@ -1322,6 +1322,7 @@ def update_claim_status(request, pk):
     return redirect('warranty_list')
 
 @login_required(login_url='login')
+@user_passes_test(lambda u: u.is_superuser)
 def audit_logs(request):
 
     logs = AuditTrail.objects.all().order_by('-timestamp')
