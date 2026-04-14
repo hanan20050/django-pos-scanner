@@ -1,12 +1,32 @@
 from idlelib.configdialog import changes
 
 from django.contrib.contenttypes.models import ContentType
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 
 from .models import Product, AuditTrail
 from .middleware import get_current_user
 from .views import employeeProfile
+
+@receiver(post_delete, sender=Product)
+def audit_product_delete(sender, instance, **kwargs):
+    user = get_current_user()
+    employee = None
+
+    if user and user.is_authenticated:
+        try: employee = user.employee
+        except: employee = None
+
+    AuditTrail.objects.create(
+        user=employee,
+        content_type=ContentType.objects.get_for_model(instance),
+        action='DELETE',
+        object_id=instance.id,
+        change_log={
+            'info': f"Product {instance.product_name} permanently removed from database.",
+            'barcode': instance.barcode
+        }
+    )
 
 @receiver(pre_save, sender=Product)
 def audit_product_logs(sender, instance, **kwargs):
@@ -24,7 +44,7 @@ def audit_product_logs(sender, instance, **kwargs):
         try: employee = user.employee
         except: employee = None
 
-    watch_fields = ['product_name', 'cost_price', 'base_price', 'min_stock_level', 'barcode']
+    watch_fields = ['product_name', 'cost_price', 'base_price', 'min_stock_level', 'barcode', 'is_active']
     changes = {}
 
     for field in watch_fields:
