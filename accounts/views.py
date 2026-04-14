@@ -1325,7 +1325,7 @@ def update_claim_status(request, pk):
     return redirect('warranty_list')
 
 @login_required(login_url='login')
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or (hasattr(u, 'employee') and u.employee.role == 'Manager'))
 def audit_logs(request):
 
     start_date_str = request.GET.get('start_date')
@@ -1347,7 +1347,7 @@ def audit_logs(request):
     if action_type:
         logs = logs.filter(action=action_type)
 
-    paginator = Paginator(logs, 10)
+    paginator = Paginator(logs, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

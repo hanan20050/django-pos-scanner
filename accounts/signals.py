@@ -31,27 +31,31 @@ def universal_audit_pre_save(sender, instance, **kwargs):
     if sender not in MODELS_TO_AUDIT or not instance.pk:
         return
 
+    if not instance.pk:
+        return
+
     try:
         old_obj = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:
         return
 
-    watch_fields = MODELS_TO_AUDIT[sender]
+    watch_fields = MODELS_TO_AUDIT.get(sender, [])
     changes = {}
     action_type = 'UPDATE'
 
     for field in watch_fields:
-        old_val = getattr(old_obj, field)
-        new_val = getattr(old_val, field)
+        if hasattr(instance, field):
+            old_val = getattr(old_obj, field)
+            new_val = getattr(instance, field)
 
-        if old_val != new_val:
-            changes[field] = {
-                'old': str(old_val),
-                'new': str(new_val)
-            }
+            if old_val != new_val:
+                changes[field] = {
+                    'old': str(old_val),
+                    'new': str(new_val)
+                }
 
-            if field == 'is_active' and new_val is False:
-                action_type = 'DELETE'
+                if field == 'is_active' and new_val is False:
+                    action_type = 'DELETE'
 
     if changes:
         AuditTrail.objects.create(
