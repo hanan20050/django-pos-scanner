@@ -33,4 +33,5 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('warrnty_list/', views.warranty_list, name='warranty_list'),
     path('update_claim_status/<int:pk>/', views.update_claim_status, name='update_claim_status'),
+    path('audit_logs/', views.audit_logs, name='audit_logs')
 ]

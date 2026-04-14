@@ -1,0 +1,211 @@
+{% extends 'accounts/main.html' %}
+
+{% block content %}
+<style>
+
+    /* Global Container */
+    .audit-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Sticky Header & Filter Section */
+    .sticky-header {
+        position: sticky;
+        top: 70px; /* Adjust this to match your Main Navbar height */
+        z-index: 1020;
+        background: #f8f9fa; /* Matches the page bg */
+        padding: 20px 0;
+    }
+
+    .filter-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    /* Timeline Styling */
+    .timeline-wrapper { margin-top: 10px; }
+
+    .page-header { border-bottom: 2px solid #f0f2f5; padding-bottom: 20px; margin-bottom: 40px; }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 45px;
+        padding-bottom: 40px;
+        border-left: 2px solid #eef0f3;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -9px; top: 0;
+        width: 16px; height: 16px;
+        border-radius: 50%;
+        background: #fff;
+        z-index: 1;
+    }
+    .timeline-item.update::before { border: 4px solid #ffc107; box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1); }
+    .timeline-item.create::before { border: 4px solid #10b981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
+    .timeline-item.delete::before { border: 4px solid #ef4444; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1); }
+
+    .time-label { font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .log-title { font-size: 1rem; color: #1e293b; font-weight: 500; line-height: 1.5; }
+    .user-name { color: #3b82f6; font-weight: 700; }
+    .object-name { color: #475569; font-weight: 600; }
+
+    /* Log Card Content */
+    .log-content {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px;
+        margin-top: 12px;
+        transition: all 0.2s;
+    }
+    .log-content:hover { border-color: #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+
+    .change-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f8fafc; }
+    .change-row:last-child { border-bottom: none; }
+
+    .field-name {
+        min-width: 140px;
+        font-weight: 600;
+        color: #64748b;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    /* Comparison Badges */
+    .val-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 500; }
+    .bg-old { background: #fef2f2; color: #dc2626; text-decoration: line-through; border: 1px solid #fee2e2; }
+    .bg-new { background: #ecfdf5; color: #059669; border: 1px solid #d1fae5; }
+    .arrow-icon { color: #94a3b8; margin: 0 12px; font-size: 0.8rem; }
+
+    .creation-tag { font-size: 0.85rem; color: #475569; display: flex; align-items: center; }
+    .creation-tag i { color: #10b981; margin-right: 8px; }
+
+    /* Custom Form Styling */
+    .form-control, .form-select { border-radius: 8px; border: 1px solid #e2e8f0; padding: 0.6rem; }
+</style>
+
+<div class="audit-container">
+
+    <div class="sticky-header">
+        <div class="filter-card shadow-sm">
+            <form method="GET" class="row g-3 flex justify-between items-center">
+                <div class="col-md-3 flex flex-col">
+                    <label class="small fw-bold text-muted text-uppercase">From Date</label>
+                    <input type="date" name="start_date" value="{{ start_date_str }}" class="form-control">
+                </div>
+                <div class="col-md-3 flex flex-col">
+                    <label class="small fw-bold text-muted text-uppercase">To Date</label>
+                    <input type="date" name="end_date" value="{{ end_date_str }}" class="form-control">
+                </div>
+                <div class="col-md-3 flex flex-col">
+                    <label class="small fw-bold text-muted text-uppercase">Action Type</label>
+                    <select name="action_type" class="form-select">
+                        <option value="">All Actions</option>
+                        <option value="CREATE" {% if action_type == 'CREATE' %}selected{% endif %}>Create</option>
+                        <option value="UPDATE" {% if action_type == 'UPDATE' %}selected{% endif %}>Update</option>
+                        <option value="DELETE" {% if action_type == 'DELETE' %}selected{% endif %}>Delete</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2 p-2 rounded mt-7" style="background-color:dodgerblue">
+                    <button type="submit" class="btn btn-primary w-full fw-bold px-4">Filter</button>
+                    <a href="{% url 'audit_logs' %}" class="btn btn-outline-secondary" title="Reset Filters">
+                        <i class="fas fa-undo"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="timeline-wrapper">
+        <div class="page-header d-flex align-items-center">
+            <div class="p-3 bg-primary bg-opacity-10 rounded-3 me-3">
+                <i class="fas fa-history text-primary fa-lg"></i>
+            </div>
+            <div>
+                <h4 class="mb-0 fw-bold">Recent Activity</h4>
+                <p class="text-muted small mb-0">Audit records for system-wide product changes</p>
+            </div>
+        </div>
+
+        {% for log in logs %}
+        <div class="timeline-item {{ log.action|lower }}">
+            <div class="time-label">{{ log.timestamp|date:"M d, Y" }} <span class="mx-1">•</span> {{ log.timestamp|date:"h:i A" }}</div>
+
+            <div class="log-title">
+                <span class="user-name">{{ log.user.name|title }}</span>
+                <span class="text-muted fw-normal">
+                    {% if log.action == 'CREATE' %}added new product{% elif log.action == 'DELETE' %}deleted product{% else %}updated{% endif %}
+                </span>
+                <span class="object-name">{{ log.content_object|default:"Object Removed" }}</span>
+            </div>
+
+            <div class="log-content shadow-sm">
+                <div class="d-flex flex-column">
+                    {% for key, value in log.change_log.items %}
+                        {% if key != 'status' %}
+                            <div class="change-row">
+                                <span class="field-name">{{ key|title }}</span>
+
+                                <div class="d-flex align-items-center">
+                                    {% if value.old != None %}
+                                        {# UPDATE VIEW #}
+                                        <span class="val-badge bg-old">
+                                            {% if "price" in key.lower %}₱{% endif %}{{ value.old }}
+                                        </span>
+                                        <i class="fas fa-chevron-right arrow-icon"></i>
+                                        <span class="val-badge bg-new">
+                                            {% if "price" in key.lower %}₱{% endif %}{{ value.new }}
+                                        </span>
+                                    {% else %}
+                                        {# CREATE/SNAPSHOT VIEW #}
+                                        <span class="creation-tag fw-bold">
+                                            {% if "price" in key.lower %}₱{% endif %}{{ value }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-5">
+<!--            <img src="https://illustrations.popsy.co/gray/no-messages.svg" alt="Empty" style="width: 200px;">-->
+            <p class="text-muted mt-3">No activity logs found for this criteria.</p>
+        </div>
+        {% endfor %}
+
+        <div class="flex items-center justify-between p-4 bg-white border-t border-gray-200">
+            <span class="text-sm text-gray-700">
+                Page <span class="font-semibold text-gray-900">{{ logs.number }}</span> of
+                <span class="font-semibold text-gray-900">{{ logs.paginator.num_pages }}</span>
+            </span>
+
+            <div class="inline-flex mt-2 xs:mt-0">
+                {% if logs.has_previous %}
+                    <a href="?page={{ logs.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+                       class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900">
+                        Prev
+                    </a>
+                {% endif %}
+
+                {% if logs.has_next %}
+                    <a href="?page={{ logs.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+                       class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900">
+                        Next
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

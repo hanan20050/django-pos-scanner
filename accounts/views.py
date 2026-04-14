@@ -11,12 +11,13 @@ from django.forms import formset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.template.defaulttags import csrf_token
 from django.utils.text import phone2numeric, compress_string
 
 from .decorators import unauthenticated_user
 from .models import Product, Employee, Branch, BranchInventory, Customer, Order, OrderItem, Payment, CashPayment, \
-    CreditOfficer, InstallmentPlan, Invoice, WarrantyClaims, DefectiveInventory, ReplacementRecord
+    CreditOfficer, InstallmentPlan, Invoice, WarrantyClaims, DefectiveInventory, ReplacementRecord, AuditTrail
 from .filters import InventoryFilter, salesFilter, installmentFilter
 from django.core.paginator import Paginator
 from django.views.generic.edit import UpdateView, CreateView
@@ -42,6 +43,8 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.shortcuts import render
+from django.utils.dateparse import parse_date
 
 from django.db.models import Sum, F, Expression, ExpressionWrapper, Count, Q, DecimalField
 from django.db.models.functions import Coalesce
@@ -1320,3 +1323,40 @@ def update_claim_status(request, pk):
 
 
     return redirect('warranty_list')
+
+@login_required(login_url='login')
+@user_passes_test(lambda u: u.is_superuser or (hasattr(u, 'employee') and u.employee.role == 'Manager'))
+def audit_logs(request):
+
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+    action_type = request.GET.get('action_type')
+
+    logs = AuditTrail.objects.all().order_by('-timestamp')
+
+    if start_date_str:
+        start_date = parse_date(start_date_str)
+        if start_date:
+            logs = logs.filter(timestamp__date__gte=start_date)
+
+    if end_date_str:
+        end_date = parse_date(end_date_str)
+        if end_date:
+            logs = logs.filter(timestamp__date__lte=end_date)
+
+    if action_type:
+        logs = logs.filter(action=action_type)
+
+    paginator = Paginator(logs, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+    context = {
+        'logs': page_obj,
+        'start_date_str': start_date_str,
+        'end_date_str': end_date_str,
+        'action_type': action_type,
+    }
+
+    return render(request, 'accounts/audit_logs.html', context)
