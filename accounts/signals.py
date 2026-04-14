@@ -46,6 +46,7 @@ def audit_product_logs(sender, instance, **kwargs):
 
     watch_fields = ['product_name', 'cost_price', 'base_price', 'min_stock_level', 'barcode', 'is_active']
     changes = {}
+    action_type='UPDATE'
 
     for field in watch_fields:
         old_val = getattr(old_obj, field)
@@ -57,10 +58,13 @@ def audit_product_logs(sender, instance, **kwargs):
                 'new': str(new_val),
             }
 
+            if field == 'is_active' and new_val is False:
+                action_type='DELETE'
+
     if changes:
         AuditTrail.objects.create(
             user=employee,
-            action='UPDATE',
+            action=action_type,
             content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.id,
             change_log=changes
