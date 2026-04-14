@@ -98,11 +98,11 @@
             <form method="GET" class="row g-3 flex justify-between items-center">
                 <div class="col-md-3 flex flex-col">
                     <label class="small fw-bold text-muted text-uppercase">From Date</label>
-                    <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+                    <input type="date" name="start_date" value="{{ start_date_str }}" class="form-control">
                 </div>
                 <div class="col-md-3 flex flex-col">
                     <label class="small fw-bold text-muted text-uppercase">To Date</label>
-                    <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+                    <input type="date" name="end_date" value="{{ end_date_str }}" class="form-control">
                 </div>
                 <div class="col-md-3 flex flex-col">
                     <label class="small fw-bold text-muted text-uppercase">Action Type</label>
@@ -178,7 +178,7 @@
         </div>
         {% empty %}
         <div class="text-center py-5">
-            <img src="https://illustrations.popsy.co/gray/no-messages.svg" alt="Empty" style="width: 200px;">
+<!--            <img src="https://illustrations.popsy.co/gray/no-messages.svg" alt="Empty" style="width: 200px;">-->
             <p class="text-muted mt-3">No activity logs found for this criteria.</p>
         </div>
         {% endfor %}

@@ -43,6 +43,8 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.shortcuts import render
+from django.utils.dateparse import parse_date
 
 from django.db.models import Sum, F, Expression, ExpressionWrapper, Count, Q, DecimalField
 from django.db.models.functions import Coalesce
@@ -1326,8 +1328,35 @@ def update_claim_status(request, pk):
 @user_passes_test(lambda u: u.is_superuser)
 def audit_logs(request):
 
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+    action_type = request.GET.get('action_type')
+
     logs = AuditTrail.objects.all().order_by('-timestamp')
 
-    context = {'logs': logs}
+    if start_date_str:
+        start_date = parse_date(start_date_str)
+        if start_date:
+            logs = logs.filter(timestamp__date__gte=start_date)
+
+    if end_date_str:
+        end_date = parse_date(end_date_str)
+        if end_date:
+            logs = logs.filter(timestamp__date__lte=end_date)
+
+    if action_type:
+        logs = logs.filter(action=action_type)
+
+    paginator = Paginator(logs, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+    context = {
+        'logs': page_obj,
+        'start_date_str': start_date_str,
+        'end_date_str': end_date_str,
+        'action_type': action_type,
+    }
 
     return render(request, 'accounts/audit_logs.html', context)
