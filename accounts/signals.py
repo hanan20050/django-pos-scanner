@@ -4,9 +4,21 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 
-from .models import Product, AuditTrail
+from .models import Product, AuditTrail, BranchInventory, Order, OrderItem, InstallmentPlan, Employee, WarrantyClaims, \
+    Supplier
 from .middleware import get_current_user
 from .views import employeeProfile
+
+MODELS_TO_AUDIT = {
+    Product: ['product_name', 'cost_price', 'base_price', 'min_stock_level', 'barcode', 'is_active'],
+    BranchInventory: ['quantity'],
+    Order: ['order_status', 'total_amount', 'is_active'],
+    OrderItem: ['product', 'quantity', 'unit_price', 'cost_price'],
+    InstallmentPlan: ['remaining_balance', 'payment_status', 'next_due_date', 'monthly_due'],
+    Employee: ['name', 'role', 'branch', 'is_active', 'email'],
+    WarrantyClaims: ['status', 'claim_type', 'cost_impact', 'handled_by', 'resolution_date'],
+    Supplier: ['name', 'status', 'contact_person', 'is_active'],
+}
 
 @receiver(post_delete, sender=Product)
 def audit_product_delete(sender, instance, **kwargs):
