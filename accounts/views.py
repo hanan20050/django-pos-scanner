@@ -552,6 +552,58 @@ def branchInventory(request):
         'is_manager':is_manager,}
         )
 
+@login_required(login_url='login')
+def export_branch_inventory_csv(request):
+    is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
+
+
+    if is_manager:
+        items = BranchInventory.objects.filter(product__is_active=True).select_related('branch', 'product')
+        assigned_branch = 'All Branches'
+    else:
+        try:
+            login_employee = Employee.objects.get(user=request.user)
+            assigned_branch = login_employee.branch
+
+            items = BranchInventory.objects.filter(branch=assigned_branch, product__is_active=True).select_related('product', 'product__supplier')
+
+        except Employee.DoesNotExist:
+            items = BranchInventory.objects.none()
+            assigned_branch = 'None assigned'
+
+    myFilter = InventoryFilter(request.GET, queryset=items)
+    filtered_items = myFilter.qs.select_related('branch', 'product', 'product__supplier')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="branch_inventory.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Branch', 'Supplier', 'Product Name', 'Category', 'Quantity', 'Price', 'Barcode', 'Status']
+    )
+
+    for item in filtered_items:
+        if item.quantity > 3:
+            status = "In Stock"
+        elif item.quantity > 0 and item.quantity <= 3:
+            status = "Low Stock"
+        else:
+            status = "Out of Stock"
+
+        writer.writerow(
+            [
+                item.branch.name if item.branch else "N/A",
+                item.product.supplier.name if item.product.supplier else "N/A",
+                item.product.product_name,
+                item.product.category,
+                item.quantity,
+                item.product.base_price,
+                item.product.barcode,
+                status
+            ]
+        )
+
+    return response
 
 def employeeProfile(request):
     sales_agent = request.user.employee

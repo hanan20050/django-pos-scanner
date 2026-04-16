@@ -57,8 +57,8 @@
         </div>
         {% endif %}
 
-        <div class="d-flex gap-2">
-            <a href="{% url 'export_sales_csv' %}?{{ request.GET.urlencode }}" class="px-6 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 shadow-sm transition">
+        <div class="flex gap-2">
+            <a href="{% url 'export_sales_csv' %}?{{ request.GET.urlencode }}" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 shadow-sm transition">
                 <i class="fas fa-file-excel"></i> Export CSV
             </a>
         </div>

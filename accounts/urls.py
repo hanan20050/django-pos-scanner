@@ -34,5 +34,6 @@ urlpatterns = [
     path('warrnty_list/', views.warranty_list, name='warranty_list'),
     path('update_claim_status/<int:pk>/', views.update_claim_status, name='update_claim_status'),
     path('audit_logs/', views.audit_logs, name='audit_logs'),
-    path('sales_display/export/', views.export_sales_csv, name='export_sales_csv')
+    path('sales_display/export/', views.export_sales_csv, name='export_sales_csv'),
+    path('branch_inventory/export/', views.export_branch_inventory_csv, name='export_branch_inventory_csv')
 ]
