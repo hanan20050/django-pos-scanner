@@ -56,6 +56,7 @@ from decimal import Decimal
 from django.http import JsonResponse
 import json
 import uuid
+import csv
 
 
 
@@ -464,6 +465,49 @@ def salesDisplay(request):
     context = {'myFilter': myFilter, 'is_manager': is_manager, 'sales': page_obj, 'grand_total': grand_total, 'inst': inst, 'cash_sales': cash_sales}
 
     return render(request, 'accounts/sales_display.html', context)
+
+@login_required(login_url='login')
+def export_sales_csv(request):
+    is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
+
+    if is_manager:
+        queryset = OrderItem.objects.filter(order__is_active=True).select_related('order', 'order__customer', 'product', 'order__employee')
+    else:
+        try:
+            assigned_branch = request.user.employee.branch
+
+            queryset = OrderItem.objects.filter(order__branch=assigned_branch, order__is_active=True).select_related('order', 'product')
+        except Employee.DoesNotExist:
+            queryset = OrderItem.objects.none
+
+    queryset = queryset.order_by('-order__order_date')
+
+    myFilter = salesFilter(request.GET, queryset=queryset)
+    filtered_items = myFilter.qs.select_related('order', 'order__customer', 'product', 'order__employee')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sales_data.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Date', 'Order ID', 'Customer', 'Product', 'Qty', 'Unit Price', 'Total', 'Branch', 'Sold By']
+    )
+
+    for item in filtered_items:
+        writer.writerow(
+            [
+                item.order.order_date.strftime("%Y-%m-%d %H:%M"),
+                item.order.id,
+                item.order.customer.name if item.order.customer else 'Walk In',
+                item.product.product_name,
+                item.quantity,
+                item.unit_price,
+                item.quantity * item.unit_price,
+                item.order.branch.name if item.order.branch else "N/A",
+                item.order.employee.name if item.order.employee else "System",
+            ]
+        )
+
+    return response
 
 @login_required(login_url='login')
 def delete_product(request, pk):
