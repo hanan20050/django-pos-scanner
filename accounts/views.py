@@ -56,6 +56,7 @@ from decimal import Decimal
 from django.http import JsonResponse
 import json
 import uuid
+import csv
 
 
 
@@ -277,6 +278,47 @@ def admin_installment(request):
     return render(request, 'accounts/admin_installment.html', context)
 
 @login_required(login_url='login')
+def admin_installment_export_csv(request):
+    is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
+
+    installment_sales = OrderItem.objects.filter(order__payment_method='INSTALLMENT').select_related('order', 'order__customer', 'product', 'order__employee', 'order__branch').order_by('-order__order_date', '-id')
+
+    # request_param = request.GET.copy()
+    # if 'page' in request_param:
+    #     request_param.pop('page')
+
+    myFilter = installmentFilter(request.GET, queryset=installment_sales)
+    filtered_items = myFilter.qs
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="installment_data.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Order #', 'Employee', 'Customer', 'Product Name', 'Branch', 'Category', 'Price', 'QTY', 'Total', 'Payment Method', 'Date', 'Status']
+    )
+
+    for item in filtered_items:
+        writer.writerow(
+            [
+                item.order.pk,
+                item.order.employee.name,
+                item.order.customer.name,
+                item.product.product_name,
+                item.order.branch.name,
+                item.product.category,
+                item.product.base_price,
+                item.quantity,
+                item.line_total,
+                item.order.payment_method,
+                item.order.order_date.strftime("%Y-%m-%d %H:%M"),
+                item.order.order_status,
+            ]
+        )
+
+    return response
+
+
+@login_required(login_url='login')
 def manage_installment(request, pk):
 
     inst = get_object_or_404(InstallmentPlan, payment__order__pk=pk)
@@ -466,6 +508,49 @@ def salesDisplay(request):
     return render(request, 'accounts/sales_display.html', context)
 
 @login_required(login_url='login')
+def export_sales_csv(request):
+    is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
+
+    if is_manager:
+        queryset = OrderItem.objects.filter(order__is_active=True).select_related('order', 'order__customer', 'product', 'order__employee')
+    else:
+        try:
+            assigned_branch = request.user.employee.branch
+
+            queryset = OrderItem.objects.filter(order__branch=assigned_branch, order__is_active=True).select_related('order', 'product')
+        except Employee.DoesNotExist:
+            queryset = OrderItem.objects.none
+
+    queryset = queryset.order_by('-order__order_date')
+
+    myFilter = salesFilter(request.GET, queryset=queryset)
+    filtered_items = myFilter.qs.select_related('order', 'order__customer', 'product', 'order__employee')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sales_data.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Date', 'Order ID', 'Customer', 'Product', 'Qty', 'Unit Price', 'Total', 'Branch', 'Sold By']
+    )
+
+    for item in filtered_items:
+        writer.writerow(
+            [
+                item.order.order_date.strftime("%Y-%m-%d %H:%M"),
+                item.order.id,
+                item.order.customer.name if item.order.customer else 'Walk In',
+                item.product.product_name,
+                item.quantity,
+                item.unit_price,
+                item.quantity * item.unit_price,
+                item.order.branch.name if item.order.branch else "N/A",
+                item.order.employee.name if item.order.employee else "System",
+            ]
+        )
+
+    return response
+
+@login_required(login_url='login')
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
 
@@ -508,6 +593,58 @@ def branchInventory(request):
         'is_manager':is_manager,}
         )
 
+@login_required(login_url='login')
+def export_branch_inventory_csv(request):
+    is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
+
+
+    if is_manager:
+        items = BranchInventory.objects.filter(product__is_active=True).select_related('branch', 'product')
+        assigned_branch = 'All Branches'
+    else:
+        try:
+            login_employee = Employee.objects.get(user=request.user)
+            assigned_branch = login_employee.branch
+
+            items = BranchInventory.objects.filter(branch=assigned_branch, product__is_active=True).select_related('product', 'product__supplier')
+
+        except Employee.DoesNotExist:
+            items = BranchInventory.objects.none()
+            assigned_branch = 'None assigned'
+
+    myFilter = InventoryFilter(request.GET, queryset=items)
+    filtered_items = myFilter.qs.select_related('branch', 'product', 'product__supplier')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="branch_inventory.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Branch', 'Supplier', 'Product Name', 'Category', 'Quantity', 'Price', 'Barcode', 'Status']
+    )
+
+    for item in filtered_items:
+        if item.quantity > 3:
+            status = "In Stock"
+        elif item.quantity > 0 and item.quantity <= 3:
+            status = "Low Stock"
+        else:
+            status = "Out of Stock"
+
+        writer.writerow(
+            [
+                item.branch.name if item.branch else "N/A",
+                item.product.supplier.name if item.product.supplier else "N/A",
+                item.product.product_name,
+                item.product.category,
+                item.quantity,
+                item.product.base_price,
+                item.product.barcode,
+                status
+            ]
+        )
+
+    return response
 
 def employeeProfile(request):
     sales_agent = request.user.employee
@@ -523,6 +660,36 @@ def employeeProfile(request):
 
     context = {'form':form, 'sales_agent':sales_agent}
     return render(request, 'accounts/employee_profile.html', context)
+
+@login_required(login_url='login')
+def employee_list_export_csv(request):
+    employees = Employee.objects.filter(is_active=True).order_by('-hire_date')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="employee_list.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Employee Name', 'Branch', 'Role', 'Contact', 'Status', 'Joining Date']
+    )
+
+    for emp in employees:
+        if emp:
+            status = "Active Staff"
+        else:
+            status = "Inactive Staff"
+
+        writer.writerow(
+            [
+                emp.name,
+                emp.branch.name if emp.branch else "N/A",
+                emp.role,
+                emp.phone,
+                status,
+                emp.hire_date.strftime("%Y-%m-%d"),
+            ]
+        )
+
+    return response
 
 
 class EmployeeList(ListView):
@@ -1304,6 +1471,51 @@ def warranty_list(request):
     return render(request, 'accounts/warranty_list.html', context)
 
 @login_required(login_url='login')
+def warranty_list_export_csv(request):
+    status_filter = request.GET.get('status')
+    search_query = request.GET.get('q')
+
+    claims = WarrantyClaims.objects.all().select_related('order_item__product', 'order_item__order__customer').order_by('-date_filed')
+
+    if status_filter and status_filter != 'All':
+        claims = claims.filter(status=status_filter)
+
+    if search_query:
+        claims = claims.filter(
+            Q(faulty_serial__icontains=search_query) |
+            Q(order_item__order__customer__name__icontains=search_query)
+        )
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="warranty_list.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Claim ID', 'Customer', 'Item', 'Type', 'Status', 'Date Filed']
+    )
+
+    for claim in claims:
+        try:
+            customer_name = claim.order_item.order.customer.name if claim.order_item.order.customer else "Walk-in"
+        except AttributeError:
+            customer_name = "N/A"
+
+        product_name = claim.order_item.product.product_name if claim.order_item.product else "Unknown"
+
+        writer.writerow(
+            [
+                claim.pk,
+                customer_name,
+                product_name,
+                claim.claim_type,
+                claim.status,
+                claim.date_filed.strftime("%Y-%m-%d %H:%M") if claim.date_filed else "N/A"
+            ]
+        )
+
+
+    return response
+
+@login_required(login_url='login')
 def update_claim_status(request, pk):
     print(request.POST)
 
@@ -1360,3 +1572,52 @@ def audit_logs(request):
     }
 
     return render(request, 'accounts/audit_logs.html', context)
+
+@login_required(login_url='login')
+def audit_logs_export_csv(request):
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+    action_type = request.GET.get('action_type')
+
+    logs = AuditTrail.objects.all().order_by('-timestamp')
+
+    if start_date_str:
+        start_date = parse_date(start_date_str)
+        if start_date:
+            logs = logs.filter(timestamp__date__gte=start_date)
+
+    if end_date_str:
+        end_date = parse_date(end_date_str)
+        if end_date:
+            logs = logs.filter(timestamp__date__lte=end_date)
+
+    if action_type:
+        logs = logs.filter(action=action_type)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="audit_logs.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Timestamp', 'User', 'Action', 'Model', 'IP Address', 'Description']
+    )
+
+    for log in logs:
+        description = ""
+        if isinstance(log.change_log, dict):
+            description = ", ".join([f"{k}: {v}" for k, v in log.change_log.items()])
+        else:
+            description = str(log.change_log)
+
+        writer.writerow(
+            [
+                log.timestamp,
+                log.user.name,
+                log.action,
+                log.content_type.model,
+                log.ip_address,
+                description
+            ]
+        )
+
+    return response
+

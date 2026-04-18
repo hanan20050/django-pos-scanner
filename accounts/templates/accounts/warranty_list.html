@@ -69,6 +69,12 @@
 
             <button type="submit" class="bg-blue-500 px-4 rounded">Search</button>
         </form>
+
+        <div class="flex gap-2">
+            <a href="{% url 'warranty_list_export_csv' %}?{{ request.GET.urlencode }}" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 shadow-sm transition">
+                <i class="fas fa-file-excel"></i> Export CSV
+            </a>
+        </div>
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">

@@ -33,5 +33,11 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('warrnty_list/', views.warranty_list, name='warranty_list'),
     path('update_claim_status/<int:pk>/', views.update_claim_status, name='update_claim_status'),
-    path('audit_logs/', views.audit_logs, name='audit_logs')
+    path('audit_logs/', views.audit_logs, name='audit_logs'),
+    path('sales_display/export/', views.export_sales_csv, name='export_sales_csv'),
+    path('branch_inventory/export/', views.export_branch_inventory_csv, name='export_branch_inventory_csv'),
+    path('admin_installment/export_data_csv/', views.admin_installment_export_csv, name='admin_installment_export_csv'),
+    path('employee_list/export_employee_csv/', views.employee_list_export_csv, name='employee_list_export_csv'),
+    path('warrnty_list/export_warranty_list/', views.warranty_list_export_csv, name='warranty_list_export_csv'),
+    path('audit_logs/export_audit_logs/', views.audit_logs_export_csv, name='audit_logs_export_csv')
 ]
