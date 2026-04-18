@@ -1471,6 +1471,51 @@ def warranty_list(request):
     return render(request, 'accounts/warranty_list.html', context)
 
 @login_required(login_url='login')
+def warranty_list_export_csv(request):
+    status_filter = request.GET.get('status')
+    search_query = request.GET.get('q')
+
+    claims = WarrantyClaims.objects.all().select_related('order_item__product', 'order_item__order__customer').order_by('-date_filed')
+
+    if status_filter and status_filter != 'All':
+        claims = claims.filter(status=status_filter)
+
+    if search_query:
+        claims = claims.filter(
+            Q(faulty_serial__icontains=search_query) |
+            Q(order_item__order__customer__name__icontains=search_query)
+        )
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="warranty_list.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Claim ID', 'Customer', 'Item', 'Type', 'Status', 'Date Filed']
+    )
+
+    for claim in claims:
+        try:
+            customer_name = claim.order_item.order.customer.name if claim.order_item.order.customer else "Walk-in"
+        except AttributeError:
+            customer_name = "N/A"
+
+        product_name = claim.order_item.product.product_name if claim.order_item.product else "Unknown"
+
+        writer.writerow(
+            [
+                claim.pk,
+                customer_name,
+                product_name,
+                claim.claim_type,
+                claim.status,
+                claim.date_filed.strftime("%Y-%m-%d %H:%M") if claim.date_filed else "N/A"
+            ]
+        )
+
+
+    return response
+
+@login_required(login_url='login')
 def update_claim_status(request, pk):
     print(request.POST)
 

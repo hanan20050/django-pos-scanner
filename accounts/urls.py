@@ -37,5 +37,6 @@ urlpatterns = [
     path('sales_display/export/', views.export_sales_csv, name='export_sales_csv'),
     path('branch_inventory/export/', views.export_branch_inventory_csv, name='export_branch_inventory_csv'),
     path('admin_installment/export_data_csv/', views.admin_installment_export_csv, name='admin_installment_export_csv'),
-    path('employee_list/export_employee_csv/', views.employee_list_export_csv, name='employee_list_export_csv')
+    path('employee_list/export_employee_csv/', views.employee_list_export_csv, name='employee_list_export_csv'),
+    path('warrnty_list/export_warranty_list/', views.warranty_list_export_csv, name='warranty_list_export_csv')
 ]
