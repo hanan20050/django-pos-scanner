@@ -317,6 +317,7 @@ def admin_installment_export_csv(request):
 
     return response
 
+
 @login_required(login_url='login')
 def manage_installment(request, pk):
 
@@ -659,6 +660,36 @@ def employeeProfile(request):
 
     context = {'form':form, 'sales_agent':sales_agent}
     return render(request, 'accounts/employee_profile.html', context)
+
+@login_required(login_url='login')
+def employee_list_export_csv(request):
+    employees = Employee.objects.filter(is_active=True).order_by('-hire_date')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="employee_list.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Employee Name', 'Branch', 'Role', 'Contact', 'Status', 'Joining Date']
+    )
+
+    for emp in employees:
+        if emp:
+            status = "Active Staff"
+        else:
+            status = "Inactive Staff"
+
+        writer.writerow(
+            [
+                emp.name,
+                emp.branch.name if emp.branch else "N/A",
+                emp.role,
+                emp.phone,
+                status,
+                emp.hire_date.strftime("%Y-%m-%d"),
+            ]
+        )
+
+    return response
 
 
 class EmployeeList(ListView):

@@ -7,12 +7,19 @@
             <h1 class="text-2xl font-bold text-gray-900">Employee Directory</h1>
             <p class="text-sm text-gray-500 mt-1">Manage team members, roles, and branch assignments.</p>
         </div>
-        <div>
+        <div class="flex flex-row gap-4">
             <a href="{% url 'employee_form' %}" class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
                 + Add Employee
             </a>
+            <div class="flex gap-2">
+                <a href="{% url 'employee_list_export_csv' %}?{{ request.GET.urlencode }}" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 shadow-sm transition">
+                    <i class="fas fa-file-excel"></i> Export CSV
+                </a>
+            </div>
+
         </div>
     </div>
+
 
     <div class="w-full mx-auto bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
