@@ -278,6 +278,46 @@ def admin_installment(request):
     return render(request, 'accounts/admin_installment.html', context)
 
 @login_required(login_url='login')
+def admin_installment_export_csv(request):
+    is_manager = request.user.is_superuser or hasattr(request.user, 'employee') and request.user.employee.role == 'Manager'
+
+    installment_sales = OrderItem.objects.filter(order__payment_method='INSTALLMENT').select_related('order', 'order__customer', 'product', 'order__employee', 'order__branch').order_by('-order__order_date', '-id')
+
+    # request_param = request.GET.copy()
+    # if 'page' in request_param:
+    #     request_param.pop('page')
+
+    myFilter = installmentFilter(request.GET, queryset=installment_sales)
+    filtered_items = myFilter.qs
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="installment_data.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Order #', 'Employee', 'Customer', 'Product Name', 'Branch', 'Category', 'Price', 'QTY', 'Total', 'Payment Method', 'Date', 'Status']
+    )
+
+    for item in filtered_items:
+        writer.writerow(
+            [
+                item.order.pk,
+                item.order.employee.name,
+                item.order.customer.name,
+                item.product.product_name,
+                item.order.branch.name,
+                item.product.category,
+                item.product.base_price,
+                item.quantity,
+                item.line_total,
+                item.order.payment_method,
+                item.order.order_date.strftime("%Y-%m-%d %H:%M"),
+                item.order.order_status,
+            ]
+        )
+
+    return response
+
+@login_required(login_url='login')
 def manage_installment(request, pk):
 
     inst = get_object_or_404(InstallmentPlan, payment__order__pk=pk)
