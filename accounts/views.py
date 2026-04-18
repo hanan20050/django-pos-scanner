@@ -1572,3 +1572,52 @@ def audit_logs(request):
     }
 
     return render(request, 'accounts/audit_logs.html', context)
+
+@login_required(login_url='login')
+def audit_logs_export_csv(request):
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+    action_type = request.GET.get('action_type')
+
+    logs = AuditTrail.objects.all().order_by('-timestamp')
+
+    if start_date_str:
+        start_date = parse_date(start_date_str)
+        if start_date:
+            logs = logs.filter(timestamp__date__gte=start_date)
+
+    if end_date_str:
+        end_date = parse_date(end_date_str)
+        if end_date:
+            logs = logs.filter(timestamp__date__lte=end_date)
+
+    if action_type:
+        logs = logs.filter(action=action_type)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="audit_logs.csv"'
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Timestamp', 'User', 'Action', 'Model', 'IP Address', 'Description']
+    )
+
+    for log in logs:
+        description = ""
+        if isinstance(log.change_log, dict):
+            description = ", ".join([f"{k}: {v}" for k, v in log.change_log.items()])
+        else:
+            description = str(log.change_log)
+
+        writer.writerow(
+            [
+                log.timestamp,
+                log.user.name,
+                log.action,
+                log.content_type.model,
+                log.ip_address,
+                description
+            ]
+        )
+
+    return response
+
