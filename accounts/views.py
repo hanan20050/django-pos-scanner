@@ -498,7 +498,7 @@ def salesDisplay(request):
 
     grand_total = result['total_revenue'] or 0
 
-    paginator = Paginator(filtered_items, 10)
+    paginator = Paginator(filtered_items, 7)
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

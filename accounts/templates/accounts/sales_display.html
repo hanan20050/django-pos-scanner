@@ -39,16 +39,15 @@
         </div>
 
         {% if is_manager %}
-            <div class="flex justify-center items-center">
+            <div class="flex justify-end items-center mt-6 pl-48">
                 <div class="text-gray-700 font-semibold flex justify-center items-center space-x-2">
                     <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Cash Sales: {{ cash_sales }}</span>
                     <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Installment Processed: {{ inst }}</span>
                     <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Total Sales: ₱{{ grand_total }}</span>
                 </div>
             </div>
-        {% endif %}
 
-        {% if request.user.employee.branch %}
+        {% elif request.user.employee.branch %}
         <div class="flex justify-center items-center">
             <div class="text-gray-700 font-semibold flex justify-center items-center space-x-2">
                 <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Commission: {{ request.user.employee.salesagent.total_commission_earned }}</span>
@@ -57,7 +56,7 @@
         </div>
         {% endif %}
 
-        <div class="flex gap-2">
+        <div class="flex gap-2 mt-4">
             <a href="{% url 'export_sales_csv' %}?{{ request.GET.urlencode }}" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 shadow-sm transition">
                 <i class="fas fa-file-excel"></i> Export CSV
             </a>
