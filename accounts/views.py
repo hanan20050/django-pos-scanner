@@ -779,6 +779,12 @@ def posTerminal(request):
     branch_products = BranchInventory.objects.filter(branch=employee.branch).select_related('product')
     credit_officers = Employee.objects.filter(role='Credit Officer')
 
+    query = request.GET.get('q')
+    if query:
+        branch_products = branch_products.filter(
+            Q(product__product_name__icontains=query)
+        )
+
     context = {'employee':employee, 'branch_products':branch_products, 'credit_officers': credit_officers}
 
     return render(request, 'accounts/pos_terminal.html', context)
