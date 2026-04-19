@@ -1,5 +1,7 @@
 {% extends 'accounts/main.html' %}
 
+{% load humanize %}
+
 {% block content %}
 
 
@@ -39,15 +41,15 @@
         </div>
 
         {% if is_manager %}
-            <div class="flex justify-center items-center">
+            <div class="flex justify-end items-center mt-6 pl-48">
                 <div class="text-gray-700 font-semibold flex justify-center items-center space-x-2">
                     <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Installment Processed: {{ inst }}</span>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Total Installments: ₱{{ grand_total }}</span>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">Total Installments: ₱{{ grand_total|floatformat:2|intcomma }}</span>
                 </div>
             </div>
         {% endif %}
 
-        <div class="flex gap-2">
+        <div class="flex gap-2 mt-4">
             <a href="{% url 'admin_installment_export_csv' %}?{{ request.GET.urlencode }}" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 shadow-sm transition">
                 <i class="fas fa-file-excel"></i> Export CSV
             </a>
@@ -74,7 +76,7 @@
                 <th class="px-6 py-3">Date</th>
                 <th class="px-6 py-3">Status</th>
                 {% if request.user.employee.branch %}
-                <th class="px-6 py-3">Receipt</th>
+<!--                <th class="px-6 py-3">Receipt</th>-->
                 {% endif %}
                 {% if is_manager %}
                 <th class="px-6 py-3">Option</th>
@@ -82,7 +84,7 @@
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-            {% for i in installment_sales %}
+            {% for i in page_obj %}
             <tr class="hover:bg-gray-50 text-center">
                 {% if is_manager %}
                 <td class="px-6 py-4"> #{{ i.id }}
@@ -113,20 +115,20 @@
 
 <div class="flex items-center justify-between p-4 bg-white border-t border-gray-200">
     <span class="text-sm text-gray-700">
-        Page <span class="font-semibold text-gray-900">{{ sales.number }}</span> of
-        <span class="font-semibold text-gray-900">{{ sales.paginator.num_pages }}</span>
+        Page <span class="font-semibold text-gray-900">{{ page_obj.number }}</span> of
+        <span class="font-semibold text-gray-900">{{ page_obj.paginator.num_pages }}</span>
     </span>
 
     <div class="inline-flex mt-2 xs:mt-0">
-        {% if sales.has_previous %}
-            <a href="?page={{ sales.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
                class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900">
                 Prev
             </a>
         {% endif %}
 
-        {% if sales.has_next %}
-            <a href="?page={{ sales.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'page=' }}{% endif %}"
                class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900">
                 Next
             </a>
