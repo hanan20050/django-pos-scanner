@@ -273,7 +273,12 @@ def admin_installment(request):
     sales_result = filtered_items.aggregate(total=Sum('order__total_amount'))
     grand_total = sales_result['total'] or 0
 
-    context = {'installment_sales': installment_sales, 'myFilter': myFilter, 'is_manager': is_manager, 'inst': inst, 'grand_total': grand_total}
+    paginator = Paginator(filtered_items, 10)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {'installment_sales': installment_sales, 'myFilter': myFilter, 'is_manager': is_manager, 'inst': inst, 'grand_total': grand_total, 'page_obj': page_obj}
 
     return render(request, 'accounts/admin_installment.html', context)
 
