@@ -445,7 +445,7 @@ def loginPage(request):
             if user.is_superuser or is_manager:
                 return redirect('dashboard')
             else:
-                return redirect('home')
+                return redirect('pos_terminal')
         else:
             messages.info(request, 'Username or password is incorrect.')
 
