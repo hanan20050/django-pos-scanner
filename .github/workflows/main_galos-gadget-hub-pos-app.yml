@@ -63,4 +63,4 @@ jobs:
         with:
           app-name: 'galos-gadget-hub-pos-app'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8DD6143102DA4A2DBA1CBBD22BD9009B }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4CC7D171A99A4018A97D60B5011F1146 }}
