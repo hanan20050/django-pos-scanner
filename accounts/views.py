@@ -1,7 +1,6 @@
 from contextlib import nullcontext
 from functools import total_ordering
 from http.client import responses
-from sys import is_stack_trampoline_active, exception
 from xmlrpc.client import WRAPPERS
 
 from django.contrib.admin.templatetags.admin_list import items_for_result, paginator_number
