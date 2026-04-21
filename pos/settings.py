@@ -20,22 +20,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 
-allowed_hosts_env = os.getenv("ALLOWED_HOSTS", "")
-if allowed_hosts_env:
-    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(",")]
-else:
-    ALLOWED_HOSTS = [
-        "localhost",
-        "127.0.0.1",
-        ".azurewebsites.net",  # The dot at the start is a wildcard!
-        "0.0.0.0"
-    ]
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    '.azurewebsites.net', # Wildcard for all Azure URLs
+    'galos-gadget-hub-pos-app-hcgdfqfeduephrej.japanwest-01.azurewebsites.net' # Your specific long URL
+]
 
+# This is the "Magic Sauce" for Azure Load Balancers
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+# CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
-    "https://*.azurewebsites.net"
+    'https://*.azurewebsites.net',
+    'https://galos-gadget-hub-pos-app-hcgdfqfeduephrej.japanwest-01.azurewebsites.net'
 ]
 
 # Quick-start development settings - unsuitable for production
