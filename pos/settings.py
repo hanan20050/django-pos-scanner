@@ -19,12 +19,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
-csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', '')
 
-if csrf_origins:
-    CSRF_TRUSTED_ORIGINS = csrf_origins.split(',')
+allowed_hosts_env = os.getenv("ALLOWED_HOSTS", "")
+if allowed_hosts_env:
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(",")]
 else:
-    CSRF_TRUSTED_ORIGINS = []
+    ALLOWED_HOSTS = [
+        "localhost",
+        "127.0.0.1",
+        ".azurewebsites.net",  # The dot at the start is a wildcard!
+        "0.0.0.0"
+    ]
+
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.azurewebsites.net"
+]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -34,8 +46,6 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-for-ci-checks
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
-
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_HOST')
