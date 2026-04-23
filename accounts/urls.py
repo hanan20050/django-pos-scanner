@@ -41,5 +41,6 @@ urlpatterns = [
     path('employee_list/export_employee_csv/', views.employee_list_export_csv, name='employee_list_export_csv'),
     path('warrnty_list/export_warranty_list/', views.warranty_list_export_csv, name='warranty_list_export_csv'),
     path('audit_logs/export_audit_logs/', views.audit_logs_export_csv, name='audit_logs_export_csv'),
-    path('google439ec38d3e46cf95.html', TemplateView.as_view(template_name='google439ec38d3e46cf95.html'))
+    path('google439ec38d3e46cf95.html', TemplateView.as_view(template_name='google439ec38d3e46cf95.html')),
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

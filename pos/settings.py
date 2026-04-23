@@ -35,7 +35,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.azurewebsites.net',
-    'https://galos-gadget-hub-pos-app-hcgdfqfeduephrej.japanwest-01.azurewebsites.net'
+    'https://galos-gadget-hub-pos-app-hcgdfqfeduephrej.japanwest-01.azurewebsites.net',
+    'https://galosgadgethubpos.systems',
+    'https://www.galosgadgethubpos.systems'
 ]
 
 # Quick-start development settings - unsuitable for production
