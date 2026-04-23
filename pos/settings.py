@@ -14,7 +14,6 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(os.path.join(BASE_DIR, '.env'))
@@ -24,15 +23,16 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
-    '.azurewebsites.net', # Wildcard for all Azure URLs
-    'galos-gadget-hub-pos-app-hcgdfqfeduephrej.japanwest-01.azurewebsites.net' # Your specific long URL
+    'galosgadgethubpos.systems',
+    'www.galosgadgethubpos.systems',
+    '.azurewebsites.net',
+    'galos-gadget-hub-pos-app-hcgdfqfeduephrej.japanwest-01.azurewebsites.net'
 ]
 
-# This is the "Magic Sauce" for Azure Load Balancers
+
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
     'https://*.azurewebsites.net',
     'https://galos-gadget-hub-pos-app-hcgdfqfeduephrej.japanwest-01.azurewebsites.net'
@@ -41,10 +41,8 @@ CSRF_TRUSTED_ORIGINS = [
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-for-ci-checks')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
