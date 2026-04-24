@@ -47,7 +47,7 @@ class Employee(models.Model):
     role = models.CharField(choices=ROLE_CHOICES, max_length=100, default='Sales Agent')
     email = models.EmailField(max_length=200, null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
-    profile_pic = models.ImageField(upload_to='media/', null=True, blank=True)
+    profile_pic = models.ImageField(upload_to='profiles/', null=True, blank=True)
     hire_date = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_logged_in = models.BooleanField(default=False)
