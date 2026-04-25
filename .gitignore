@@ -6,7 +6,7 @@ __pycache__/
 
 env/
 venv/
-.env.production
+.env.production/
 
 
 .idea/
@@ -23,3 +23,6 @@ filter_backup.py
 fix_db.py
 init_db.py
 data.json
+datadump.json
+datadump_clean.json
+datadump_final.json
