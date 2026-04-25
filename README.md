@@ -8,6 +8,10 @@
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-galosgadgethubpos.systems-brightgreen)](https://galosgadgethubpos.systems)
 
+<img width="1600" height="768" alt="Capture1" src="https://github.com/user-attachments/assets/5704f19b-1ece-4f91-a832-f43eebe647f9" />
+<img width="1600" height="771" alt="Capture" src="https://github.com/user-attachments/assets/ca4cbc83-6469-4f57-980a-61f2ead8931c" />
+<img width="1600" height="773" alt="Capture11" src="https://github.com/user-attachments/assets/b304182b-29d6-40e0-8390-3ac3768e7fdc" />
+
 ---
 
 ## 📋 Table of Contents 📋
