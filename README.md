@@ -1,11 +1,16 @@
 # 🏪 Django POS Scanner System
 
-> A comprehensive, production-ready Point of Sale (POS) management system built with Django for **Galos Gadget Hub** — featuring multi-branch inventory, installment credit management, warranty claims, real-time sales analytics, and role-based employee access.
+> A comprehensive, production-ready Point of Sale (POS) management system built with Django for **Galos Gadget Hub** — featuring multi-branch inventory, installment credit management, warranty claims, real-time sales analytics, audit trail logging, email notifications, CSV exports, and role-based employee access.
 
 [![Django CI Check](https://github.com/johnaljennegalos/django-pos-scanner/actions/workflows/django.ci.yml/badge.svg)](https://github.com/johnaljennegalos/django-pos-scanner/actions/workflows/django.ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Django](https://img.shields.io/badge/Django-6.0.2-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-galosgadgethubpos.systems-brightgreen)](https://galosgadgethubpos.systems)
+
+<img width="1600" height="768" alt="Capture1" src="https://github.com/user-attachments/assets/5704f19b-1ece-4f91-a832-f43eebe647f9" />
+<img width="1600" height="771" alt="Capture" src="https://github.com/user-attachments/assets/ca4cbc83-6469-4f57-980a-61f2ead8931c" />
+<img width="1600" height="773" alt="Capture11" src="https://github.com/user-attachments/assets/b304182b-29d6-40e0-8390-3ac3768e7fdc" />
 
 ---
 
@@ -41,7 +46,9 @@ The **Django POS Scanner System** is a full-featured retail management platform 
 | **Warranty Handling** | Structured Repair vs Replacement with cost tracking |
 | **Inventory Visibility** | Per-branch low-stock alerts with minimum thresholds |
 | **Reporting** | Weekly / Monthly / Yearly revenue, commissions, and outstanding balances |
-| **Accountability** | Employee login/logout tracking with session timestamps |
+| **Accountability** | Employee login/logout tracking, session timestamps, and full audit trail |
+| **Data Export** | One-click CSV exports for sales, inventory, installments, employees, warranties, audit logs |
+| **Email Automation** | HTML receipts on checkout + payment due reminders via scheduled tasks |
 
 ---
 
@@ -67,9 +74,41 @@ The **Django POS Scanner System** is a full-featured retail management platform 
 - **Admin Dashboard** — real-time KPIs: revenue, cost, gross profit, transaction count
 - **Branch Revenue Chart** — bar chart comparison of all branches
 - **Employee Sales Chart** — individual sales agent performance
+- **Top 5 Products Chart** — top-selling products by units sold (last 30 days)
 - **Weekly / Monthly / Yearly Totals** — period-based revenue aggregation
 - **Outstanding Balance Monitor** — total owed from pending installments
 - **Payment Method Breakdown** — cash vs installment revenue split
+- **Average Order Value (AOV)** — computed from the last 30-day transaction window
+
+### Enhanced Manager Dashboard
+- **Warranty Claims Summary** — counts by status (Pending / In-Progress / Completed / Released)
+- **Repair vs Replacement Breakdown** — claim counts and total cost impact per type
+- **Stock Health Overview** — healthy / low-stock / out-of-stock item counts + items restocked in last 24 hrs
+- **Overdue Installments Counter** — number of installment plans past their due date
+- **Today's Collections** — expected collection amount and payment progress percentage
+- **Day-over-Day Revenue Growth** — today vs yesterday percentage change
+- **Active Staff Panel** — list of currently logged-in employees
+
+### CSV Export
+- **Sales Export** — full filtered order list downloadable as `sales_data.csv`
+- **Branch Inventory Export** — current stock levels as `branch_inventory.csv`
+- **Installment Export** — filtered installment records as `installment_data.csv`
+- **Employee List Export** — active employee roster as `employee_list.csv`
+- **Warranty List Export** — filtered warranty claims as `warranty_list.csv`
+- **Audit Log Export** — filtered audit trail as `audit_logs.csv`
+
+### Audit Trail System
+- **AuditTrail Model** — logs every CREATE / UPDATE / DELETE action on key models (Product, BranchInventory, Order, OrderItem, InstallmentPlan, Employee, WarrantyClaims, Supplier)
+- **Django Signals** — automatic audit capture via `pre_save`, `post_save`, and `post_delete` receivers
+- **AuditMiddleware** — thread-local user capture so signals know which employee made the change
+- **Audit Logs View** (`/audit_logs/`) — paginated, filterable by date range and action type; Manager / Superuser only
+- **Audit CSV Export** — downloadable audit log
+
+### Email Notification System
+- **Cash Receipt Email** — HTML-formatted receipt sent to customer email on cash checkout
+- **Installment Confirmation Email** — HTML installment plan summary sent on installment checkout
+- **Payment Due Reminder** — scheduled task (`tasks.py: send_due_reminders()`) sends reminder 5 days before next due date
+- Configurable via environment variables (`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, etc.)
 
 ### Employee Management
 - Role-based access: Manager, Sales Agent, Credit Officer
@@ -118,9 +157,11 @@ The **Django POS Scanner System** is a full-featured retail management platform 
 | django-admin-interface | 0.32.0 | Enhanced admin panel UI |
 | django-colorfield | 0.14.0 | Color picker for admin interface |
 | django-filter | 25.2 | Advanced queryset filtering |
+| django-q | — | Background task queue (scheduled email reminders) |
 | Pillow | 12.1.1 | Image processing for product/profile pics |
 | six | 1.17.0 | Python 2/3 compatibility utility |
 | text-unidecode | 1.3 | Unicode slug support |
+| whitenoise | — | Efficient static file serving in production |
 
 ---
 
@@ -153,19 +194,27 @@ django-pos-scanner/
 │   │   │   ├── emp_receipt.html     # Receipt/invoice print view
 │   │   │   ├── warranty.html        # File a warranty claim
 │   │   │   ├── warranty_list.html   # List of all claims
+│   │   │   ├── audit_logs.html      # Audit trail viewer
 │   │   │   └── navbar.html
-│   │   └── components/              # Partial/reusable templates
-│   │       ├── cart.html
-│   │       ├── cash_modal.html
-│   │       ├── installment_modal.html
-│   │       ├── pos_product_list.html
-│   │       └── sales_edit.html
+│   │   ├── components/              # Partial/reusable templates
+│   │   │   ├── cart.html
+│   │   │   ├── cash_modal.html
+│   │   │   ├── installment_modal.html
+│   │   │   ├── pos_product_list.html
+│   │   │   └── sales_edit.html
+│   │   └── emails/                  # HTML email templates
+│   │       ├── cash_receipt.html    # Cash purchase receipt
+│   │       ├── installment_receipt.html  # Installment plan confirmation
+│   │       └── due_reminder.html    # Payment due reminder
 │   ├── admin.py                     # Django admin registrations & customizations
 │   ├── apps.py                      # App configuration
 │   ├── decorators.py                # @unauthenticated_user decorator
 │   ├── filters.py                   # django-filter FilterSet classes
 │   ├── forms.py                     # ModelForm definitions
-│   ├── models.py                    # All 14 data models
+│   ├── middleware.py                 # AuditMiddleware — thread-local user capture
+│   ├── models.py                    # All 15 data models
+│   ├── signals.py                   # Django signals for automatic audit trail
+│   ├── tasks.py                     # Scheduled tasks (payment due reminders)
 │   ├── urls.py                      # App-level URL patterns
 │   └── views.py                     # All view functions and class-based views
 │
@@ -230,6 +279,9 @@ Employee ──── Branch (ForeignKey)
                                                          Invoice (OR#)
 
 Product ──► DefectiveInventory ◄── Branch
+
+AuditTrail ──► Employee (user)
+           ──► ContentType (GenericFK → any audited model)
 ```
 
 ---
@@ -514,6 +566,20 @@ Computed property: `line_total = quantity × unit_price`
 | `date_received` | DateTimeField | Auto-set |
 | `is_disposed` | BooleanField | Whether disposed of (default True) |
 
+#### `AuditTrail`
+| Field | Type | Notes |
+|-------|------|-------|
+| `user` | ForeignKey(Employee) | Employee who performed the action (nullable) |
+| `action` | CharField | `CREATE` / `UPDATE` / `DELETE` |
+| `content_type` | ForeignKey(ContentType) | Django ContentType of the affected model |
+| `object_id` | PositiveIntegerField | Primary key of the affected record |
+| `content_object` | GenericForeignKey | Generic relation to the affected object |
+| `change_log` | JSONField | Field-level diff: `{"field": {"old": "...", "new": "..."}}` |
+| `ip_address` | GenericIPAddressField | Requester IP (nullable) |
+| `timestamp` | DateTimeField | Auto-set on creation |
+
+Automatically populated via Django signals (`signals.py`) for the following models: `Product`, `BranchInventory`, `Order`, `OrderItem`, `InstallmentPlan`, `Employee`, `WarrantyClaims`, `Supplier`.
+
 ---
 
 ## 👥 User Roles & Permissions
@@ -534,6 +600,8 @@ Computed property: `line_total = quantity × unit_price`
   - Employee List (`/employee_list`) — view all staff
   - Warranty List (`/warrnty_list/`) — all warranty claims
   - Branch Inventory (`/branch_inventory`) — stock across all branches
+  - Audit Logs (`/audit_logs/`) — full system activity trail
+  - CSV exports for all of the above
 
 ### Sales Agent
 - Redirected to `home` (main.html) on login
@@ -616,7 +684,18 @@ Computed property: `line_total = quantity × unit_price`
 ### Reporting
 | URL | View | Description |
 |-----|------|-------------|
-| `GET /admin_reports/` | `admin_reports` | Revenue analytics, charts |
+| `GET /admin_reports/` | `admin_reports` | Revenue analytics, charts, top products |
+| `GET /audit_logs/` | `audit_logs` | System audit trail (Manager/Superuser only) |
+| `GET /audit_logs/export_audit_logs/` | `audit_logs_export_csv` | Download audit logs as CSV |
+
+### CSV Exports
+| URL | View | Description |
+|-----|------|-------------|
+| `GET /sales_display/export/` | `export_sales_csv` | Sales data as CSV |
+| `GET /branch_inventory/export/` | `export_branch_inventory_csv` | Branch inventory as CSV |
+| `GET /admin_installment/export_data_csv/` | `admin_installment_export_csv` | Installment records as CSV |
+| `GET /employee_list/export_employee_csv/` | `employee_list_export_csv` | Employee roster as CSV |
+| `GET /warrnty_list/export_warranty_list/` | `warranty_list_export_csv` | Warranty claims as CSV |
 
 ### Admin (Django built-in)
 | URL | Description |
@@ -727,15 +806,77 @@ if agent:
 
 Invoices use a unique OR number generated via `get_random_string()` with a standardized prefix. VAT is computed and stored separately. The receipt view at `/accounts/<pk>/emp_receipt/` renders a printable invoice.
 
-### 9. Admin Dashboard Analytics
+### 9. Admin Reports Analytics
 
 The `admin_reports` view computes:
 - 30-day transaction window
 - Total revenue, total cost, and gross profit (via `Sum(F('unit_price') * F('quantity'))`)
+- Average Order Value (AOV)
 - Weekly / Monthly / Yearly totals
 - Outstanding installment balances
 - Cash vs installment payment breakdown
 - Per-branch and per-employee revenue for chart rendering
+- **Top 5 products by units sold** — bar chart powered by aggregated `OrderItem` quantity sums
+
+### 10. Enhanced Manager Dashboard
+
+The `dashboard` view provides an at-a-glance operations overview:
+
+| Widget | Data |
+|--------|------|
+| Revenue | Weekly / Monthly / Yearly totals |
+| Warranty Claims | Counts by status + cost impact by type |
+| Stock Health | Healthy / Low / Out-of-stock + last 24-hr restocks |
+| Overdue Installments | Plans past their next due date |
+| Collections Today | Expected vs paid amount + progress % |
+| Day-over-Day Revenue | Today vs yesterday with growth percentage |
+| Active Staff | Employees currently logged in |
+
+### 11. Audit Trail System
+
+Every change to a key model is automatically captured:
+
+```
+Employee modifies a Product price
+  → AuditMiddleware stores user in thread-local
+  → pre_save signal fires
+  → AuditTrail record created:
+      action: UPDATE
+      change_log: {"base_price": {"old": "25000", "new": "24500"}}
+      user: <Employee>
+      timestamp: <now>
+```
+
+Audited models: `Product`, `BranchInventory`, `Order`, `OrderItem`, `InstallmentPlan`, `Employee`, `WarrantyClaims`, `Supplier`
+
+Managers and superusers can view the log at `/audit_logs/` with filters for date range and action type, and export the filtered results as CSV.
+
+### 12. Email Notification System
+
+The system sends HTML emails at three points:
+
+| Trigger | Template | Recipient |
+|---------|----------|-----------|
+| Cash checkout | `emails/cash_receipt.html` | Customer (if email provided) |
+| Installment checkout | `emails/installment_receipt.html` | Customer (if email provided) |
+| 5 days before due date | `emails/due_reminder.html` | Customer (if email provided) |
+
+The due-date reminder is delivered by the `send_due_reminders()` function in `tasks.py`, intended to be scheduled via **django-q**.
+
+### 13. CSV Data Export
+
+Every major list view includes a one-click export button:
+
+| View | Export URL | File |
+|------|-----------|------|
+| Sales Display | `/sales_display/export/` | `sales_data.csv` |
+| Branch Inventory | `/branch_inventory/export/` | `branch_inventory.csv` |
+| Admin Installment | `/admin_installment/export_data_csv/` | `installment_data.csv` |
+| Employee List | `/employee_list/export_employee_csv/` | `employee_list.csv` |
+| Warranty List | `/warrnty_list/export_warranty_list/` | `warranty_list.csv` |
+| Audit Logs | `/audit_logs/export_audit_logs/` | `audit_logs.csv` |
+
+Exports respect the same filters applied in the list view (date range, status, search query, etc.).
 
 ---
 
@@ -766,12 +907,58 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 INSTALLED_APPS = [
     "admin_interface",   # Must be before django.contrib.admin
     "colorfield",
+    'django_q',
     'django.contrib.admin',
     ...
     'accounts',
     'django_filters',
     'django.contrib.humanize'
 ]
+
+# Middleware — includes custom AuditMiddleware
+MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    ...
+    'accounts.middleware.AuditMiddleware',
+]
+```
+
+### Email Settings
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `EMAIL_BACKEND` | Django email backend | `django.core.mail.backends.smtp.EmailBackend` |
+| `EMAIL_HOST` | SMTP server host | `smtp.mailprovider.com` |
+| `EMAIL_PORT` | SMTP port | `587` |
+| `EMAIL_USE_TLS` | Enable TLS | `True` |
+| `EMAIL_USE_SSL` | Enable SSL | `False` |
+| `EMAIL_HOST_USER` | SMTP username / from address | `noreply@yourdomain.com` |
+| `EMAIL_HOST_PASSWORD` | SMTP password | *(keep secret)* |
+| `DEFAULT_FROM_EMAIL` | Sender display email | `Galos Gadget Hub <noreply@yourdomain.com>` |
+
+> In development, `EMAIL_BACKEND` defaults to `console` — emails are printed to the terminal instead of sent.
+
+### django-q Task Queue
+
+`django-q` is used for scheduled background tasks such as `send_due_reminders()`:
+
+```python
+Q_CLUSTER = {
+    'name': 'GalosGadgetHub',
+    'workers': 4,
+    'recycle': 500,
+    'timeout': 60,
+    'compress': True,
+    'save_limit': 250,
+    'queue_limit': 500,
+    'label': 'Django Q',
+    'orm': 'default',   # Uses the same database — no Redis required
+}
+```
+
+Start the task worker alongside the web server:
+```bash
+python manage.py qcluster
 ```
 
 ### Environment Variables
@@ -784,6 +971,18 @@ For production, set these via environment variables or a `.env` file (never comm
 | `DEBUG` | Debug mode flag | `False` in production |
 | `ALLOWED_HOSTS` | Comma-separated allowed hosts | `yourdomain.com,www.yourdomain.com` |
 | `DATABASE_URL` | Production DB connection | `postgres://user:pass@host/db` |
+| `DB_ENGINE` | Django database engine | `django.db.backends.postgresql` |
+| `DB_NAME` | Database name | `galos_pos` |
+| `DB_USER` | Database user | `dbadmin` |
+| `DB_PASSWORD` | Database password | *(keep secret)* |
+| `DB_HOST` | Database host | `your-db-host.com` |
+| `DB_PORT` | Database port | `5432` |
+| `EMAIL_HOST` | SMTP host | `smtp.mailprovider.com` |
+| `EMAIL_PORT` | SMTP port | `587` |
+| `EMAIL_USE_TLS` | Enable TLS | `True` |
+| `EMAIL_HOST_USER` | SMTP login | `noreply@yourdomain.com` |
+| `EMAIL_HOST_PASSWORD` | SMTP password | *(keep secret)* |
+| `DEFAULT_FROM_EMAIL` | Sender email | `noreply@yourdomain.com` |
 
 ### Switching to PostgreSQL (Production)
 
@@ -995,9 +1194,24 @@ python manage.py createsuperuser
 # 6. Run system checks
 python manage.py check --deploy
 
-# 7. Start with gunicorn (example)
+# 7. Start the web server (example with gunicorn)
 pip install gunicorn
 gunicorn pos.wsgi:application --bind 0.0.0.0:8000 --workers 3
+
+# 8. Start the django-q worker (separate process, for email reminders)
+python manage.py qcluster
+```
+
+### Azure App Service Deployment
+
+The application is configured for **Microsoft Azure App Service** (Japan West). The `startup.sh` and `Procfile` handle the WSGI startup. The `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` in `settings.py` already include Azure domains.
+
+Key Azure-specific settings that are pre-configured:
+```python
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_TRUSTED_ORIGINS = ['https://*.azurewebsites.net', ...]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 ```
 
 ### Production `settings.py` Additions
@@ -1099,6 +1313,7 @@ This project is licensed under the **CC BY-NC-SA 4.0**.
 
 | Channel | Details |
 |---------|---------|
+| **Live Demo** | [galosgadgethubpos.systems](https://galosgadgethubpos.systems) |
 | **Issues** | [GitHub Issues](https://github.com/johnaljennegalos/django-pos-scanner/issues) |
 | **Repository** | [github.com/johnaljennegalos/django-pos-scanner](https://github.com/johnaljennegalos/django-pos-scanner) |
 
