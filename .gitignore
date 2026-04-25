@@ -8,6 +8,8 @@ env/
 venv/
 .env.production/
 
+staticfiles/
+
 
 .idea/
 
