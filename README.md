@@ -6,6 +6,7 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Django](https://img.shields.io/badge/Django-6.0.2-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-galosgadgethubpos.systems-brightgreen)](https://galosgadgethubpos.systems)
 
 ---
 
@@ -1308,6 +1309,7 @@ This project is licensed under the **CC BY-NC-SA 4.0**.
 
 | Channel | Details |
 |---------|---------|
+| **Live Demo** | [galosgadgethubpos.systems](https://galosgadgethubpos.systems) |
 | **Issues** | [GitHub Issues](https://github.com/johnaljennegalos/django-pos-scanner/issues) |
 | **Repository** | [github.com/johnaljennegalos/django-pos-scanner](https://github.com/johnaljennegalos/django-pos-scanner) |
 
