@@ -1156,7 +1156,7 @@ def warranty(request, pk):
 
         faulty_serial = request.POST.get(f'faulty_serial_{item_id}')
         issue_description = request.POST.get('issue_description')
-        days_since_purchase = (timezone.now().date() - sales.order_date).days
+        days_since_purchase = (timezone.now().date() - sales.order_date.date()).days
 
         if claim_type == 'Replacement' and days_since_purchase > 7:
             messages.error(request, f"Replacement denied. Item is {days_since_purchase} days old (Limit: 7).")
@@ -1528,7 +1528,6 @@ def warranty_list_export_csv(request):
 @login_required(login_url='login')
 def update_claim_status(request, pk):
     print(request.POST)
-
 
     if request.method == 'POST':
         claim = get_object_or_404(WarrantyClaims, pk=pk)
