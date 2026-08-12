@@ -14,9 +14,12 @@ from accounts.models import Employee, Branch
 
 # Superuser / Admin
 admin_user = os.getenv('ADMIN_USERNAME', 'admin')
-admin_pass = os.getenv('ADMIN_PASSWORD', 'admin123')
-if not User.objects.filter(username=admin_user).exists():
-    User.objects.create_superuser(admin_user, 'admin@pharmacy.pk', admin_pass)
+admin_pass = os.getenv('ADMIN_PASSWORD', 'admin')
+u_admin, created = User.objects.get_or_create(username=admin_user, defaults={'email': 'admin@pharmacy.pk', 'is_staff': True, 'is_superuser': True})
+u_admin.set_password(admin_pass)
+u_admin.is_staff = True
+u_admin.is_superuser = True
+u_admin.save()
 
 # Cashier User
 cashier_user = os.getenv('CASHIER_USERNAME', 'cashier1')
