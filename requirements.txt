@@ -8,5 +8,6 @@ gunicorn
 whitenoise
 dj-database-url
 python-dotenv
+python-dateutil
 pillow
 tablib
