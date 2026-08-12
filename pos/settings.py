@@ -19,16 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '0.0.0.0',
-    '.onrender.com',
-    'galosgadgethubpos.systems',
-    'www.galosgadgethubpos.systems',
-    '.azurewebsites.net',
-    'galos-gadget-hub-pos-app-hcgdfqfeduephrej.japanwest-01.azurewebsites.net'
-]
+ALLOWED_HOSTS = ['*']
 
 
 USE_X_FORWARDED_HOST = True
@@ -190,4 +181,4 @@ Q_CLUSTER = {
     'orm': 'default',
 }
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
