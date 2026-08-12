@@ -113,10 +113,19 @@ WSGI_APPLICATION = 'pos.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# Persistent Disk configuration for Render.com (/var/data)
+RENDER_DATA_DIR = '/var/data'
+if os.path.exists(RENDER_DATA_DIR):
+    DEFAULT_DB_PATH = os.path.join(RENDER_DATA_DIR, 'db.sqlite3')
+    MEDIA_ROOT = os.path.join(RENDER_DATA_DIR, 'media')
+else:
+    DEFAULT_DB_PATH = BASE_DIR / 'db.sqlite3'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.getenv('DB_NAME', BASE_DIR / 'db.sqlite3'),
+        'NAME': os.getenv('DB_NAME', DEFAULT_DB_PATH),
         'USER': os.getenv('DB_USER', ''),
         'PASSWORD': os.getenv('DB_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', ''),
@@ -168,8 +177,6 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 Q_CLUSTER = {
     'name': 'GalosGadgetHub',

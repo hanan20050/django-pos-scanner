@@ -19,3 +19,7 @@ services:
         value: "cashier1"
       - key: CASHIER_PASSWORD
         value: "cashier123"
+    disk:
+      name: pos-data
+      mountPath: /var/data
+      sizeGB: 1
