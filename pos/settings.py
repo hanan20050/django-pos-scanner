@@ -26,12 +26,20 @@ USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://drugs-mart-pos.onrender.com',
     'https://*.onrender.com',
     'https://*.azurewebsites.net',
-    'https://galos-gadget-hub-pos-app-hcgdfqfeduephrej.japanwest-01.azurewebsites.net',
     'https://galosgadgethubpos.systems',
-    'https://www.galosgadgethubpos.systems'
+    'https://www.galosgadgethubpos.systems',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080'
 ]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
