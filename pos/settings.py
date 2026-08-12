@@ -83,6 +83,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'pos.urls'
 
+# Allow Django Admin popups and inline frames
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
