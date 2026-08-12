@@ -44,7 +44,7 @@
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cash Received</label>
                     <div class="flex items-center">
-                        <span class="text-2xl font-black text-green-500 mr-2">₱</span>
+                        <span class="text-2xl font-black text-green-500 mr-2">Rs. </span>
                         <input type="number" id="cash-received-input" oninput="calculateChange()"
                                class="bg-transparent text-4xl font-black text-white outline-none w-full" placeholder="0.00">
                     </div>
@@ -53,7 +53,7 @@
 
             <div class="flex justify-between items-center pt-6 border-t border-slate-800">
                 <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Change to Return</span>
-                <span id="change-display" class="text-4xl font-black text-green-400">₱0.00</span>
+                <span id="change-display" class="text-4xl font-black text-green-400">Rs. 0.00</span>
             </div>
         </div>
     </div>
@@ -67,7 +67,7 @@
         <div class="mt-8 pt-6 border-t border-gray-200">
             <div class="flex justify-between items-end mb-6">
                 <span class="text-xs font-black text-gray-400 uppercase">Grand Total</span>
-                <span id="cash-modal-price" class="text-3xl font-black text-gray-900">₱0.00</span>
+                <span id="cash-modal-price" class="text-3xl font-black text-gray-900">Rs. 0.00</span>
             </div>
             <button id="place-order-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl transition-all uppercase tracking-widest text-sm shadow-xl shadow-blue-100">
                 Place Order

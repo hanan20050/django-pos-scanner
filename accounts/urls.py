@@ -7,6 +7,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('online_checkout/', views.online_checkout, name='online_checkout'),
 
     path('manage_employee/<int:pk>/', views.manageEmployee, name='manage_employee'),
 
@@ -31,6 +32,7 @@ urlpatterns = [
     path('admin_installment/', views.admin_installment, name='admin_installment'),
     path('accounts/<int:pk>/manage_installment', views.manage_installment, name='manage_installment'),
     path('admin_reports/', views.admin_reports, name='admin_reports'),
+    path('update_order_status/<int:pk>/', views.update_order_status, name='update_order_status'),
     path('delete-order/<int:pk>/', views.delete_order, name='delete_order'),
     path('delete-product/<int:pk>/', views.delete_product, name='delete_product'),
     path('warranty/<int:pk>/', views.warranty, name='warranty'),

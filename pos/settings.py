@@ -23,6 +23,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
+    '.onrender.com',
     'galosgadgethubpos.systems',
     'www.galosgadgethubpos.systems',
     '.azurewebsites.net',
@@ -34,6 +35,7 @@ USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
     'https://*.azurewebsites.net',
     'https://galos-gadget-hub-pos-app-hcgdfqfeduephrej.japanwest-01.azurewebsites.net',
     'https://galosgadgethubpos.systems',
@@ -64,6 +66,7 @@ INSTALLED_APPS = [
     "admin_interface",
     "colorfield",
     'django_q',
+    'import_export',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

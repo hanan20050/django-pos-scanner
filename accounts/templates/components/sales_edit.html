@@ -20,7 +20,7 @@
                     </div>
                     <div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
                         <label class="block text-xs font-bold text-gray-500 uppercase">Current Total</label>
-                        <p class="text-sm font-bold text-emerald-600">₱{{ object.total_amount }}</p>
+                        <p class="text-sm font-bold text-emerald-600">Rs. {{ object.total_amount }}</p>
                     </div>
                 </div>
 
@@ -99,10 +99,10 @@
                         <tr>
                             <td class="py-3">
                                 <p class="font-bold text-gray-800">{{ item.product.product_name }}</p>
-                                <p class="text-xs text-gray-500">@ ₱{{ item.product.base_price }}</p>
+                                <p class="text-xs text-gray-500">@ Rs. {{ item.product.base_price }}</p>
                             </td>
                             <td class="text-center py-3">{{ item.quantity }}</td>
-                            <td class="text-right py-3 font-bold">₱{{ item.line_total }}</td>
+                            <td class="text-right py-3 font-bold">Rs. {{ item.line_total }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -111,11 +111,11 @@
                 <div class="space-y-2 border-t-2 border-gray-800 pt-4">
                     <div class="flex justify-between text-sm">
                         <span>SUBTOTAL</span>
-                        <span>₱{{ object.total_amount }}</span>
+                        <span>Rs. {{ object.total_amount }}</span>
                     </div>
                     <div class="flex justify-between text-lg font-black">
                         <span>GRAND TOTAL</span>
-                        <span>₱{{ object.total_amount }}</span>
+                        <span>Rs. {{ object.total_amount }}</span>
                     </div>
                     <div class="flex justify-between text-sm italic">
                         <span>PAYMENT ({{ object.payment_method }})</span>

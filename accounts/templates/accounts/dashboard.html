@@ -9,7 +9,7 @@
             <div class="relative z-10 flex items-center justify-between">
                 <div>
                     <p class="text-xs font-bold text-blue-400 uppercase tracking-widest opacity-80">Weekly Sales</p>
-                    <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ weekly_total|floatformat:2|intcomma }}</h3>
+                    <h3 class="text-3xl font-black text-white mt-2 tracking-tight">Rs. {{ weekly_total|floatformat:2|intcomma }}</h3>
                 </div>
                 <div class="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl backdrop-blur-md">
                     <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
@@ -22,7 +22,7 @@
             <div class="relative z-10 flex items-center justify-between">
                 <div>
                     <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest opacity-80">Monthly Volume</p>
-                    <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ monthly_total|floatformat:2|intcomma }}</h3>
+                    <h3 class="text-3xl font-black text-white mt-2 tracking-tight">Rs. {{ monthly_total|floatformat:2|intcomma }}</h3>
                 </div>
                 <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl backdrop-blur-md">
                     <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
@@ -35,7 +35,7 @@
             <div class="relative z-10 flex items-center justify-between">
                 <div>
                     <p class="text-xs font-bold text-violet-400 uppercase tracking-widest opacity-80">Annual Revenue</p>
-                    <h3 class="text-3xl font-black text-white mt-2 tracking-tight">₱{{ yearly_total|floatformat:2|intcomma }}</h3>
+                    <h3 class="text-3xl font-black text-white mt-2 tracking-tight">Rs. {{ yearly_total|floatformat:2|intcomma }}</h3>
                 </div>
                 <div class="p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl backdrop-blur-md">
                     <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -57,9 +57,9 @@
             </div>
             <div class="p-6 space-y-6 flex-grow">
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="bg-slate-900 p-4 rounded-xl text-center"><p class="text-[9px] font-bold text-slate-400 uppercase">Liability</p><h2 class="text-sm font-black text-white">₱{{ total_cost_impact|floatformat:0|intcomma }}</h2></div>
-                    <div class="bg-gray-50 p-4 rounded-xl text-center"><p class="text-[9px] font-bold text-gray-400 uppercase">Repairs</p><h2 class="text-sm font-black text-slate-900">₱{{ repair_cost_impact|floatformat:0|intcomma }}</h2></div>
-                    <div class="bg-gray-50 p-4 rounded-xl text-center"><p class="text-[9px] font-bold text-gray-400 uppercase">Loss</p><h2 class="text-sm font-black text-slate-900">₱{{ replacement_cost_impact|floatformat:0|intcomma }}</h2></div>
+                    <div class="bg-slate-900 p-4 rounded-xl text-center"><p class="text-[9px] font-bold text-slate-400 uppercase">Liability</p><h2 class="text-sm font-black text-white">Rs. {{ total_cost_impact|floatformat:0|intcomma }}</h2></div>
+                    <div class="bg-gray-50 p-4 rounded-xl text-center"><p class="text-[9px] font-bold text-gray-400 uppercase">Repairs</p><h2 class="text-sm font-black text-slate-900">Rs. {{ repair_cost_impact|floatformat:0|intcomma }}</h2></div>
+                    <div class="bg-gray-50 p-4 rounded-xl text-center"><p class="text-[9px] font-bold text-gray-400 uppercase">Loss</p><h2 class="text-sm font-black text-slate-900">Rs. {{ replacement_cost_impact|floatformat:0|intcomma }}</h2></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100"><p class="text-[10px] font-bold text-indigo-600 uppercase">Total Repairs</p><h3 class="text-2xl font-black text-indigo-900">{{ repair }}</h3></div>
@@ -109,7 +109,7 @@
 
             <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800">
                 <p class="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-2">Daily Target</p>
-                <h3 class="text-2xl font-black text-white">₱{{ collections_today|floatformat:2|intcomma }}</h3>
+                <h3 class="text-2xl font-black text-white">Rs. {{ collections_today|floatformat:2|intcomma }}</h3>
                 <div class="w-full h-1.5 bg-slate-800 rounded-full mt-4 overflow-hidden">
                     <div class="bg-emerald-500 h-full rounded-full" style="width: {{ collection_progress|default:'0' }}%"></div>
                 </div>
@@ -128,14 +128,14 @@
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                     </div>
                     <div>
-                        <h4 class="text-3xl font-black text-white">₱{{ today_total|floatformat:0|intcomma }}</h4>
+                        <h4 class="text-3xl font-black text-white">Rs. {{ today_total|floatformat:0|intcomma }}</h4>
                         <p class="text-xs font-bold {% if growth_percent > 0 %}text-emerald-400{% else %}text-rose-400{% endif %}">{% if growth_percent > 0 %}+{% endif %}{{ growth_percent|floatformat:1 }}% vs Yesterday</p>
                     </div>
                 </div>
             </div>
             <div class="pt-6 border-t border-slate-800">
                 <p class="text-[10px] font-black text-slate-500 uppercase mb-1">Outstanding Exposure</p>
-                <p class="text-xl font-mono font-bold text-slate-200">₱{{ outstanding_balance|floatformat:2|intcomma }}</p>
+                <p class="text-xl font-mono font-bold text-slate-200">Rs. {{ outstanding_balance|floatformat:2|intcomma }}</p>
             </div>
         </div>
 

@@ -13,7 +13,7 @@
             <div class="bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-800">
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Liability</p>
                 <div class="flex items-center justify-between">
-                    <h2 class="text-3xl font-black text-white">₱{{ total_cost_impact|floatformat:2|intcomma }}</h2>
+                    <h2 class="text-3xl font-black text-white">Rs. {{ total_cost_impact|floatformat:2|intcomma }}</h2>
                     <div class="p-2 bg-slate-800 rounded-lg">
                         <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3 1.343 3-3-1.343-3-3-3zM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"></path></svg>
                     </div>
@@ -23,7 +23,7 @@
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Repair Logistics</p>
                 <div class="flex items-center justify-between">
-                    <h2 class="text-3xl font-black text-slate-900">₱{{ repair_cost_impact|floatformat:2|intcomma }}</h2>
+                    <h2 class="text-3xl font-black text-slate-900">Rs. {{ repair_cost_impact|floatformat:2|intcomma }}</h2>
                     <span class="text-[10px] font-bold bg-blue-50 text-blue-600 px-2 py-1 rounded-md">SERVICE</span>
                 </div>
             </div>
@@ -31,7 +31,7 @@
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Inventory Loss</p>
                 <div class="flex items-center justify-between">
-                    <h2 class="text-3xl font-black text-slate-900">₱{{ replacement_cost_impact|floatformat:2|intcomma }}</h2>
+                    <h2 class="text-3xl font-black text-slate-900">Rs. {{ replacement_cost_impact|floatformat:2|intcomma }}</h2>
                     <span class="text-[10px] font-bold bg-amber-50 text-amber-600 px-2 py-1 rounded-md">HARDWARE</span>
                 </div>
             </div>

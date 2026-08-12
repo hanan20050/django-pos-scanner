@@ -22,7 +22,7 @@
 
         <div style="background-color: #fffbeb; border: 1px solid #fef3c7; padding: 20px; border-radius: 12px; margin: 25px 0; text-align: center;">
             <p style="margin: 0; font-size: 12px; color: #92400e; text-transform: uppercase; letter-spacing: 0.05em;">Amount Due</p>
-            <h1 style="margin: 5px 0; color: #b45309; font-size: 32px;">₱{{ monthly_due|floatformat:2 }}</h1>
+            <h1 style="margin: 5px 0; color: #b45309; font-size: 32px;">Rs. {{ monthly_due|floatformat:2 }}</h1>
             <p style="margin: 0; font-size: 14px; color: #92400e;"><strong>Due Date:</strong> {{ due_date|date:"d-M-Y" }}</p>
         </div>
 

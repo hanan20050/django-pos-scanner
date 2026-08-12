@@ -17,7 +17,8 @@ class InstallmentPlanInline(admin.TabularInline):
 
 @admin.register(Branch)
 class BranchAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone_number', 'address', 'is_active')
+    list_display = ('name', 'address', 'latitude', 'longitude', 'phone_number', 'is_active')
+    fields = ('name', 'address', 'phone_number', 'latitude', 'longitude', 'is_active')
     search_fields = ('name',)
 
     def get_actions(self, request):
@@ -82,20 +83,49 @@ class CustomerAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
+from import_export.admin import ImportExportModelAdmin
+from import_export import resources
+
+class ProductResource(resources.ModelResource):
+    class Meta:
+        model = Product
+        fields = ('id', 'product_name', 'sku', 'category', 'base_price', 'discount_price', 'barcode', 'cost_price', 'requires_prescription', 'min_stock_level', 'is_active')
+
+@admin.register(Category)
+class CategoryAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'description')
+    search_fields = ('name',)
+
+class ProductVariantInline(admin.TabularInline):
+    model = ProductVariant
+    extra = 1
+
+class ProductReviewInline(admin.TabularInline):
+    model = ProductReview
+    extra = 0
+    readonly_fields = ('created_at',)
+
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ('supplier', 'product_name', 'category', 'base_price', 'barcode', 'is_active')
-    search_fields = ('product_name', 'barcode')
-    list_filter = ('is_active', 'supplier', 'category',)
+class ProductAdmin(ImportExportModelAdmin):
+    resource_class = ProductResource
+    inlines = [ProductVariantInline, ProductReviewInline]
+    list_display = ('product_name', 'sku', 'category', 'base_price', 'discount_price', 'is_featured', 'is_best_seller', 'requires_prescription', 'is_active')
+    list_editable = ('base_price', 'discount_price', 'is_featured', 'is_best_seller', 'requires_prescription', 'is_active')
+    search_fields = ('product_name', 'barcode', 'sku', 'tags')
+    list_filter = ('is_active', 'is_featured', 'is_best_seller', 'requires_prescription', 'supplier', 'category')
     list_select_related = ('supplier',)
     ordering = ('category', 'product_name')
-
-    actions = ['archive_products','restore_product']
-
-    @admin.action(description='Restore selected product')
-    def restore_product(self, request, queryset):
-        count = queryset.update(is_active=True)
-        self.message_user(request, f"Successfully restored {count} products.")
+    fieldsets = (
+        ('General Product Info', {
+            'fields': ('product_name', 'sku', 'category', 'supplier', 'short_description', 'description', 'tags', 'image')
+        }),
+        ('Pricing & Inventory', {
+            'fields': ('base_price', 'discount_price', 'cost_price', 'min_stock_level', 'barcode')
+        }),
+        ('Merchandising & Compliance', {
+            'fields': ('is_featured', 'is_best_seller', 'requires_prescription', 'is_active')
+        }),
+    )
 
     @admin.action(description='Archive selected products')
     def archive_products(self, request, queryset):

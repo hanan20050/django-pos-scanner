@@ -39,10 +39,10 @@
                 <tr style="border-bottom: 1px dashed #e5e7eb;">
                     <td style="padding: 12px 0;">
                         <p style="margin: 0; font-weight: bold; color: #1f2937;">{{ item.product.product_name }}</p>
-                        <p style="margin: 0; font-size: 12px; color: #6b7280;">@ ₱{{ item.unit_price }}</p>
+                        <p style="margin: 0; font-size: 12px; color: #6b7280;">@ Rs. {{ item.unit_price }}</p>
                     </td>
                     <td style="text-align: center; vertical-align: middle;">{{ item.quantity }}</td>
-                    <td style="text-align: right; font-weight: bold; vertical-align: middle;">₱{{ item.line_total }}</td>
+                    <td style="text-align: right; font-weight: bold; vertical-align: middle;">Rs. {{ item.line_total }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -52,11 +52,11 @@
             <table style="width: 100%; font-size: 14px;">
                 <tr>
                     <td>SUBTOTAL</td>
-                    <td style="text-align: right;">₱{{ order.total_amount|floatformat:2 }}</td>
+                    <td style="text-align: right;">Rs. {{ order.total_amount|floatformat:2 }}</td>
                 </tr>
                 <tr style="font-size: 18px; font-weight: 900;">
                     <td style="padding-top: 10px;">GRAND TOTAL</td>
-                    <td style="text-align: right; padding-top: 10px;">₱{{ order.total_amount|floatformat:2 }}</td>
+                    <td style="text-align: right; padding-top: 10px;">Rs. {{ order.total_amount|floatformat:2 }}</td>
                 </tr>
                 <tr style="font-style: italic; font-size: 12px;">
                     <td style="padding-top: 10px;">PAYMENT ({{ order.payment_method|upper }})</td>
@@ -64,11 +64,11 @@
                 </tr>
                 <tr>
                     <td>DOWNPAYMENT</td>
-                    <td style="text-align: right;">₱{{ downpayment|floatformat:2 }}</td>
+                    <td style="text-align: right;">Rs. {{ downpayment|floatformat:2 }}</td>
                 </tr>
                 <tr>
                     <td>MONTHLY DUE</td>
-                    <td style="text-align: right;">₱{{ installment.monthly_due }}</td>
+                    <td style="text-align: right;">Rs. {{ installment.monthly_due }}</td>
                 </tr>
             </table>
         </div>

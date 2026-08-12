@@ -412,10 +412,163 @@ def instCalculator(request):
     return render(request, 'accounts/inst_calculator.html', context)
 
 
-@login_required(login_url='login')
+import math
+
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371  # Radius of Earth in km
+    dLat = math.radians(lat2 - lat1)
+    dLon = math.radians(lon2 - lon1)
+    a = math.sin(dLat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dLon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
+
 def home(request):
-    print(f"DEBUG: User {request.user.username} reached home. Role: {request.user.employee.role}")
-    return render(request, 'accounts/main.html')
+    products = Product.objects.filter(is_active=True)
+    category = request.GET.get('category')
+    search_query = request.GET.get('search')
+    user_lat = request.GET.get('lat')
+    user_lng = request.GET.get('lng')
+
+    active_branches = Branch.objects.filter(is_active=True)
+    branches_with_location = active_branches.exclude(latitude=0.0, longitude=0.0).exclude(latitude__isnull=True).exclude(longitude__isnull=True)
+    
+    missing_branch_locations = branches_with_location.count() == 0
+
+    nearest_branch = None
+    min_distance = None
+    has_location_prompt = not user_lat or not user_lng
+
+    if user_lat and user_lng:
+        try:
+            ulat = float(user_lat)
+            ulng = float(user_lng)
+            closest_branch = None
+            closest_dist = float('inf')
+
+            for b in branches_with_location:
+                dist = haversine(ulat, ulng, b.latitude, b.longitude)
+                if dist < closest_dist:
+                    closest_dist = dist
+                    closest_branch = b
+
+            if closest_branch:
+                nearest_branch = closest_branch
+                min_distance = round(closest_dist, 1)
+
+                branch_prod_ids = BranchInventory.objects.filter(
+                    branch=closest_branch, quantity__gt=0
+                ).values_list('product_id', flat=True)
+                products = products.filter(id__in=branch_prod_ids)
+        except ValueError:
+            pass
+
+    if category:
+        products = products.filter(category=category)
+    if search_query:
+        products = products.filter(Q(product_name__icontains=search_query) | Q(barcode__icontains=search_query) | Q(tags__icontains=search_query) | Q(sku__icontains=search_query))
+
+    products = products.prefetch_related('variants', 'reviews')
+    featured_products = products.filter(is_featured=True)
+
+    categories = [cat[0] for cat in Product.CATEGORIES]
+    context = {
+        'products': products,
+        'featured_products': featured_products,
+        'categories': categories,
+        'selected_category': category,
+        'search_query': search_query,
+        'nearest_branch': nearest_branch,
+        'min_distance': min_distance,
+        'user_lat': user_lat,
+        'user_lng': user_lng,
+        'has_location_prompt': has_location_prompt,
+        'missing_branch_locations': missing_branch_locations,
+        'all_branches': active_branches,
+    }
+    return render(request, 'accounts/storefront.html', context)
+
+def online_checkout(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
+        cart_data_raw = request.POST.get('cart_data', '[]')
+
+        try:
+            cart_items = json.loads(cart_data_raw)
+        except Exception:
+            cart_items = []
+
+        if not cart_items:
+            messages.error(request, "Your cart is empty!")
+            return redirect('home')
+
+        # Get or create customer
+        customer, created = Customer.objects.get_or_create(
+            email=email,
+            defaults={'name': name, 'phone': phone, 'address': address}
+        )
+
+        default_branch = Branch.objects.filter(is_active=True).first()
+        default_employee = Employee.objects.filter(is_active=True).first()
+
+        if not default_branch or not default_employee:
+            messages.error(request, "Store is currently not taking orders.")
+            return redirect('home')
+
+        with transaction.atomic():
+            total = 0
+            order = Order.objects.create(
+                customer=customer,
+                employee=default_employee,
+                branch=default_branch,
+                order_status='Pending',
+                payment_method='CASH',
+                total_amount=0
+            )
+
+            for item in cart_items:
+                product_id = item.get('id')
+                qty = int(item.get('qty', 1))
+                product = get_object_or_404(Product, id=product_id)
+                line_total = product.base_price * qty
+                total += line_total
+
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    cost_price=product.cost_price,
+                    unit_price=product.base_price,
+                    quantity=qty
+                )
+
+            pay = Payment.objects.create(
+                order=order,
+                amount_paid=total,
+                date_paid=timezone.now().date(),
+                payment_type='CASH'
+            )
+            CashPayment.objects.create(
+                payment=pay,
+                cash_received=total,
+                change_given=0
+            )
+
+        return render(request, 'accounts/order_success.html', {'order': order, 'customer': customer})
+
+    return redirect('home')
+
+@login_required(login_url='login')
+def update_order_status(request, pk):
+    if request.method == 'POST':
+        order = get_object_or_404(Order, pk=pk)
+        new_status = request.POST.get('status')
+        if new_status in ['Pending', 'Completed', 'Cancelled']:
+            order.order_status = new_status
+            order.save()
+            messages.success(request, f"Order #{order.id} status updated to {new_status}.")
+    return redirect('sales_display')
 
 @unauthenticated_user
 def loginPage(request):

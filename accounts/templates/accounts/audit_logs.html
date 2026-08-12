@@ -164,16 +164,16 @@
                                     {% if value.old != None %}
                                         {# UPDATE VIEW #}
                                         <span class="val-badge bg-old">
-                                            {% if "price" in key.lower %}₱{% endif %}{{ value.old }}
+                                            {% if "price" in key.lower %}Rs. {% endif %}{{ value.old }}
                                         </span>
                                         <i class="fas fa-chevron-right arrow-icon"></i>
                                         <span class="val-badge bg-new">
-                                            {% if "price" in key.lower %}₱{% endif %}{{ value.new }}
+                                            {% if "price" in key.lower %}Rs. {% endif %}{{ value.new }}
                                         </span>
                                     {% else %}
                                         {# CREATE/SNAPSHOT VIEW #}
                                         <span class="creation-tag fw-bold">
-                                            {% if "price" in key.lower %}₱{% endif %}{{ value }}
+                                            {% if "price" in key.lower %}Rs. {% endif %}{{ value }}
                                         </span>
                                     {% endif %}
                                 </div>

@@ -25,6 +25,8 @@ class Branch(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100, blank=True)
     phone_number = models.CharField(max_length=100, blank=True)
+    latitude = models.FloatField(default=31.5204)  # Default Lahore
+    longitude = models.FloatField(default=74.3587)
     is_active = models.BooleanField(default=True)
 
     def delete(self, *args, **kwargs):
@@ -36,8 +38,11 @@ class Branch(models.Model):
 
 class Employee(models.Model):
     ROLE_CHOICES = (
+    ('Cashier', 'Cashier'),
     ('Sales Agent', 'Sales Agent'),
+    ('Pharmacist', 'Pharmacist'),
     ('Credit Officer', 'Credit Officer'),
+    ('Inventory Manager', 'Inventory Manager'),
     ('Manager', 'Manager'),
     )
 
@@ -130,32 +135,78 @@ class Supplier(models.Model):
     def __str__(self):
         return f"{self.name} {'(Archived)' if not self.is_active else ''}"
 
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
+    def __str__(self):
+        return self.name
+
 class Product(models.Model):
     CATEGORIES = (
-    ('Laptop', 'Laptop'),
-    ('Android', 'Android'),
-    ('iPhone', 'iPhone'),
-    ('Printer', 'Printer')
+        ('Pain Relief & Analgesics', 'Pain Relief & Analgesics'),
+        ('Antibiotics & Prescription', 'Antibiotics & Prescription'),
+        ('Vitamins & Supplements', 'Vitamins & Supplements'),
+        ('Cold, Flu & Cough', 'Cold, Flu & Cough'),
+        ('Allergy & Antihistamines', 'Allergy & Antihistamines'),
+        ('Digestive & Stomach Care', 'Digestive & Stomach Care'),
+        ('Personal & Skincare', 'Personal & Skincare'),
     )
 
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-    product_name = models.CharField(max_length=100)
-    category = models.CharField(max_length=100, choices=CATEGORIES, default='Laptop')
+    product_name = models.CharField(max_length=200)
+    sku = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    category = models.CharField(max_length=100, choices=CATEGORIES, default='Pain Relief & Analgesics')
+    category_obj = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    short_description = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     base_price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     barcode = models.CharField(max_length=100, unique=True)
     cost_price = models.DecimalField(max_digits=10, decimal_places=2)
-    min_stock_level = models.PositiveIntegerField(default=3)
-    image = models.ImageField(upload_to='media/', null=True, blank=True)
+    requires_prescription = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
+    is_best_seller = models.BooleanField(default=False)
+    tags = models.CharField(max_length=255, blank=True, null=True, help_text="Comma separated tags e.g. organic, tablet, syrup")
+    min_stock_level = models.PositiveIntegerField(default=5)
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
     is_active = models.BooleanField(default=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.product_name} | {self.barcode}"
 
+    @property
+    def effective_price(self):
+        return self.discount_price if self.discount_price and self.discount_price > 0 else self.base_price
+
     def soft_delete(self):
         self.is_active = False
         self.deleted_at = timezone.now()
         self.save()
+
+class ProductVariant(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
+    name = models.CharField(max_length=100)  # e.g., "Strip of 10", "Box of 100", "500mg", "1000mg"
+    sku = models.CharField(max_length=100, unique=True)
+    price_override = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    stock_quantity = models.PositiveIntegerField(default=50)
+
+    def __str__(self):
+        return f"{self.product.product_name} - {self.name}"
+
+class ProductReview(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    customer_name = models.CharField(max_length=100)
+    rating = models.PositiveIntegerField(default=5)  # 1 to 5 stars
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Review for {self.product.product_name} by {self.customer_name} ({self.rating} stars)"
 
 class BranchInventory(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, limit_choices_to={'is_active': True})

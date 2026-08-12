@@ -25,7 +25,7 @@
 <script>
     const currentEmployeeId = "{{ request.user.id }}"
 
-    const cartKey = `pos_cart_user${currentEmployeeId}`;
+    const cartKey = `pos_cart_userRs. {currentEmployeeId}`;
 
     let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
     let currentGrandTotal = 0;

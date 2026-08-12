@@ -26,7 +26,7 @@
             </div>
             <div class="bg-indigo-600 p-6 rounded-xl text-white">
                 <p class="text-sm opacity-80">Remaining Balance</p>
-                <h2 class="text-3xl font-black">₱{{ inst.remaining_balance }}</h2>
+                <h2 class="text-3xl font-black">Rs. {{ inst.remaining_balance }}</h2>
             </div>
             <div class="bg-indigo-600 p-6 rounded-xl text-white">
                 <p class="text-sm opacity-80">Next Due Date</p>
@@ -57,7 +57,7 @@
                                 Paid
                             </span>
                         </td>
-                        <td class="p-3 text-right font-bold">₱{{ i.amount_paid }}</td>
+                        <td class="p-3 text-right font-bold">Rs. {{ i.amount_paid }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -82,7 +82,7 @@
                                 Unpaid
                             </span>
                         </td>
-                        <td class="p-3 text-right font-bold">₱{{ inst.monthly_due }}</td>
+                        <td class="p-3 text-right font-bold">Rs. {{ inst.monthly_due }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -47,7 +47,7 @@
                 </div>
                 <h3 class="font-black text-gray-800 leading-tight truncate">{{ item.product.product_name }}</h3>
                 <div class="mt-auto pt-2 flex items-center justify-between">
-                    <span class="text-lg font-black text-blue-700">₱{{ item.product.base_price }}</span>
+                    <span class="text-lg font-black text-blue-700">Rs. {{ item.product.base_price }}</span>
                     <span class="text-[10px] font-bold {% if item.quantity > 0 %}text-green-500{% else %}text-red-500{% endif %}">
                         QTY: {{ item.quantity }}
                     </span>

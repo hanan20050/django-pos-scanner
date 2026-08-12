@@ -9,11 +9,11 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
   <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
     <p class="text-sm font-medium text-gray-500">Gross Revenue</p>
-    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ gross_revenue|floatformat:2|intcomma }}</h3>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">Rs. {{ gross_revenue|floatformat:2|intcomma }}</h3>
   </div>
   <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
     <p class="text-sm font-medium text-gray-500">Net Profit</p>
-    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ net_profit|floatformat:2|intcomma }}</h3>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">Rs. {{ net_profit|floatformat:2|intcomma }}</h3>
   </div>
   <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
     <p class="text-sm font-medium text-gray-500">Transactions</p>
@@ -21,11 +21,11 @@
   </div>
   <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
     <p class="text-sm font-medium text-gray-500">Avg Order Value</p>
-    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ aov|floatformat:2|intcomma }}</h3>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">Rs. {{ aov|floatformat:2|intcomma }}</h3>
   </div>
   <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
     <p class="text-sm font-medium text-gray-500">Outstanding Receivables</p>
-    <h3 class="text-2xl font-bold text-gray-900 mt-1">₱{{ outstanding_balance }}</h3>
+    <h3 class="text-2xl font-bold text-gray-900 mt-1">Rs. {{ outstanding_balance }}</h3>
   </div>
     <div class="p-6 rounded-xl shadow-sm border transition-all duration-300 {% if ratio > 0.3 %}bg-red-50 border-red-200{% else %}bg-green-50 border-green-200{% endif %}">
         <div class="flex justify-between items-center">
@@ -49,7 +49,7 @@
         <div class="flex justify-between items-center mt-3">
             <p class="text-xs text-gray-500">Uncollected Balance</p>
             <p class="text-xs font-bold {% if ratio > 0.3 %}text-red-700{% else %}text-gray-700{% endif %}">
-                ₱{{ outstanding_balance }}
+                Rs. {{ outstanding_balance }}
             </p>
         </div>
     </div>
@@ -113,7 +113,7 @@
         <td class="px-6 py-4 text-sm text-gray-700">{{ tx.orderitem_set.first.quantity }}</td>
         <td class="px-6 py-4 text-sm text-gray-500">{{ tx.payment_method }}</td>
         <td class="px-6 py-4 text-sm text-gray-500">{{ tx.order_date }}</td>
-        <td class="px-6 py-4 text-sm font-semibold">₱{{ tx.total_amount }}</td>
+        <td class="px-6 py-4 text-sm font-semibold">Rs. {{ tx.total_amount }}</td>
         <td class="px-6 py-4">
           {% if tx.order_status == 'Completed' %}
             <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Completed</span>
@@ -177,7 +177,7 @@
                         {{ start_of_week|date:"M d, Y" }} - Present
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <span class="text-sm font-black text-blue-400">₱{{ weekly_total|floatformat:2|intcomma }}</span>
+                        <span class="text-sm font-black text-blue-400">Rs. {{ weekly_total|floatformat:2|intcomma }}</span>
                     </td>
                     <td class="px-6 py-4 text-center">
                         <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-bold rounded uppercase">Active</span>
@@ -193,7 +193,7 @@
                         {{ start_of_month|date:"M d, Y" }} - Present
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <span class="text-sm font-black text-emerald-400">₱{{ monthly_total|floatformat:2|intcomma }}</span>
+                        <span class="text-sm font-black text-emerald-400">Rs. {{ monthly_total|floatformat:2|intcomma }}</span>
                     </td>
                     <td class="px-6 py-4 text-center">
                         <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded uppercase">Current</span>
@@ -209,7 +209,7 @@
                         Jan 01, {{ now|date:"Y" }} - Present
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <span class="text-sm font-black text-violet-400">₱{{ yearly_total|floatformat:2|intcomma }}</span>
+                        <span class="text-sm font-black text-violet-400">Rs. {{ yearly_total|floatformat:2|intcomma }}</span>
                     </td>
                     <td class="px-6 py-4 text-center">
                         <span class="px-2 py-0.5 bg-violet-500/10 text-violet-400 text-[10px] font-bold rounded uppercase">Fiscal</span>
