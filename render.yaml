@@ -3,7 +3,7 @@ services:
     name: drugs-mart-pos
     runtime: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn pos.wsgi:application --bind 0.0.0.0:$PORT"
+    startCommand: "./start.sh"
     envVars:
       - key: SECRET_KEY
         generateValue: true
