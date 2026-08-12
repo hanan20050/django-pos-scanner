@@ -927,7 +927,11 @@ def manageEmployee(request, pk):
 
 @login_required(login_url='login')
 def posTerminal(request):
-    employee = get_object_or_404(Employee, user=request.user)
+    employee = Employee.objects.filter(user=request.user).first()
+    if not employee:
+        messages.error(request, "Your account does not have an associated Employee profile to access the POS terminal.")
+        return redirect('dashboard')
+        
     branch_products = BranchInventory.objects.filter(branch=employee.branch).select_related('product')
     credit_officers = Employee.objects.filter(role='Credit Officer')
 

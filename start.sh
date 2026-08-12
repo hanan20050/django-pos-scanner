@@ -22,6 +22,12 @@ u_admin.save()
 cashier_user = os.getenv('CASHIER_USERNAME', 'cashier1')
 cashier_pass = os.getenv('CASHIER_PASSWORD', 'cashier123')
 branch = Branch.objects.first()
+
+if branch:
+    emp_admin, _ = Employee.objects.get_or_create(user=u_admin, defaults={'branch': branch, 'name': 'System Admin', 'role': 'Manager', 'email': u_admin.email})
+    emp_admin.role = 'Manager'
+    emp_admin.branch = branch
+    emp_admin.save()
 u, created = User.objects.get_or_create(username=cashier_user, defaults={'email': 'cashier@pharmacy.pk'})
 if created or not u.check_password(cashier_pass):
     u.set_password(cashier_pass)
